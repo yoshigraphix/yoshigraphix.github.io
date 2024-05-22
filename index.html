@@ -1,28 +1,730 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Hank Quinlan, Horrible Cop</title>
-	</head>
-	<body>
-		<nav>
-    		<ul>
-        		<li><a href="/">Home</a></li>
-	        	<li><a href="/about">About</a></li>
-        		<li><a href="/cv">CV</a></li>
-        		<li><a href="/blog">Blog</a></li>
-    		</ul>
-		</nav>
-		<div class="container">
-    		<div class="blurb">
-        		<h1>Hi there, I'm Hank Quinlan!</h1>
-				<p>I'm best known as the horrible cop from <em>A Touch of Evil</em> Don't trust me. <a href="/about">Read more about my life...</a></p>
-    		</div><!-- /.blurb -->
-		</div><!-- /.container -->
-		<footer>
-    		<ul>
-        		<li><a href="mailto:hankquinlanhub@gmail.com">email</a></li>
-        		<li><a href="https://github.com/hankquinlan">github.com/hankquinlan</a></li>
-			</ul>
-		</footer>
-	</body>
+<!doctype html>
+<html lang="en">
+
+<!-- Head -->
+<head>
+  <!-- Page Meta Tags-->
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon/favicon-16x16.png">
+  <link rel="mask-icon" href="./assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- Google Font-->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS -->
+  <link rel="stylesheet" href="./assets/css/libs.bundle.css" />
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="./assets/css/theme.bundle.css" />
+
+  <!-- Fix for custom scrollbar if JS is disabled-->
+  <noscript>
+    <style>
+      /**
+          * Reinstate scrolling for non-JS clients
+          */
+      .simplebar-content-wrapper {
+        overflow: auto;
+      }
+    </style>
+  </noscript>
+
+  <!-- Page Title -->
+  <title>Bootstrap 5 HTML Template</title>
+
+</head>
+<body class="">
+
+    <!-- Locomotive Scroll Container-->
+    <div data-scroll-container>
+        <!-- Navbar -->
+        <nav data-scroll-section class="navbar navbar-expand-lg navbar-light bg-transparent mb-5 mb-lg-10">
+          <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center fade-in" href="./index.html" data-scroll>
+              <picture class="avatar me-3" data-scroll data-scroll-speed="10" data-scroll-direction="horizontal" data-scroll-position="top">
+                  <!--<img class="img-fluid rounded-circle" src="./assets/images/avatar-small.png" alt="HTML Bootstrap Template by Pixel Rocket">-->
+                <img class="img-fluid rounded-square" src="./assets/images/avatar-small.png" alt="HTML Bootstrap Template by Pixel Rocket">
+              </picture>
+              <span class="fw-bolder fs-6 d-flex justify-content-start" data-scroll-section>
+                <span class="fade-in" data-scroll data-scroll-speed="2" data-scroll-delay=".03" data-scroll-position="top"><span style="color: #6EE7B7">YOSHI</span> SAKAGUCHI</span>
+              </span>
+            </a>
+            <button class="btn-icon navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <i class="ri-menu-3-line"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent" data-scroll data-scroll-speed="4" data-scroll-delay=".6" data-scroll-position="top">
+              <ul class="navbar-nav me-0 ms-auto mb-2 mb-lg-0 mt-4 mt-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link" href="./index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./about.html">About</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./work-listing.html">Work</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./contact.html">Contact</a>
+                </li>
+                <li class="nav-item d-lg-none">
+                  <a class="nav-link btn-toggle-mode" href="#">Toggle Dark/Light Mode</a>
+                </li>
+              </ul>
+            </div>
+            <button class="btn-icon btn-toggle-mode ms-7 fade-in d-none d-lg-flex" data-scroll data-scroll-speed="-10" data-scroll-direction="horizontal" data-scroll-position="top"><i class="ri-sun-line"></i></button>
+          </div>
+        </nav>        <!-- / Navbar-->
+
+        <!-- Main Section-->
+        <section class="py-3 ">
+            <!-- Page Content Goes Here -->
+
+            <div class="container" data-scroll-section>
+
+                <!-- Hero-->
+                <div class="mb-lg-10">
+                    <p class="subtitle-sm" data-scroll data-scroll-speed="2" data-scroll-position="top">Hello there!</p>
+                    <h1 class="display-1 mb-4" data-scroll data-scroll-speed="4" data-scroll-position="top">I am <span style="color: #6EE7B7">YOSHI</span> SAKAGUCHI</h1>
+                    <p data-scroll data-scroll-speed="6" data-scroll-position="top" class="lead typed-elem">Tennessee-based  <span class="fw-bold text-highlight" data-typed='{"backSpeed": 50,"strings": ["graphic designer", "motion graphics", "video editor", "digital artist"]}'></span><span class="d-block">specializing in generating on brand visual content.</span></p>
+                </div>                <!-- /Hero-->
+
+                <!-- Latest Projects Slideshow Top-->
+                <div>
+                    <h2 
+                        class="display-6 border-bottom pb-5 mb-5 fade-in-up" 
+                        data-scroll data-scroll-position="bottom"
+                    >Selected Work</h2>                    <div class="position-relative">
+                        <div class="swiper-container swiper-linked-top">
+                          <div class="swiper-wrapper">
+                                    <div class="swiper-slide cursor-pointer">
+                                        <picture>
+                                            <img class="img-fluid" src="./assets/images/project-listing-1.jpg" alt="">
+                                        </picture>
+                                    </div>
+                                    <div class="swiper-slide cursor-pointer">
+                                        <picture>
+                                            <img class="img-fluid" src="./assets/images/project-listing-2.jpg" alt="">
+                                        </picture>
+                                    </div>
+                                    <div class="swiper-slide cursor-pointer">
+                                        <picture>
+                                            <img class="img-fluid" src="./assets/images/project-listing-3.jpg" alt="">
+                                        </picture>
+                                    </div>
+                                    <div class="swiper-slide cursor-pointer">
+                                        <picture>
+                                            <img class="img-fluid" src="./assets/images/project-listing-4.jpg" alt="">
+                                        </picture>
+                                    </div>
+                                    <div class="swiper-slide cursor-pointer">
+                                        <picture>
+                                            <img class="img-fluid" src="./assets/images/project-listing-5.jpg" alt="">
+                                        </picture>
+                                    </div>
+                                    <div class="swiper-slide cursor-pointer">
+                                        <picture>
+                                            <img class="img-fluid" src="./assets/images/project-listing-6.jpg" alt="">
+                                        </picture>
+                                    </div>
+                                    <div class="swiper-slide cursor-pointer">
+                                        <picture>
+                                            <img class="img-fluid" src="./assets/images/project-listing-7.jpg" alt="">
+                                        </picture>
+                                    </div>
+                                    <div class="swiper-slide cursor-pointer">
+                                        <picture>
+                                            <img class="img-fluid" src="./assets/images/project-listing-8.jpg" alt="">
+                                        </picture>
+                                    </div>
+                          </div>
+                        </div>
+                        <div class="swiper-prev swiper-btn"><i class="ri-arrow-left-line"></i></div>
+                        <div class="swiper-next swiper-btn"><i class="ri-arrow-right-line"></i></div>                    </div>
+                </div>
+                <!-- / Latest Projects Slideshow Top-->
+
+                <!-- Latest Projects Slideshow Bottom-->
+                <div class="mt-3 mb-5">
+                    <div class="swiper-container swiper-linked-bottom">
+                      <div class="swiper-wrapper">
+                                <div class="swiper-slide">
+                                  <div class="row gx-4 align-items-center">
+                    
+                                    <!-- Slide Image-->
+                                    <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
+                                      <picture>
+                                        <img class="img-fluid" src="./assets/images/project-listing-1.jpg" alt="">
+                                    </picture>
+                                    </div>
+                                    <!-- / Slide Image -->
+                    
+                                    <!-- Slide Text-->
+                                    <div class="col-12 col-md-6">
+                                      <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100"><span class='me-2'>eLearning</span> &middot; <span class='ms-2'>Tynker</span></p>
+                                      <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">Sizzle Reels</p>
+                                      <p class="small text-muted mb-2" data-swiper-parallax-x="-200">
+Managed a team of international video editors and graphic artists, enhancing the visual storytelling aspect of web-based games and coding lessons.</p>
+                                      <div class="mt-3" data-swiper-parallax-y="-15">
+                                        <a class="link-body" href="./work-project01.html">View Project</a>
+                                      </div>
+                                    </div>
+                                    <!-- / Slide Text-->
+                                  </div>
+                                </div>
+                                <div class="swiper-slide">
+                                  <div class="row gx-4 align-items-center">
+                    
+                                    <!-- Slide Image-->
+                                    <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
+                                      <picture>
+                                        <img class="img-fluid" src="./assets/images/project-listing-2.jpg" alt="">
+                                    </picture>
+                                    </div>
+                                    <!-- / Slide Image -->
+                    
+                                    <!-- Slide Text-->
+                                    <div class="col-12 col-md-6">
+                                      <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100"><span class='me-2'>Gaming</span> &middot; <span class='ms-2'>Jackbox Games</span></p>
+                                      <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">The Devils and the Details</p>
+                                      <p class="small text-muted mb-2" data-swiper-parallax-x="-200">Contract artist for Jackbox Games, responsible for creating over 200 vector illustrations in one month for the popular party game 'The Devils and the Details', showcasing meticulous attention to detail and thematic understanding."</p>
+                                      <div class="mt-3" data-swiper-parallax-y="-15">
+                                        <a class="link-body" href="./work-project02.html">View Project</a>
+                                      </div>
+                                    </div>
+                                    <!-- / Slide Text-->
+                                  </div>
+                                </div>
+                                <div class="swiper-slide">
+                                  <div class="row gx-4 align-items-center">
+                    
+                                    <!-- Slide Image-->
+                                    <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
+                                      <picture>
+                                        <img class="img-fluid" src="./assets/images/project-listing-3.jpg" alt="">
+                                    </picture>
+                                    </div>
+                                    <!-- / Slide Image -->
+                    
+                                    <!-- Slide Text-->
+                                    <div class="col-12 col-md-6">
+                                      <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100"><span class='me-2'>Marketing</span> &middot; <span class='ms-2'>Jellyvision</span></p>
+                                      <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">Blog Images</p>
+                                      <p class="small text-muted mb-2" data-swiper-parallax-x="-200">In the whirlwind of just over a year, I conjured up a myriad of vibrant illustrations to jazz up Jellyvision's product awareness blogs. With each stroke, I breathed life into intricate concepts, making them as captivating as they were informative.</p>
+                                      <div class="mt-3" data-swiper-parallax-y="-15">
+                                        <a class="link-body" href="./work-project03.html">View Project</a>
+                                      </div>
+                                    </div>
+                                    <!-- / Slide Text-->
+                                  </div>
+                                </div>
+                                <div class="swiper-slide">
+                                  <div class="row gx-4 align-items-center">
+                    
+                                    <!-- Slide Image-->
+                                    <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
+                                      <picture>
+                                        <img class="img-fluid" src="./assets/images/project-listing-4.jpg" alt="">
+                                    </picture>
+                                    </div>
+                                    <!-- / Slide Image -->
+                    
+                                    <!-- Slide Text-->
+                                    <div class="col-12 col-md-6">
+                                      <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100"><span class='me-2'>Mobile</span> &middot; <span class='ms-2'>React Native</span></p>
+                                      <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">Messaging App</p>
+                                      <p class="small text-muted mb-2" data-swiper-parallax-x="-200">Creation of a custom React Native messaging app for a messaging SAAS startup.</p>
+                                      <div class="mt-3" data-swiper-parallax-y="-15">
+                                        <a class="link-body" href="./work-single.html">View Project</a>
+                                      </div>
+                                    </div>
+                                    <!-- / Slide Text-->
+                                  </div>
+                                </div>
+                                <div class="swiper-slide">
+                                  <div class="row gx-4 align-items-center">
+                    
+                                    <!-- Slide Image-->
+                                    <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
+                                      <picture>
+                                        <img class="img-fluid" src="./assets/images/project-listing-5.jpg" alt="">
+                                    </picture>
+                                    </div>
+                                    <!-- / Slide Image -->
+                    
+                                    <!-- Slide Text-->
+                                    <div class="col-12 col-md-6">
+                                      <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100"><span class='me-2'>Ecommerce</span> &middot; <span class='ms-2'>Shopify</span></p>
+                                      <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">Shopify Online Store</p>
+                                      <p class="small text-muted mb-2" data-swiper-parallax-x="-200">Design and development of a custom Shopify Ecommerce platform for a car retailer.</p>
+                                      <div class="mt-3" data-swiper-parallax-y="-15">
+                                        <a class="link-body" href="./work-single.html">View Project</a>
+                                      </div>
+                                    </div>
+                                    <!-- / Slide Text-->
+                                  </div>
+                                </div>
+                                <div class="swiper-slide">
+                                  <div class="row gx-4 align-items-center">
+                    
+                                    <!-- Slide Image-->
+                                    <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
+                                      <picture>
+                                        <img class="img-fluid" src="./assets/images/project-listing-6.jpg" alt="">
+                                    </picture>
+                                    </div>
+                                    <!-- / Slide Image -->
+                    
+                                    <!-- Slide Text-->
+                                    <div class="col-12 col-md-6">
+                                      <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100"><span class='me-2'>Ecommerce</span> &middot; <span class='ms-2'>Magento</span></p>
+                                      <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">Magento Online Store</p>
+                                      <p class="small text-muted mb-2" data-swiper-parallax-x="-200">Design and development of a custom Magento Ecommerce platform for a pet food retailer.</p>
+                                      <div class="mt-3" data-swiper-parallax-y="-15">
+                                        <a class="link-body" href="./work-single.html">View Project</a>
+                                      </div>
+                                    </div>
+                                    <!-- / Slide Text-->
+                                  </div>
+                                </div>
+                                <div class="swiper-slide">
+                                  <div class="row gx-4 align-items-center">
+                    
+                                    <!-- Slide Image-->
+                                    <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
+                                      <picture>
+                                        <img class="img-fluid" src="./assets/images/project-listing-7.jpg" alt="">
+                                    </picture>
+                                    </div>
+                                    <!-- / Slide Image -->
+                    
+                                    <!-- Slide Text-->
+                                    <div class="col-12 col-md-6">
+                                      <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100"><span class='me-2'>Ecommerce</span> &middot; <span class='ms-2'>Wordpress</span></p>
+                                      <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">Web Application</p>
+                                      <p class="small text-muted mb-2" data-swiper-parallax-x="-200">Design and development of a custom WooCommerce Ecommerce platform for a furniture retailer.</p>
+                                      <div class="mt-3" data-swiper-parallax-y="-15">
+                                        <a class="link-body" href="./work-single.html">View Project</a>
+                                      </div>
+                                    </div>
+                                    <!-- / Slide Text-->
+                                  </div>
+                                </div>
+                                <div class="swiper-slide">
+                                  <div class="row gx-4 align-items-center">
+                    
+                                    <!-- Slide Image-->
+                                    <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
+                                      <picture>
+                                        <img class="img-fluid" src="./assets/images/project-listing-8.jpg" alt="">
+                                    </picture>
+                                    </div>
+                                    <!-- / Slide Image -->
+                    
+                                    <!-- Slide Text-->
+                                    <div class="col-12 col-md-6">
+                                      <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100"><span class='me-2'>Ecommerce</span> &middot; <span class='ms-2'>Shopify</span></p>
+                                      <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">Ecommerce Marketing</p>
+                                      <p class="small text-muted mb-2" data-swiper-parallax-x="-200">Design and development of a custom Shopify Ecommerce platform for a fashion retailer.</p>
+                                      <div class="mt-3" data-swiper-parallax-y="-15">
+                                        <a class="link-body" href="./work-single.html">View Project</a>
+                                      </div>
+                                    </div>
+                                    <!-- / Slide Text-->
+                                  </div>
+                                </div>
+                      </div>
+                    </div>                </div>
+                <!-- / Latest Projects Slideshow Bottom-->
+
+                <!-- Experience-->
+                <div class="py-lg-6" data-scroll>
+                    <h2 
+                        class="display-6 border-bottom pb-5 mb-5 fade-in-up" 
+                        data-scroll data-scroll-position="bottom"
+                    >Experience</h2>                <!-- Single Experience-->
+                                <div 
+                                    class="row gx-2 mb-5 fade-in-up" 
+                                    data-scroll
+                                    data-scroll-position="bottom" 
+                                >
+                                    <div class="col-12 col-lg-4">
+                                        <p class="fw-bolder mb-1">Tynker</p>
+                                        <span class="text-muted small">(2020 - 2023)</span>
+                                    </div>
+                                    <div class="col-12 col-lg-8">
+                                        <p class="fw-bolder">Game & Marketing Graphics Lead</p>
+                                        <p class="text-muted fw-light fs-6">
+                                            <ul class="text-muted fw-light fs-6">                                 
+                                              <li>Managed a team of international video editors and graphic artists.</li>
+                                              <li>Rigged characters using Spine for web-based games, enhancing visual storytelling.</li>
+                                              <li>Participated in QA sessions to identify and report bugs for high-quality gameplay experiences.</li>
+                                              <li>Developed social media and marketing graphics for various projects, driving audience engagement.</li>
+                                            </ul> 
+                                        </p>
+                                        <a class="link-body" href="https://www.tynker.com">https://www.tynker.com</a>
+                                    </div>
+                                </div>
+                                <!-- / Single Experience -->
+                                <!-- Single Experience-->
+                                <div 
+                                    class="row gx-2 mb-5 fade-in-up" 
+                                    data-scroll
+                                    data-scroll-position="bottom" 
+                                >
+                                    <div class="col-12 col-lg-4">
+                                        <p class="fw-bolder mb-1">Jackbox Games</p>
+                                        <span class="text-muted small">(2020 - Contract)</span>
+                                    </div>
+                                    <div class="col-12 col-lg-8">
+                                        <p class="fw-bolder">Game & Marketing Artist | QA</p>
+                                        <p class="text-muted fw-light fs-6">
+                                            <ul class="text-muted fw-light fs-6">                                 
+                                              <li>Worked on popular games such as Devil’s In The Details and Talking Points.</li>
+                                              <li>Created art assets for gameplay and participated in QA sessions for bug identification and reporting.</li>
+                                              <li>Developed social media and marketing graphics to drive engagement with target audiences.</li>
+                                            </ul> 
+                                            
+                                            
+                                        </p>
+                                        <a class="link-body" href="https://www.jackboxgames.com/games/packs/the-jackbox-party-pack-7">https://www.jackboxgames.com</a>
+                                    </div>
+                                </div>
+                                <!-- / Single Experience -->
+                                <!-- Single Experience-->
+                                <div 
+                                    class="row gx-2 mb-5 fade-in-up" 
+                                    data-scroll
+                                    data-scroll-position="bottom" 
+                                >
+                                    <div class="col-12 col-lg-4">
+                                        <p class="fw-bolder mb-1">Jellyvision</p>
+                                        <span class="text-muted small">(2011 - 2020)</span>
+                                    </div>
+                                    <div class="col-12 col-lg-8">
+                                        <p class="fw-bolder">Lead Production Artist</p>
+                                        <p class="text-muted fw-light fs-6">
+                                            <ul class="text-muted fw-light fs-6">                                 
+                                              <li>Led the production of After Effects and canvas-formatted animations for B2B SaaS projects.</li>
+                                              <li>Created visual mockups for interactive web environments to ensure high-quality deliverables.</li>
+                                              <li>Recruited, mentored, and directed a team of designers, providing guidance and feedback to enhance their skills.</li>
+                                            </ul> 
+                                        </p>
+                                        <a class="link-body" href="https://www.jellyvision.com">https://www.jellysivion.com</a>
+                                    </div>
+                                </div>
+                                <!-- / Single Experience -->
+                                <!-- Single Experience-->
+                                <div 
+                                    class="row gx-2 mb-5 fade-in-up" 
+                                    data-scroll
+                                    data-scroll-position="bottom" 
+                                >
+                                    <div class="col-12 col-lg-4">
+                                        <p class="fw-bolder mb-1">Webfoot Technologies</p>
+                                        <span class="text-muted small">(2014 - 2016)</span>
+                                    </div>
+                                    <div class="col-12 col-lg-8">
+                                        <p class="fw-bolder">Graphic Designer</p>
+                                        <p class="text-muted fw-light fs-6">
+                                            <ul class="text-muted fw-light fs-6">                                 
+                                              <li>Led GUI design for several games, including the <a href="http://www.webfootgames.com/game.html?gameid=YouDontKnowJack_DS">You Don’t Know Jack</a> adaptation for the Nintendo DS.</li>
+                                              <li>Managed contracted work and designed minigames and platforming stages for <a href="http://www.webfootgames.com/game.html?gameid=FancyNancyTeaPartyTime_DS">Fancy Nancy DS</a>.</li>
+                                              <li>Worked as a Game Artist for "<a href="http://www.webfootgames.com/game.html?gameid=FabulousFinds_DS">Fabulous Finds DS</a>" and "<a href="http://www.webfootgames.com/game.html?gameid=TheBiggestLoser_DS">Biggest Loser DS</a>".</li>
+                                            </ul> 
+                                        
+                                        </p>
+                                        <a class="link-body" href="https://www.webfootgames.com">https://www.webfootgames.com</a>
+                                    </div>
+                                </div>
+                                <!-- / Single Experience -->
+                </div>                <!-- / Experience-->                
+
+            </div>
+
+            <!-- Testimonials-->
+            <!-- Testimonials -->
+            <div class="mt-8">
+              <div class="d-flex mb-4" data-scroll-section>
+                <div class="testimonials" data-scroll data-scroll-direction="horizontal" data-scroll-speed="-8" data-scroll-offset="0">
+                      <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "Over the past two years, I worked with Yoshi to create dozens of illustrations for a range of marketing projects. He was a joy to collaborate with - someone who reliably <span style="color: #6EE7B7">brought clever ideas to the table</span>, and nailed the landing when it came to execution, often on his first stab at it. Can't recommend him enough. ""
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-1.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Mark Radar</p>
+                                    <p class="small text-muted m-0 lh-1">Jellyvision - Marketing</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>          
+                    <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "I worked with Yoshi directly on many projects over the years at Jellyvision, and he was always a great teammate. His illustration and animation skills are top notch. He's very collaborative––he'd ask for my feedback and was open to incorporating it. What especially impressed me about Yoshi is how tech savvy he is. He was always on the forefront of figuring out how to adapt our art for the constantly-evolving web landscape and how to streamline the process of creating it. On top of that, he is friendly, kind, and fun to be around. <span style="color: #6EE7B7">Yoshi would be an asset to any team.</span>"
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-2.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Katie Lauffenburger</p>
+                                    <p class="small text-muted m-0 lh-1">Jellyvision - Design</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>          
+                    <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "Jellyvision was the very lucky home for Yoshi's artistic excellence for almost nine years. Yoshi is creative, hard working, very efficient, and a lovely human being to boot. He's a multi-faceted creator and knows how to handle high volume, high pressure project work as well as iterative product work, which can require two different mindsets. And he's got a kind and gentle spirit, which makes collaborating with him a true pleasure."
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-3.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Amanda Lannert</p>
+                                    <p class="small text-muted m-0 lh-1">Jellyvision - CEO</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>          
+                    <!--
+                    <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "Yoshi always maintained a positive outlook even during the inevitable game ending crunch periods. He handled the pressures of a small development team admirably which made working with him a pleasure. He is honest, intelligent and hard-working and is a solid team player."
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-4.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Debra Osborn</p>
+                                    <p class="small text-muted m-0 lh-1">Super 8 Design House</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>          
+                    <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "Yoshi is a very creative and bright artist, he consistently offers a new and creative approach. He is a quick learner and a strong communicator."
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-5.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Christina Gerskovich</p>
+                                    <p class="small text-muted m-0 lh-1">Horseland</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>          
+                    <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "Yoshi is not only a very talented individual, but he is also a true team player who collaborates well across a fully remote, global team setting. He is consistently open to feedback and goes above and beyond to ensure project success. His illustration and graphic design expertise translate abstract concepts into tangible, visually appealing creations. Moreover, his skill in capturing impactful user moments shines through his exceptional product videos and sizzles. Yoshi's creative talent helps leave a lasting impression. He is a great asset to any team."
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-6.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Jamie May</p>
+                                    <p class="small text-muted m-0 lh-1">Tynker</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>    
+                      -->
+                  </div>
+              </div>
+              <div class="d-flex justify-content-end" data-scroll-section>
+                <div class="testimonials" data-scroll data-scroll-direction="horizontal" data-scroll-speed="8" data-scroll-offset="0">
+                    
+                    
+                    <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "Yoshi always maintained a positive outlook even during the inevitable game ending crunch periods. He handled the pressures of a small development team admirably which made working with him a pleasure. He is honest, intelligent and hard-working and is a solid team player."
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-4.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Debra Osborn</p>
+                                    <p class="small text-muted m-0 lh-1">Super 8 Design House</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>          
+                    <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "Yoshi is a very creative and bright artist, he consistently offers a new and creative approach. He is a <span style="color: #6EE7B7">quick learner and a strong communicator.</span>"
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-5.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Christina Gerskovich</p>
+                                    <p class="small text-muted m-0 lh-1">Horseland</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>          
+                    <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "Yoshi is not only a very talented individual, but he is also a <span style="color: #6EE7B7">true team player who collaborates well across a fully remote, global team setting</span>. He is consistently open to feedback and goes above and beyond to ensure project success. His illustration and graphic design expertise translate abstract concepts into tangible, visually appealing creations. Yoshi's creative talent helps leave a lasting impression. He is a great asset to any team."
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-6.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Jamie May</p>
+                                    <p class="small text-muted m-0 lh-1">Tynker</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>     
+                    
+                    <!--
+                    <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "With a creative approach to logos, she was able provide us with custom designs without ever having an unrealistic deadline. Not only does the work make our company look good but also feel really nice when we can trust someone!"
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-3.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Simon Smith</p>
+                                    <p class="small text-muted m-0 lh-1">Brand Juice Co</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>          <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "I&#x27;ve never met anyone who is more professional and clear in their communications than Jenny, but it was when she started giving me advice on how to improve our website design that really made a difference for us -- she had so many good ideas!"
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-1.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Joe Hill</p>
+                                    <p class="small text-muted m-0 lh-1">Joe Hill Software</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>          <div class="card card-testimonial">
+                          <div class="card-body">
+                            <p class="mb-1">
+                                "I can&#x27;t say enough good things about Jenny! We started as a client last year after she made some major changes for us which turned out beautifully. We&#x27;ll be a client for as long as she will work with us!"
+                            </p>
+                            <div class="d-flex align-items-center mt-4">
+                                <picture class="avatar me-3">
+                                    <img class="img-fluid rounded-circle" src="./assets/images/avatar-2.jpeg" alt="">
+                                </picture>
+                                <div>
+                                    <p class="small fw-bolder mb-2 lh-1">Rob Waite</p>
+                                    <p class="small text-muted m-0 lh-1">RW Software Services</p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>   
+                      -->
+                  
+                  </div>
+              </div>
+            </div>
+            <!-- / Testimonials-->            <!-- / Testimonials-->
+
+            <!-- /Page Content -->
+        </section>
+        <!-- / Main Section-->
+
+        <!-- Footer -->
+        <!-- Footer-->
+        <div class="d-flex align-items-center justify-content-center flex-column col-lg-7 col-xl-6 col-xxl-5 text-center mx-auto mt-5 px-4 px-md-0 mt-lg-10" data-scroll-section>
+            <h4 class="display-5 mb-5" data-scroll data-scroll-speed=".8" data-scroll-delay="0.05">Thank you for your time and consideration.</h4>
+             <a href="./assets/resume/resume_sakaguchi_gd.pdf" class="btn btn-dark w-100 d-flex align-items-center justify-content-center"><i class="ri-file-download-line ri-lg me-2"></i> My Resume</a>
+        </div>
+        
+        <footer class="border-top mt-10 pt-5 pb-8" data-scroll-section>
+            <div class="container d-flex justify-content-between">
+                <p class="small">
+                    All rights reserved. ©
+                    <span style="color: #6ee7b7">YOSHI</span> SAKAGUCHI 2024.
+                    Template created by
+                    <a class="link-body" href="https://www.pixelrocket.store"
+                        >Pixel Rocket</a
+                    >
+                </p>
+                <ul class="list-unstyled d-flex align-items-center">
+                    <li class="ms-3">
+                        <a
+                            class="text-decoration-none text-muted"
+                            href="https://www.linkedin.com/in/yoshisakaguchi/"
+                            ><i class="ri-linkedin-fill"></i
+                        ></a>
+                    </li>
+                    <li class="ms-3">
+                        <a
+                            class="text-decoration-none text-muted"
+                            href="https://www.youtube.com/@YoshiSakaguchi "
+                            ><i class="ri-youtube-fill"></i
+                        ></a>
+                    </li>
+                    <li class="ms-3">
+                        <a
+                            class="text-decoration-none text-muted"
+                            href="https://vimeo.com/yoshisakaguchi"
+                            ><i class="ri-vimeo-fill"></i
+                        ></a>
+                    </li>
+                </ul>
+            </div>
+        </footer>
+        <!-- / Footer-->
+        <!-- / Footer-->
+    </div>
+    <!-- Locomotive Scroll Container-->
+
+
+    <!-- Theme JS -->
+    <!-- Vendor JS -->
+    <script src="./assets/js/vendor.bundle.js"></script>
+    
+    <!-- Theme JS -->
+    <script src="./assets/js/theme.bundle.js"></script>
+</body>
+
 </html>
