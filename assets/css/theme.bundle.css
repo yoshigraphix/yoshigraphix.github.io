@@ -24196,7 +24196,7 @@ p {
 /* ---- grid ---- */
 
 .grid {
-
+ 
 }
 
 /* clearfix */
@@ -24209,9 +24209,9 @@ p {
 /* ---- grid-item ---- */
 
 .grid-item {
-  width: 100px;
-  height: 100px;
-  float: left;
+  width: 6rem;
+  height: 6rem;
+  float: center;
   
 }
 
