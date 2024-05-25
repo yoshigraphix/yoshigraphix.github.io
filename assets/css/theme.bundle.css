@@ -24211,8 +24211,12 @@ p {
 .grid-item {
   width: 6rem;
   height: 6rem;
-  float: center;
-  
+  float:left;
+   background:white;
+    border-color:red;
+    border:-14px;
+    border-radius: 100px;
+   
 }
 
 .grid-item--width2 { width: 320px; }
