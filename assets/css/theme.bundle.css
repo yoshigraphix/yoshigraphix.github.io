@@ -17211,7 +17211,7 @@ p {
     margin-left: 1rem;
     margin-right: 1rem;
     width: 80vw;
-    max-width: 700px;
+    max-width: 300px;
     display: flex;
 }
 @font-face {
