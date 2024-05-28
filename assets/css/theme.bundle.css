@@ -4673,6 +4673,10 @@ fieldset:disabled .btn {
     align-items: center;
 }
 .navbar-toggler {
+    position:absolute;
+    top: 1.8rem;
+    right: 2rem;
+    z-index: 1000;
     padding: 0.25rem 0.75rem;
     font-size: calc(1.26875rem + 0.225vw);
     line-height: 1;
@@ -4680,7 +4684,11 @@ fieldset:disabled .btn {
     border: 1px solid transparent;
     border-radius: 0.25rem;
     transition: box-shadow 0.15s ease-in-out;
+
 }
+
+
+
 @media (min-width: 1200px) {
     .navbar-toggler {
         font-size: 1.4375rem;
@@ -24231,6 +24239,10 @@ p {
 
 
 
-
-
+/* Hide the name on smaller screens */
+@media (max-width: 992px) {
+  .hide-on-small {
+    display: none;
+  }
+}
 
