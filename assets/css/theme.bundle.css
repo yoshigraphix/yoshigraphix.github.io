@@ -24195,9 +24195,11 @@ p {
 
 /* ---- grid ---- */
 
-.grid {
- 
-}
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 20px; /* Adjust this value to change the gap between grid items */
+        }
 
 /* clearfix */
 .grid:after {
