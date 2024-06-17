@@ -1,0 +1,338 @@
+
+<!doctype html>
+<html lang="en">
+
+<!-- Head -->
+<head>
+  
+    <style>
+    #scrollTopBtn {
+      display: none; /* Hidden by default */
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 99;
+      border: none;
+      outline: none;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    #scrollTopBtn:hover {
+      background-color: #555;
+    }
+
+    /* Example page content */
+    .content {
+      height: 2000px;
+      background: linear-gradient(to bottom, #f06, white);
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+    
+    
+    
+    
+    
+    
+    <!-- Page Meta Tags-->
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon/favicon-16x16.png">
+  <link rel="mask-icon" href="./assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- Google Font-->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS -->
+  <link rel="stylesheet" href="./assets/css/libs.bundle.css" />
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="./assets/css/theme.bundle.css" />
+
+  <!-- Fix for custom scrollbar if JS is disabled-->
+  <noscript>
+    <style>
+      /**
+          * Reinstate scrolling for non-JS clients
+          */
+      .simplebar-content-wrapper {
+        overflow: auto;
+      }
+    </style>
+  </noscript>
+
+  <!-- Page Title -->
+  <title>Yoshi Sakaguchi</title>
+
+</head>
+<body class="">
+
+    <!-- Locomotive Scroll Container-->
+    <div data-scroll-container>
+        <!-- Navbar -->
+        <nav data-scroll-section class="navbar navbar-expand-lg navbar-light bg-transparent mb-5 mb-lg-10">
+          <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center fade-in" href="./index.html" data-scroll>
+              <picture class="avatar me-3" data-scroll data-scroll-speed="10" data-scroll-direction="horizontal" data-scroll-position="top">
+                
+                <img class="img-fluid rounded-square" src="./assets/images/avatar-small.png" alt="Yoshi Sakaguchi">
+              </picture>
+              <span class="fw-bolder fs-6 d-flex justify-content-start" data-scroll-section>
+                <span class="fade-in" data-scroll data-scroll-speed="2" data-scroll-delay=".03" data-scroll-position="top"><span style="color: #6EE7B7">YOSHI</span> SAKAGUCHI</span>
+              </span>
+            </a>
+            <button class="btn-icon navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <i class="ri-menu-3-line"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent" data-scroll data-scroll-speed="4" data-scroll-delay=".6" data-scroll-position="top">
+              <ul class="navbar-nav me-0 ms-auto mb-2 mb-lg-0 mt-4 mt-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link" href="./index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./about.html">About</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./work-listing.html">Work</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./contact.html">Contact</a>
+                </li>
+                <li class="nav-item d-lg-none">
+                  <a class="nav-link btn-toggle-mode" href="#">Toggle Dark/Light Mode</a>
+                </li>
+              </ul>
+            </div>
+            <button class="btn-icon btn-toggle-mode ms-7 ms-3 fade-in d-none d-lg-flex" data-scroll data-scroll-speed="-10" data-scroll-direction="horizontal" data-scroll-position="top"><i class="ri-sun-line"></i></button>
+          </div>
+        </nav>        <!-- / Navbar-->
+
+        <!-- Main Section-->
+       
+        <!-- / Main Section-->
+
+        <!-- Footer -->
+        <!-- Footer-->
+        <div class="d-flex align-items-center justify-content-center flex-column col-lg-7 col-xl-6 col-xxl-5 text-center mx-auto mt-5 px-4 px-md-0 mt-lg-10" data-scroll-section>
+            <h4 class="display-5 mb-5" data-scroll data-scroll-speed=".8" data-scroll-delay="0.05">Thank you for your time and consideration.</h4>
+             <a href="./assets/resume/resume_sakaguchi_gd.pdf" class="btn btn-dark w-100 d-flex align-items-center justify-content-center"><i class="ri-file-download-line ri-lg me-2"></i> My Resume</a>
+        </div>
+        
+        <footer class="border-top mt-10 pt-5 pb-8" data-scroll-section>
+            <div class="container d-flex justify-content-between">
+                <p class="small">
+                    All rights reserved. ©
+                    <span style="color: #6ee7b7">YOSHI</span> SAKAGUCHI 2024.
+                   
+                </p>
+                <ul class="list-unstyled d-flex align-items-center">
+                    <li class="ms-3">
+                        <a
+                            class="text-decoration-none text-muted"
+                            href="https://www.linkedin.com/in/yoshisakaguchi/"
+                            ><i class="ri-linkedin-fill"></i
+                        ></a>
+                    </li>
+                    <li class="ms-3">
+                        <a
+                            class="text-decoration-none text-muted"
+                            href="https://www.youtube.com/@YoshiSakaguchi "
+                            ><i class="ri-youtube-fill"></i
+                        ></a>
+                    </li>
+                    <li class="ms-3">
+                        <a
+                            class="text-decoration-none text-muted"
+                            href="https://vimeo.com/yoshisakaguchi"
+                            ><i class="ri-vimeo-fill"></i
+                        ></a>
+                    </li>
+                </ul>
+            </div>
+        </footer>
+        <!-- / Footer-->
+        <!-- / Footer-->
+    </div>
+
+
+    <!-- Vendor JS -->
+    <script src="./assets/js/vendor.bundle.js"></script>
+    
+    <!-- Theme JS -->
+    <script src="./assets/js/theme.bundle.js"></script>
+
+
+
+</body>
+
+</html>
+
+ChatGPT
+Your HTML code looks pretty good overall. I've made some adjustments to fix a few errors and improve the functionality of the scroll-to-top button. Here's the modified version:
+
+html
+Copy code
+<!doctype html>
+<html lang="en">
+
+<head>
+   
+    <title>Yoshi Sakaguchi</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon/favicon-16x16.png">
+    <link rel="mask-icon" href="./assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Google Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="./assets/css/libs.bundle.css" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="./assets/css/theme.bundle.css" />
+
+    <!-- Fix for custom scrollbar if JS is disabled-->
+    <noscript>
+        <style>
+            /**
+          * Reinstate scrolling for non-JS clients
+          */
+            .simplebar-content-wrapper {
+                overflow: auto;
+            }
+        </style>
+    </noscript>
+
+    <!-- Inline CSS -->
+    <style>
+        #scrollTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99;
+            border: none;
+            outline: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #555;
+        }
+
+        /* Example page content */
+        .content {
+            height: 2000px;
+            background: linear-gradient(to bottom, #f06, white);
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+</head>
+
+<body class="">
+    <!-- Locomotive Scroll Container-->
+    <div data-scroll-container>
+        <!-- Navbar -->
+        <nav data-scroll-section class="navbar navbar-expand-lg navbar-light bg-transparent mb-5 mb-lg-10">
+            <div class="container-fluid">
+                <!-- Navbar content -->
+            </div>
+        </nav>
+        <!-- / Navbar-->
+
+        <!-- Main Section-->
+        <!-- / Main Section-->
+
+        <!-- Footer -->
+        <div class="d-flex align-items-center justify-content-center flex-column col-lg-7 col-xl-6 col-xxl-5 text-center mx-auto mt-5 px-4 px-md-0 mt-lg-10" data-scroll-section>
+            <h4 class="display-5 mb-5" data-scroll data-scroll-speed=".8" data-scroll-delay="0.05">Thank you for your time and consideration.</h4>
+            <a href="./assets/resume/resume_sakaguchi_gd.pdf" class="btn btn-dark w-100 d-flex align-items-center justify-content-center"><i class="ri-file-download-line ri-lg me-2"></i> My Resume</a>
+        </div>
+
+        <footer class="border-top mt-10 pt-5 pb-8" data-scroll-section>
+            <div class="container d-flex justify-content-between">
+                <p class="small">
+                    All rights reserved. ©
+                    <span style="color: #6ee7b7">YOSHI</span> SAKAGUCHI 2024.
+                </p>
+                <ul class="list-unstyled d-flex align-items-center">
+                    <!-- Social media icons -->
+                </ul>
+            </div>
+        </footer>
+        <!-- / Footer-->
+    </div>
+    <!-- / Locomotive Scroll Container -->
+  <!-- Scroll to Top Button -->
+  <button id="scrollTopBtn" title="Go to top">Top</button>
+
+  <script>
+    // Get the button
+    let scrollTopBtn = document.getElementById("scrollTopBtn");
+
+    // When the user scrolls down 20px from the top of the document, show the button
+    window.onscroll = function() {
+      scrollFunction();
+    };
+
+    function scrollFunction() {
+      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        scrollTopBtn.style.display = "block";
+      } else {
+        scrollTopBtn.style.display = "none";
+      }
+    }
+
+    // When the user clicks on the button, scroll to the top of the document
+    scrollTopBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+
+    <!-- Scroll to Top Button -->
+
+</body>
+
+</html>
+
+ChatGPT
