@@ -24263,3 +24263,31 @@ p {
 #scrollTopBtn:hover {
   background-color: #555; /* Add a dark-grey background on hover */
 }
+
+
+
+.title-text {
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Responsive styles */
+@media (min-width: 1200px) {
+    .title-text {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+}
+@media (max-width: 1199px) and (min-width: 768px) {
+    .title-text {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+}
+@media (max-width: 767px) {
+    .title-text {
+        font-size: 1.2rem;
+        line-height: 1.4;
+        white-space: pre-wrap; /* Keeps line breaks as in the HTML */
+    }
+}
