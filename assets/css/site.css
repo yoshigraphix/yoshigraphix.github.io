@@ -1330,6 +1330,174 @@ dd {
     margin-top: 2.5rem;
 }
 
+/* --- Résumé viewer --------------------------------------------------------
+   Two presentations of the same document. Wide screens get the browser's real
+   PDF viewer (selectable text, zoom, print). Narrow screens get rendered page
+   images, because mobile browsers overwhelmingly refuse to display an inline
+   PDF — they show a blank box or silently offer a download instead.          */
+
+.resume {
+    margin-inline: auto;
+    max-width: 900px;
+}
+
+/* Real text rather than an embedded PDF or page images: it reflows on a phone,
+   is searchable and selectable, works with screen readers, and carries no
+   contact details the author didn't choose to publish. */
+
+.resume__contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.resume__contact a:hover {
+    color: var(--accent);
+}
+
+.resume__section {
+    padding-block: clamp(1.75rem, 1rem + 2vw, 2.75rem);
+    border-bottom: 1px solid var(--line);
+}
+
+.resume__section > h2 {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: var(--step--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+}
+
+.resume__role {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.resume__role + .resume__role {
+    margin-top: 1.75rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+
+.resume__role h3 {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+}
+
+.resume__where {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+}
+
+.resume__role p {
+    color: var(--ink-2);
+    max-width: 78ch;
+}
+
+.resume__list {
+    display: grid;
+    gap: 0.65rem;
+    color: var(--ink-2);
+    max-width: 82ch;
+}
+
+.resume__list li {
+    padding-left: 1.4rem;
+    position: relative;
+}
+
+.resume__list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 6px;
+    height: 1px;
+    background: var(--accent);
+}
+
+.resume__list strong {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+/* --- Print ----------------------------------------------------------------
+   Printing (or "Save as PDF") should produce a clean document: ink on paper,
+   no site chrome, no decoration, nothing split awkwardly across a page break. */
+
+@media print {
+    .site-header,
+    .site-footer,
+    .grain,
+    .resume__actions,
+    .skip-link,
+    .back-link {
+        display: none !important;
+    }
+
+    :root {
+        --ink: #000;
+        --ink-2: #1a1a1a;
+        --ink-3: #555;
+        --paper: #fff;
+        --paper-2: #fff;
+        --line: #bbb;
+        --accent: #0a7d5c;
+    }
+
+    body {
+        background: #fff;
+        color: #000;
+        font-size: 10.5pt;
+    }
+
+    .wrap {
+        max-width: none;
+        padding-inline: 0;
+    }
+
+    .page-hero {
+        padding-block: 0 0.5rem;
+    }
+
+    .page-hero h1 {
+        font-size: 26pt;
+    }
+
+    .page-hero .lede {
+        font-size: 10.5pt;
+    }
+
+    .resume__role,
+    .resume__section {
+        break-inside: avoid;
+    }
+
+    [data-reveal] {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    a {
+        text-decoration: none;
+    }
+}
+
+.resume__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
 /* --- Form ----------------------------------------------------------------- */
 
 .form {
