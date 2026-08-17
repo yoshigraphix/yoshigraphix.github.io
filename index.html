@@ -1,760 +1,968 @@
 <!doctype html>
-<html lang="en">
-    <!-- Head -->
+<html lang="en" data-theme="dark">
     <head>
-        <!-- Page Meta Tags-->
         <meta charset="utf-8" />
-        <meta http-equiv="x-ua-compatible" content="ie=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <meta name="keywords" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>Yoshi Sakaguchi — Multimedia Artist &amp; Designer</title>
+        <meta
+            name="description"
+            content="Yoshi Sakaguchi is a multimedia artist and designer in East Tennessee. Illustration, motion, and game art for Tynker, Jackbox Games, and Jellyvision." />
+        <link rel="canonical" href="https://yoshigraphix.github.io/" />
+
+        <!-- Social preview -->
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Yoshi Sakaguchi — Multimedia Artist &amp; Designer" />
+        <meta
+            property="og:description"
+            content="Illustration, motion, and game art for Tynker, Jackbox Games, and Jellyvision." />
+        <meta property="og:url" content="https://yoshigraphix.github.io/" />
+        <meta property="og:image" content="https://yoshigraphix.github.io/assets/images/project-listing-1.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
 
         <!-- Favicon -->
+        <link rel="icon" type="image/svg+xml" href="./assets/images/favicon/mark.svg" />
         <link rel="apple-touch-icon" sizes="180x180" href="./assets/images/favicon/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon/favicon-16x16.png" />
-        <link rel="mask-icon" href="./assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5" />
-        <meta name="msapplication-TileColor" content="#da532c" />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#100f0e" />
 
-        <!-- Google Font-->
+        <!-- Type -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=DM+Mono:wght@400;500&amp;family=Instrument+Sans:wght@400..700&amp;display=swap"
             rel="stylesheet" />
 
-        <!-- Vendor CSS -->
-        <link rel="stylesheet" href="./assets/css/libs.bundle.css" />
-
-        <!-- Main CSS -->
-        <link rel="stylesheet" href="./assets/css/theme.bundle.css" />
-
-        <!-- Fix for custom scrollbar if JS is disabled-->
-        <noscript>
-            <style>
-                /**
-          * Reinstate scrolling for non-JS clients
-          */
-                .simplebar-content-wrapper {
-                    overflow: auto;
-                }
-            </style>
-        </noscript>
-
-        <!-- Page Title -->
-        <title>Yoshi Sakaguchi</title>
+        <link rel="stylesheet" href="./assets/css/site.css" />
     </head>
-    <body class="">
-        <!-- Locomotive Scroll Container-->
-        <div data-scroll-container>
-            <!-- Navbar -->
-            <nav data-scroll-section class="navbar navbar-expand-lg navbar-light bg-transparent mb-5 mb-lg-10">
-                <div class="container-fluid">
-                    <a class="navbar-brand d-flex align-items-center fade-in" href="./index.html" data-scroll>
-                        <picture
-                            class="avatar me-3"
-                            data-scroll
-                            data-scroll-speed="10"
-                            data-scroll-direction="horizontal"
-                            data-scroll-position="top">
-                            <img
-                                class="img-fluid rounded-square"
-                                src="./assets/images/avatar-small.png"
-                                alt="Yoshi Sakaguchi" />
-                        </picture>
-                        <span class="fw-bolder fs-6 d-flex justify-content-start" data-scroll-section>
-                            <span
-                                class="fade-in"
-                                data-scroll
-                                data-scroll-speed="2"
-                                data-scroll-delay=".03"
-                                data-scroll-position="top"
-                                ><span style="color: #6ee7b7">YOSHI</span> SAKAGUCHI</span
-                            >
-                        </span>
-                    </a>
-                    <button
-                        class="btn-icon navbar-toggler ms-auto"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
-                        <i class="ri-menu-3-line"></i>
-                    </button>
-                    <div
-                        class="collapse navbar-collapse"
-                        id="navbarSupportedContent"
-                        data-scroll
-                        data-scroll-speed="4"
-                        data-scroll-delay=".6"
-                        data-scroll-position="top">
-                        <ul class="navbar-nav me-0 ms-auto mb-2 mb-lg-0 mt-4 mt-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link" href="./index.html">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="./about.html">About</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="./work-listing.html">Work</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="./contact.html">Contact</a>
-                            </li>
-                            <li class="nav-item d-lg-none">
-                                <a class="nav-link btn-toggle-mode" href="#">Toggle Dark/Light Mode</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <button
-                        class="btn-icon btn-toggle-mode ms-7 ms-3 fade-in d-none d-lg-flex"
-                        data-scroll
-                        data-scroll-speed="-10"
-                        data-scroll-direction="horizontal"
-                        data-scroll-position="top">
-                        <i class="ri-sun-line"></i>
-                    </button>
+
+    <body>
+        <a class="skip-link" href="#main">Skip to content</a>
+        <div class="grain" aria-hidden="true"></div>
+
+        <!-- ===== Header ===== -->
+        <header class="site-header">
+            <div class="wrap">
+                <a class="brand" href="./index.html">
+                    <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true">
+                        <circle cx="20" cy="20" r="20" fill="var(--brand)" />
+                        <path
+                            d="M11.4 12 L20 21.6 L28.6 12 M20 21.6 L20 29.6"
+                            fill="none"
+                            stroke="#12100e"
+                            stroke-width="4.6"
+                            stroke-linejoin="miter" />
+                    </svg>
+                    <span>Yoshi Sakaguchi</span>
+                </a>
+
+                <button
+                    class="nav-toggle"
+                    type="button"
+                    data-nav-toggle
+                    aria-expanded="false"
+                    aria-label="Toggle menu">
+                    <svg class="icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M3 7h18M3 17h18" />
+                    </svg>
+                    <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </button>
+
+                <nav class="nav" data-nav aria-label="Main">
+                    <a href="./index.html" aria-current="page">Home</a>
+                    <a href="./work.html">Work</a>
+                    <a href="./about.html">About</a>
+                    <a href="./contact.html">Contact</a>
+                </nav>
+            </div>
+        </header>
+
+        <main id="main">
+            <!-- ===== Hero ===== -->
+            <section class="hero">
+                <!-- Parallax backdrop: bouncing-ball arc with onion-skinned frames -->
+                <div class="hero__bg" aria-hidden="true">
+                    <div class="hero__layer hero__layer--glow" data-parallax="0.16"></div>
+                    <div class="hero__layer hero__layer--grid" data-parallax="0.05"></div>
+
+                    <svg
+                        class="hero__layer hero__layer--art"
+                        data-parallax="0.34"
+                        viewBox="0 0 1200 700"
+                        preserveAspectRatio="xMidYMid slice">
+                        <!-- The arc -->
+                        <path class="hero__path" d="M100 520 Q600 -160 1100 520" />
+
+                        <!-- Onion-skin frames, spaced along the same parabola -->
+                        <circle class="hero__frame" cx="100" cy="520" r="15" style="animation-delay: 0s" />
+                        <circle class="hero__frame" cx="225" cy="371" r="15" style="animation-delay: 0.13s" />
+                        <circle class="hero__frame" cx="350" cy="265" r="15" style="animation-delay: 0.26s" />
+                        <circle class="hero__frame" cx="475" cy="201" r="15" style="animation-delay: 0.39s" />
+                        <circle class="hero__frame" cx="600" cy="180" r="15" style="animation-delay: 0.52s" />
+                        <circle class="hero__frame" cx="725" cy="201" r="15" style="animation-delay: 0.65s" />
+                        <circle class="hero__frame" cx="850" cy="265" r="15" style="animation-delay: 0.78s" />
+                        <circle class="hero__frame" cx="975" cy="371" r="15" style="animation-delay: 0.91s" />
+                        <circle class="hero__frame" cx="1100" cy="520" r="15" style="animation-delay: 1.04s" />
+
+                        <!-- Impact ring where the ball lands -->
+                        <circle class="hero__impact" cx="100" cy="520" r="26" />
+                    </svg>
                 </div>
-            </nav>
-            <!-- / Navbar-->
 
-            <!-- Main Section-->
-            <section class="py-3">
-                <!-- Page Content Goes Here -->
+                <div class="wrap">
+                    <div class="hero__eyebrow" data-reveal>
+                        <span class="dot" aria-hidden="true"></span>
+                        <span class="label">Available for freelance &amp; full-time</span>
+                    </div>
 
-                <div class="container" data-scroll-section>
-                    <!-- Hero-->
-                    <div class="mb-lg-10">
-                        <p class="subtitle-sm" data-scroll data-scroll-speed="2" data-scroll-position="top">Welcome!</p>
-                        <h1 class="display-1 mb-4" data-scroll data-scroll-speed="4" data-scroll-position="top">
-                            I am
-                            <span style="color: #6ee7b7">YOSHI</span> SAKAGUCHI
-                        </h1>
-                        <p data-scroll data-scroll-speed="6" data-scroll-position="top" class="lead typed-elem">
-                            Tennessee-based
-                            <span
-                                class="fw-bold text-highlight"
-                                data-typed='{"backSpeed": 50,"strings": ["graphic designer", "motion graphics", "video editor", "digital artist"]}'></span
-                            ><span class="d-block">specializing in generating on brand visual content.</span>
+                    <h1 class="display hero__name" data-reveal data-reveal-delay="80">
+                        Yoshi<br />Sakaguchi
+                    </h1>
+
+                    <div class="hero__meta">
+                        <p class="lede" data-reveal data-reveal-delay="160">
+                            Artistic imagineer in East Tennessee, building on-brand visual
+                            content — illustration, motion, and game art.
                         </p>
-                    </div>
-                    <!-- /Hero-->
 
-                    <!-- Latest Projects Slideshow Top-->
-                    <div>
-                        <h2
-                            class="display-6 border-bottom pb-5 mb-5 fade-in-up"
-                            data-scroll
-                            data-scroll-position="bottom">
-                            Selected Projects
-                        </h2>
-                        <div class="position-relative">
-                            <div class="swiper-container swiper-linked-top">
-                                <div class="swiper-wrapper">
-                                    <div class="swiper-slide cursor-pointer">
-                                        <picture>
-                                            <img class="img-fluid" src="./assets/images/project-listing-1.jpg" alt="" />
-                                        </picture>
-                                    </div>
-                                    <div class="swiper-slide cursor-pointer">
-                                        <picture>
-                                            <img class="img-fluid" src="./assets/images/project-listing-5.jpg" alt="" />
-                                        </picture>
-                                    </div>
-                                    <div class="swiper-slide cursor-pointer">
-                                        <picture>
-                                            <img class="img-fluid" src="./assets/images/project-listing-3.jpg" alt="" />
-                                        </picture>
-                                    </div>
-                                    <div class="swiper-slide cursor-pointer">
-                                        <picture>
-                                            <img class="img-fluid" src="./assets/images/project-listing-4.jpg" alt="" />
-                                        </picture>
-                                    </div>
-
-                                    <div class="swiper-slide cursor-pointer">
-                                        <picture>
-                                            <img class="img-fluid" src="./assets/images/project-listing-2.jpg" alt="" />
-                                        </picture>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="swiper-prev swiper-btn">
-                                <i class="ri-arrow-left-line"></i>
-                            </div>
-                            <div class="swiper-next swiper-btn">
-                                <i class="ri-arrow-right-line"></i>
-                            </div>
+                        <div data-reveal data-reveal-delay="240">
+                            <p class="label" style="margin-bottom: 0.9rem">Currently</p>
+                            <p style="max-width: 26ch; color: var(--ink-2)">
+                                Senior Learning Experience Design at Cirrus, leading
+                                AI R&amp;D. Previously Tynker, Jackbox Games, Jellyvision.
+                            </p>
                         </div>
-                    </div>
-                    <!-- / Latest Projects Slideshow Top-->
 
-                    <!-- Latest Projects Slideshow Bottom-->
-                    <div class="mt-3 mb-5">
-                        <div class="swiper-container swiper-linked-bottom">
-                            <div class="swiper-wrapper">
-                                <div class="swiper-slide">
-                                    <div class="row gx-4 align-items-center">
-                                        <!-- Slide Image-->
-                                        <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
-                                            <a href="./work-project01.html">
-                                                <picture>
-                                                    <img
-                                                        class="img-fluid"
-                                                        src="./assets/images/project-listing-1.jpg"
-                                                        alt="" />
-                                                </picture>
-                                            </a>
-                                        </div>
-                                        <!-- / Slide Image -->
-
-                                        <!-- Slide Text-->
-                                        <div class="col-12 col-md-6">
-                                            <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100">
-                                                <span class="me-2">eLearning</span>
-                                                &middot;
-                                                <span class="ms-2">Tynker</span>
-                                            </p>
-                                            <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">
-                                                Sizzle Reels
-                                            </p>
-                                            <p class="small text-muted mb-2" data-swiper-parallax-x="-200">
-                                                Managed a team of international video editors and graphic artists,
-                                                enhancing the visual storytelling aspect of web-based games and coding
-                                                lessons.
-                                            </p>
-                                            <div class="mt-3" data-swiper-parallax-y="-15">
-                                                <a class="link-body" href="./work-project01.html">View Project</a>
-                                            </div>
-                                        </div>
-                                        <!-- / Slide Text-->
-                                    </div>
-                                </div>
-                                <div class="swiper-slide">
-                                    <div class="row gx-4 align-items-center">
-                                        <!-- Slide Image-->
-                                        <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
-                                            <a href="./work-project05.html">
-                                                <picture>
-                                                    <img
-                                                        class="img-fluid"
-                                                        src="./assets/images/project-listing-5.jpg"
-                                                        alt="" />
-                                                </picture>
-                                            </a>
-                                        </div>
-                                        <!-- / Slide Image -->
-
-                                        <!-- Slide Text-->
-                                        <div class="col-12 col-md-6">
-                                            <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100">
-                                                <span class="me-2">UI / UX</span>
-                                                &middot;
-                                                <span class="ms-2">Tynker</span>
-                                            </p>
-                                            <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">
-                                                Coding Fun, One Logo at a Time
-                                            </p>
-                                            <p class="small text-muted mb-2" data-swiper-parallax-x="-200">
-                                                Crafted over 100 visually engaging logos thumbnail cards for Tynker’s
-                                                web and mobile app to attract and engage users.
-                                            </p>
-                                            <div class="mt-3" data-swiper-parallax-y="-15">
-                                                <a class="link-body" href="./work-project05.html">View Project</a>
-                                            </div>
-                                        </div>
-                                        <!-- / Slide Text-->
-                                    </div>
-                                </div>
-                                <div class="swiper-slide">
-                                    <div class="row gx-4 align-items-center">
-                                        <!-- Slide Image-->
-                                        <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
-                                            <a href="./work-project03.html">
-                                                <picture>
-                                                    <img
-                                                        class="img-fluid"
-                                                        src="./assets/images/project-listing-3.jpg"
-                                                        alt="" />
-                                                </picture>
-                                            </a>
-                                        </div>
-                                        <!-- / Slide Image -->
-
-                                        <!-- Slide Text-->
-                                        <div class="col-12 col-md-6">
-                                            <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100">
-                                                <span class="me-2">Marketing</span>
-                                                &middot;
-                                                <span class="ms-2">Jellyvision</span>
-                                            </p>
-                                            <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">
-                                                Blog Images
-                                            </p>
-                                            <p class="small text-muted mb-2" data-swiper-parallax-x="-200">
-                                                In the whirlwind of just over a year, I conjured up a myriad of vibrant
-                                                illustrations to jazz up Jellyvision's product awareness blogs. With
-                                                each stroke, I breathed life into intricate concepts, making them as
-                                                captivating as they were informative.
-                                            </p>
-                                            <div class="mt-3" data-swiper-parallax-y="-15">
-                                                <a class="link-body" href="./work-project03.html">View Project</a>
-                                            </div>
-                                        </div>
-                                        <!-- / Slide Text-->
-                                    </div>
-                                </div>
-                                <div class="swiper-slide">
-                                    <div class="row gx-4 align-items-center">
-                                        <!-- Slide Image-->
-                                        <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
-                                            <a href="./work-project04.html">
-                                                <picture>
-                                                    <img
-                                                        class="img-fluid"
-                                                        src="./assets/images/project-listing-4.jpg"
-                                                        alt="" />
-                                                </picture>
-                                            </a>
-                                        </div>
-                                        <!-- / Slide Image -->
-
-                                        <!-- Slide Text-->
-                                        <div class="col-12 col-md-6">
-                                            <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100">
-                                                <span class="me-2">Marketing</span>
-                                                &middot;
-                                                <span class="ms-2">Jackbox Games & Tynker</span>
-                                            </p>
-                                            <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">
-                                                Marketing Images for Social Media
-                                            </p>
-                                            <p class="small text-muted mb-2" data-swiper-parallax-x="-200">
-                                                Optimized images of various sizes for diverse social media marketing
-                                                campaigns, ensuring platform-specific engagement.
-                                            </p>
-                                            <div class="mt-3" data-swiper-parallax-y="-15">
-                                                <a class="link-body" href="./work-project04.html">View Project</a>
-                                            </div>
-                                        </div>
-                                        <!-- / Slide Text-->
-                                    </div>
-                                </div>
-
-                                <div class="swiper-slide">
-                                    <div class="row gx-4 align-items-center">
-                                        <!-- Slide Image-->
-                                        <div class="col-12 col-md-6" data-swiper-parallax-x="-100">
-                                            <a href="./work-project02.html">
-                                                <picture>
-                                                    <img
-                                                        class="img-fluid"
-                                                        src="./assets/images/project-listing-2.jpg"
-                                                        alt="" />
-                                                </picture>
-                                            </a>
-                                        </div>
-                                        <!-- / Slide Image -->
-
-                                        <!-- Slide Text-->
-                                        <div class="col-12 col-md-6">
-                                            <p class="subtitle-xs mb-0 mt-4 mt-md-0" data-swiper-parallax-x="-100">
-                                                <span class="me-2">Gaming</span>
-                                                &middot;
-                                                <span class="ms-2">Jackbox Games</span>
-                                            </p>
-                                            <p class="fw-bolder lead mb-3 mt-2" data-swiper-parallax-x="-150">
-                                                The Devils and the Details
-                                            </p>
-                                            <p class="small text-muted mb-2" data-swiper-parallax-x="-200">
-                                                Contract artist for Jackbox Games, responsible for creating over 200
-                                                vector illustrations in one month for the popular party game 'The Devils
-                                                and the Details', showcasing meticulous attention to detail and thematic
-                                                understanding."
-                                            </p>
-                                            <div class="mt-3" data-swiper-parallax-y="-15">
-                                                <a class="link-body" href="./work-project02.html">View Project</a>
-                                            </div>
-                                        </div>
-                                        <!-- / Slide Text-->
-                                    </div>
-                                </div>
-                                <!--
-                                <div class="swiper-slide">
-                                    <div class="row gx-4 align-items-center"></div>
-                                </div>
-                                -->
-                            </div>
-                        </div>
-                    </div>
-                    <!-- / Latest Projects Slideshow Bottom-->
-
-                    <!-- Experience-->
-                    <div class="py-lg-6" data-scroll>
-                        <h2
-                            class="display-6 border-bottom pb-5 mb-5 fade-in-up"
-                            data-scroll
-                            data-scroll-position="bottom">
-                            Experience
-                        </h2>
-                        <!-- Single Experience-->
-                        <div class="row gx-2 mb-5 fade-in-up" data-scroll data-scroll-position="bottom">
-                            <div class="col-12 col-lg-4">
-                                <p class="fw-bolder mb-1">Tynker</p>
-                                <span class="text-muted small">(2020 - 2023)</span>
-                            </div>
-                            <div class="col-12 col-lg-8">
-                                <p class="fw-bolder">Game and Marketing Graphics Lead</p>
-                                <div class="text-muted fw-light fs-6">
-                                    <ul class="text-muted fw-light fs-6">
-                                        <li>Managed a team of international video editors and graphic artists.</li>
-                                        <li>
-                                            Rigged characters using Spine for web-based games, enhancing visual
-                                            storytelling.
-                                        </li>
-                                        <li>
-                                            Participated in QA sessions to identify and report bugs for high-quality
-                                            gameplay experiences.
-                                        </li>
-                                        <li>
-                                            Developed social media and marketing graphics for various projects, driving
-                                            audience engagement.
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <a class="link-body" href="https://www.tynker.com">https://www.tynker.com</a>
-                            </div>
-                        </div>
-                        <!-- / Single Experience -->
-                        <!-- Single Experience-->
-                        <div class="row gx-2 mb-5 fade-in-up" data-scroll data-scroll-position="bottom">
-                            <div class="col-12 col-lg-4">
-                                <p class="fw-bolder mb-1">Jackbox Games</p>
-                                <span class="text-muted small">(2020 - Contract)</span>
-                            </div>
-                            <div class="col-12 col-lg-8">
-                                <p class="fw-bolder">Game & Marketing Artist | QA</p>
-                                <div class="text-muted fw-light fs-6">
-                                    <ul class="text-muted fw-light fs-6">
-                                        <li>
-                                            Worked on popular games such as Devil’s In The Details and Talking Points.
-                                        </li>
-                                        <li>
-                                            Created art assets for gameplay and participated in QA sessions for bug
-                                            identification and reporting.
-                                        </li>
-                                        <li>
-                                            Developed social media and marketing graphics to drive engagement with
-                                            target audiences.
-                                        </li>
-                                    </ul>
-                                </div>
-                                <a
-                                    class="link-body"
-                                    href="https://www.jackboxgames.com/games/packs/the-jackbox-party-pack-7"
-                                    >https://www.jackboxgames.com</a
-                                >
-                            </div>
-                        </div>
-                        <!-- / Single Experience -->
-                        <!-- Single Experience-->
-                        <div class="row gx-2 mb-5 fade-in-up" data-scroll data-scroll-position="bottom">
-                            <div class="col-12 col-lg-4">
-                                <p class="fw-bolder mb-1">Jellyvision</p>
-                                <span class="text-muted small">(2011 - 2020)</span>
-                            </div>
-                            <div class="col-12 col-lg-8">
-                                <p class="fw-bolder">Lead Production Artist</p>
-                                <div class="text-muted fw-light fs-6">
-                                    <ul class="text-muted fw-light fs-6">
-                                        <li>
-                                            Led the production of After Effects and canvas-formatted animations for B2B
-                                            SaaS projects.
-                                        </li>
-                                        <li>
-                                            Created visual mockups for interactive web environments to ensure
-                                            high-quality deliverables.
-                                        </li>
-                                        <li>
-                                            Recruited, mentored, and directed a team of designers, providing guidance
-                                            and feedback to enhance their skills.
-                                        </li>
-                                    </ul>
-                                </div>
-                                <a class="link-body" href="https://www.jellyvision.com">https://www.jellysivion.com</a>
-                            </div>
-                        </div>
-                        <!-- / Single Experience -->
-                        <!-- Single Experience-->
-                        <div class="row gx-2 mb-5 fade-in-up" data-scroll data-scroll-position="bottom">
-                            <div class="col-12 col-lg-4">
-                                <p class="fw-bolder mb-1">Webfoot Technologies</p>
-                                <span class="text-muted small">(2009 - 2010)</span>
-                            </div>
-                            <div class="col-12 col-lg-8">
-                                <p class="fw-bolder">Graphic Designer</p>
-                                <div class="text-muted fw-light fs-6">
-                                    <ul class="text-muted fw-light fs-6">
-                                        <li>
-                                            Led GUI design for several games, including the
-                                            <a href="http://www.webfootgames.com/game.html?gameid=YouDontKnowJack_DS"
-                                                >You Don’t Know Jack</a
-                                            >
-                                            adaptation for the Nintendo DS.
-                                        </li>
-                                        <li>
-                                            Managed contracted work and designed minigames and platforming stages for
-                                            <a
-                                                href="http://www.webfootgames.com/game.html?gameid=FancyNancyTeaPartyTime_DS"
-                                                >Fancy Nancy DS</a
-                                            >.
-                                        </li>
-                                        <li>
-                                            Worked as a Game Artist for "<a
-                                                href="http://www.webfootgames.com/game.html?gameid=FabulousFinds_DS"
-                                                >Fabulous Finds DS</a
-                                            >" and "<a
-                                                href="http://www.webfootgames.com/game.html?gameid=TheBiggestLoser_DS"
-                                                >Biggest Loser DS</a
-                                            >".
-                                        </li>
-                                    </ul>
-                                </div>
-                                <a class="link-body" href="https://www.webfootgames.com"
-                                    >https://www.webfootgames.com</a
-                                >
-                            </div>
-                        </div>
-                        <!-- / Single Experience -->
-                    </div>
-                    <!-- / Experience-->
-                </div>
-
-                <!-- Testimonials-->
-                <!-- Testimonials -->
-                <div class="mt-8">
-                    <div class="d-flex mb-4" data-scroll-section>
-                        <div
-                            class="testimonials"
-                            data-scroll
-                            data-scroll-direction="horizontal"
-                            data-scroll-speed="-8"
-                            data-scroll-offset="0">
-                            <div class="card card-testimonial">
-                                <div class="card-body">
-                                    <p class="fs-8 mb-1">
-                                        "Over the past two years, I worked with Yoshi to create dozens of illustrations
-                                        for a range of marketing projects. He was a joy to collaborate with - someone
-                                        who reliably
-                                        <span style="color: #6ee7b7">brought clever ideas to the table</span>, and
-                                        nailed the landing when it came to execution, often on his first stab at it.
-                                        Can't recommend him enough."
-                                    </p>
-                                    <div class="d-flex align-items-center mt-4">
-                                        <picture class="avatar me-3">
-                                            <img
-                                                class="img-fluid rounded-circle"
-                                                src="./assets/images/avatar-1.jpeg"
-                                                alt="" />
-                                        </picture>
-                                        <div>
-                                            <p class="small fw-bolder mb-2 lh-1">Mark Radar</p>
-                                            <p class="small text-muted m-0 lh-1">Jellyvision - Marketing</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-testimonial">
-                                <div class="card-body">
-                                    <p class="fs-8 mb-1">
-                                        "What especially impressed me about Yoshi is how tech savvy he is. He was always
-                                        on the forefront of figuring out how to adapt our art for the
-                                        constantly-evolving web landscape and how to streamline the process of creating
-                                        it. On top of that, he is friendly, kind, and fun to be around.
-                                        <span style="color: #6ee7b7">Yoshi would be an asset to any team.</span>"
-                                    </p>
-                                    <div class="d-flex align-items-center mt-4">
-                                        <picture class="avatar me-3">
-                                            <img
-                                                class="img-fluid rounded-circle"
-                                                src="./assets/images/avatar-2.jpeg"
-                                                alt="" />
-                                        </picture>
-                                        <div>
-                                            <p class="small fw-bolder mb-2 lh-1">Katie Lauffenburger</p>
-                                            <p class="small text-muted m-0 lh-1">Jellyvision - Design</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-testimonial">
-                                <div class="card-body">
-                                    <p class="fs-8 mb-1">
-                                        "Jellyvision was the very lucky home for Yoshi's artistic excellence for almost
-                                        nine years. Yoshi is creative, hard working, very efficient, and a lovely human
-                                        being to boot. He's a multi-faceted creator and knows how to handle high volume,
-                                        high pressure project work as well as iterative product work, which can require
-                                        two different mindsets. And he's got a kind and gentle spirit, which makes
-                                        collaborating with him a
-                                        <span style="color: #6ee7b7">true pleasure</span>."
-                                    </p>
-                                    <div class="d-flex align-items-center mt-4">
-                                        <picture class="avatar me-3">
-                                            <img
-                                                class="img-fluid rounded-circle"
-                                                src="./assets/images/avatar-3.jpeg"
-                                                alt="" />
-                                        </picture>
-                                        <div>
-                                            <p class="small fw-bolder mb-2 lh-1">Amanda Lannert</p>
-                                            <p class="small text-muted m-0 lh-1">Jellyvision - CEO</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-end" data-scroll-section>
-                        <div
-                            class="testimonials"
-                            data-scroll
-                            data-scroll-direction="horizontal"
-                            data-scroll-speed="8"
-                            data-scroll-offset="0">
-                            <div class="card card-testimonial">
-                                <div class="card-body">
-                                    <p class="fs-8 mb-1">
-                                        "Yoshi always maintained a positive outlook even during the inevitable game
-                                        ending crunch periods. He handled the pressures of a small development team
-                                        admirably which made working with him a pleasure. He is
-                                        <span style="color: #6ee7b7">honest, intelligent and hard-working</span>
-                                        and is a solid team player."
-                                    </p>
-                                    <div class="d-flex align-items-center mt-4">
-                                        <picture class="avatar me-3">
-                                            <img
-                                                class="img-fluid rounded-circle"
-                                                src="./assets/images/avatar-4.jpeg"
-                                                alt="" />
-                                        </picture>
-                                        <div>
-                                            <p class="small fw-bolder mb-2 lh-1">Debra Osborn</p>
-                                            <p class="small text-muted m-0 lh-1">Webfoot Games</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-testimonial">
-                                <div class="card-body">
-                                    <p class="fs-8 mb-1">
-                                        "Yoshi is a very creative and bright artist, he consistently offers a new and
-                                        creative approach. He is a
-                                        <span style="color: #6ee7b7">quick learner and a strong communicator.</span>"
-                                    </p>
-                                    <div class="d-flex align-items-center mt-4">
-                                        <picture class="avatar me-3">
-                                            <img
-                                                class="img-fluid rounded-circle"
-                                                src="./assets/images/avatar-5.jpeg"
-                                                alt="" />
-                                        </picture>
-                                        <div>
-                                            <p class="small fw-bolder mb-2 lh-1">Christina Gerskovich</p>
-                                            <p class="small text-muted m-0 lh-1">Horseland</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-testimonial">
-                                <div class="card-body">
-                                    <p class="fs-8 mb-1">
-                                        "Yoshi is not only a very talented individual, but he is also a
-                                        <span style="color: #6ee7b7">true team player</span>
-                                        who collaborates well across a fully remote, global team setting. He is
-                                        consistently open to feedback and goes above and beyond to ensure project
-                                        success. His illustration and graphic design expertise translate abstract
-                                        concepts into tangible, visually appealing creations. Yoshi's creative talent
-                                        helps leave a lasting impression. He is a great asset to any team."
-                                    </p>
-                                    <div class="d-flex align-items-center mt-4">
-                                        <picture class="avatar me-3">
-                                            <img
-                                                class="img-fluid rounded-circle"
-                                                src="./assets/images/avatar-6.jpeg"
-                                                alt="" />
-                                        </picture>
-                                        <div>
-                                            <p class="small fw-bolder mb-2 lh-1">Jamie May</p>
-                                            <p class="small text-muted m-0 lh-1">Tynker</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <a class="btn" href="./work.html" data-reveal data-reveal-delay="320">
+                            See the work
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M13 6l6 6-6 6" />
+                            </svg>
+                        </a>
                     </div>
                 </div>
-                <!-- / Testimonials-->
-                <!-- / Testimonials-->
-
-                <!-- /Page Content -->
             </section>
-            <!-- / Main Section-->
 
-            <!-- Footer -->
-            <!-- Footer-->
-            <div
-                class="d-flex align-items-center justify-content-center flex-column col-lg-7 col-xl-6 col-xxl-5 text-center mx-auto mt-5 px-4 px-md-0 mt-lg-10"
-                data-scroll-section>
-                <h4 class="display-5 mb-5" data-scroll data-scroll-speed=".8" data-scroll-delay="0.05">
-                    Thank you for your time and consideration.
-                </h4>
-                <a
-                    href="./assets/resume/resume_sakaguchi_gd.pdf"
-                    class="btn btn-dark w-100 d-flex align-items-center justify-content-center"
-                    ><i class="ri-file-download-line ri-lg me-2"></i> My Resume</a
-                >
+            <!-- ===== Stats ===== -->
+            <section class="stats" aria-label="By the numbers">
+                <div class="stat">
+                    <span class="stat__num" data-count="200" data-count-suffix="+">0</span>
+                    <span class="stat__label">Vector illustrations in one month</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__num" data-count="1" data-count-suffix="M+">0</span>
+                    <span class="stat__label">Views on the Mythicraft reel</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__num" data-count="100" data-count-suffix="+">0</span>
+                    <span class="stat__label">Thumbnail cards shipped</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__num" data-count="18" data-count-suffix="M+">0</span>
+                    <span class="stat__label">People reached at Jellyvision</span>
+                </div>
+            </section>
+
+            <!-- ===== Word marquee ===== -->
+            <div class="marquee" aria-hidden="true">
+                <div class="marquee__track">
+                    <span class="marquee__word">Illustration</span>
+                    <span class="marquee__star">✦</span>
+                    <span class="marquee__word marquee__word--outline">Motion</span>
+                    <span class="marquee__star">✦</span>
+                    <span class="marquee__word">Game Art</span>
+                    <span class="marquee__star">✦</span>
+                    <span class="marquee__word marquee__word--outline">Branding</span>
+                    <span class="marquee__star">✦</span>
+                    <span class="marquee__word">Animation</span>
+                    <span class="marquee__star">✦</span>
+                </div>
             </div>
 
-            <footer class="border-top mt-10 pt-5 pb-8" data-scroll-section>
-                <div class="container d-flex justify-content-between">
-                    <p class="small">
-                        All rights reserved. ©
-                        <span style="color: #6ee7b7">YOSHI</span> SAKAGUCHI 2024.
-                    </p>
-                    <ul class="list-unstyled d-flex align-items-center">
-                        <li class="ms-3">
-                            <a
-                                class="text-decoration-none text-muted"
-                                href="https://www.linkedin.com/in/yoshisakaguchi/"
-                                ><i class="ri-linkedin-fill"></i
-                            ></a>
-                        </li>
-                        <li class="ms-3">
-                            <a class="text-decoration-none text-muted" href="https://www.youtube.com/@YoshiSakaguchi "
-                                ><i class="ri-youtube-fill"></i
-                            ></a>
-                        </li>
-                        <li class="ms-3">
-                            <a class="text-decoration-none text-muted" href="https://vimeo.com/yoshisakaguchi"
-                                ><i class="ri-vimeo-fill"></i
-                            ></a>
-                        </li>
-                    </ul>
+            <!-- ===== Selected work ===== -->
+            <section class="section" id="work">
+                <div class="wrap">
+                    <div class="section-head" data-reveal>
+                        <h2>Selected Work</h2>
+                        <span class="label">05 Projects</span>
+                    </div>
+
+                    <div class="work-list">
+                        <!-- 01 -->
+                        <article class="work-card" data-reveal>
+                            <a class="work-card__media" data-badge href="./work/sizzle-reels.html" tabindex="-1" aria-hidden="true">
+                                <img src="./assets/images/project-listing-1.jpg" alt="" loading="lazy" />
+                                <span class="cursor-badge">View</span>
+                            </a>
+                            <div class="work-card__text">
+                                <span class="work-card__ghost" aria-hidden="true">01</span>
+                                <span class="work-card__index">01 / 05</span>
+                                <span class="label label--accent">eLearning · Tynker</span>
+                                <h3 class="work-card__title">
+                                    <a href="./work/sizzle-reels.html">Sizzle Reels</a>
+                                </h3>
+                                <p class="work-card__body">
+                                    Managed a team of international video editors and graphic
+                                    artists, enhancing the visual storytelling of web-based games
+                                    and coding lessons. The Mythicraft reel passed a million views.
+                                </p>
+                                <a class="arrow-link" href="./work/sizzle-reels.html">
+                                    View project
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12h14M13 6l6 6-6 6" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </article>
+
+                        <!-- 02 -->
+                        <article class="work-card" data-reveal>
+                            <a class="work-card__media" data-badge href="./work/tynker-logos.html" tabindex="-1" aria-hidden="true">
+                                <img src="./assets/images/project-listing-5.jpg" alt="" loading="lazy" />
+                                <span class="cursor-badge">View</span>
+                            </a>
+                            <div class="work-card__text">
+                                <span class="work-card__ghost" aria-hidden="true">02</span>
+                                <span class="work-card__index">02 / 05</span>
+                                <span class="label label--accent">UI / UX · Tynker</span>
+                                <h3 class="work-card__title">
+                                    <a href="./work/tynker-logos.html">Coding Fun, One Logo at a Time</a>
+                                </h3>
+                                <p class="work-card__body">
+                                    Over 100 thumbnail cards for Tynker's web and mobile app —
+                                    each a visual entry point to a lesson, balancing clarity
+                                    against the pull to click.
+                                </p>
+                                <a class="arrow-link" href="./work/tynker-logos.html">
+                                    View project
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12h14M13 6l6 6-6 6" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </article>
+
+                        <!-- 03 -->
+                        <article class="work-card" data-reveal>
+                            <a class="work-card__media" data-badge href="./work/jellyvision-blog-images.html" tabindex="-1" aria-hidden="true">
+                                <img src="./assets/images/project-listing-3.jpg" alt="" loading="lazy" />
+                                <span class="cursor-badge">View</span>
+                            </a>
+                            <div class="work-card__text">
+                                <span class="work-card__ghost" aria-hidden="true">03</span>
+                                <span class="work-card__index">03 / 05</span>
+                                <span class="label label--accent">Marketing · Jellyvision</span>
+                                <h3 class="work-card__title">
+                                    <a href="./work/jellyvision-blog-images.html">Blog Images</a>
+                                </h3>
+                                <p class="work-card__body">
+                                    A run of vibrant illustrations for Jellyvision's product
+                                    awareness blogs — each one turning an abstract benefits
+                                    concept into something you actually want to look at.
+                                </p>
+                                <a class="arrow-link" href="./work/jellyvision-blog-images.html">
+                                    View project
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12h14M13 6l6 6-6 6" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </article>
+
+                        <!-- 04 -->
+                        <article class="work-card" data-reveal>
+                            <a class="work-card__media" data-badge href="./work/social-media-marketing.html" tabindex="-1" aria-hidden="true">
+                                <img src="./assets/images/project-listing-4.jpg" alt="" loading="lazy" />
+                                <span class="cursor-badge">View</span>
+                            </a>
+                            <div class="work-card__text">
+                                <span class="work-card__ghost" aria-hidden="true">04</span>
+                                <span class="work-card__index">04 / 05</span>
+                                <span class="label label--accent">Marketing · Jackbox Games &amp; Tynker</span>
+                                <h3 class="work-card__title">
+                                    <a href="./work/social-media-marketing.html">Marketing Images for Social Media</a>
+                                </h3>
+                                <p class="work-card__body">
+                                    Optimized images at every size a platform could ask for,
+                                    tuned per channel so each campaign landed where it ran.
+                                </p>
+                                <a class="arrow-link" href="./work/social-media-marketing.html">
+                                    View project
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12h14M13 6l6 6-6 6" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </article>
+
+                        <!-- 05 -->
+                        <article class="work-card" data-reveal>
+                            <a class="work-card__media" data-badge href="./work/devils-and-the-details.html" tabindex="-1" aria-hidden="true">
+                                <img src="./assets/images/project-listing-2.jpg" alt="" loading="lazy" />
+                                <span class="cursor-badge">View</span>
+                            </a>
+                            <div class="work-card__text">
+                                <span class="work-card__ghost" aria-hidden="true">05</span>
+                                <span class="work-card__index">05 / 05</span>
+                                <span class="label label--accent">Gaming · Jackbox Games</span>
+                                <h3 class="work-card__title">
+                                    <a href="./work/devils-and-the-details.html">The Devils and the Details</a>
+                                </h3>
+                                <p class="work-card__body">
+                                    Contract artist on the Jackbox party game — over 200 vector
+                                    illustrations in a single month, from character designs to
+                                    environments to interactive assets.
+                                </p>
+                                <a class="arrow-link" href="./work/devils-and-the-details.html">
+                                    View project
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12h14M13 6l6 6-6 6" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </article>
+                    </div>
                 </div>
-            </footer>
-            <!-- / Footer-->
-            <!-- / Footer-->
+            </section>
+
+            <!-- Artwork strip: 47 Tynker thumbnail cards, three rows at different speeds -->
+            <div class="marquee-stack" aria-label="Selected thumbnail card artwork">
+                <div class="marquee marquee--media" style="--marquee-duration: 62s">
+                    <div class="marquee__track">
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_01.png"
+                            aria-label="Enlarge thumbnail card 1 of 47">
+                            <img src="./assets/images/strip/TC_01.jpg" alt="Tynker lesson thumbnail card 1" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_02.png"
+                            aria-label="Enlarge thumbnail card 2 of 47">
+                            <img src="./assets/images/strip/TC_02.jpg" alt="Tynker lesson thumbnail card 2" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_03.png"
+                            aria-label="Enlarge thumbnail card 3 of 47">
+                            <img src="./assets/images/strip/TC_03.jpg" alt="Tynker lesson thumbnail card 3" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_04.png"
+                            aria-label="Enlarge thumbnail card 4 of 47">
+                            <img src="./assets/images/strip/TC_04.jpg" alt="Tynker lesson thumbnail card 4" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_05.png"
+                            aria-label="Enlarge thumbnail card 5 of 47">
+                            <img src="./assets/images/strip/TC_05.jpg" alt="Tynker lesson thumbnail card 5" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_06.png"
+                            aria-label="Enlarge thumbnail card 6 of 47">
+                            <img src="./assets/images/strip/TC_06.jpg" alt="Tynker lesson thumbnail card 6" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_07.png"
+                            aria-label="Enlarge thumbnail card 7 of 47">
+                            <img src="./assets/images/strip/TC_07.jpg" alt="Tynker lesson thumbnail card 7" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_08.png"
+                            aria-label="Enlarge thumbnail card 8 of 47">
+                            <img src="./assets/images/strip/TC_08.jpg" alt="Tynker lesson thumbnail card 8" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_09.png"
+                            aria-label="Enlarge thumbnail card 9 of 47">
+                            <img src="./assets/images/strip/TC_09.jpg" alt="Tynker lesson thumbnail card 9" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_10.png"
+                            aria-label="Enlarge thumbnail card 10 of 47">
+                            <img src="./assets/images/strip/TC_10.jpg" alt="Tynker lesson thumbnail card 10" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_11.png"
+                            aria-label="Enlarge thumbnail card 11 of 47">
+                            <img src="./assets/images/strip/TC_11.jpg" alt="Tynker lesson thumbnail card 11" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_12.png"
+                            aria-label="Enlarge thumbnail card 12 of 47">
+                            <img src="./assets/images/strip/TC_12.jpg" alt="Tynker lesson thumbnail card 12" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_13.png"
+                            aria-label="Enlarge thumbnail card 13 of 47">
+                            <img src="./assets/images/strip/TC_13.jpg" alt="Tynker lesson thumbnail card 13" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_14.png"
+                            aria-label="Enlarge thumbnail card 14 of 47">
+                            <img src="./assets/images/strip/TC_14.jpg" alt="Tynker lesson thumbnail card 14" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_15.png"
+                            aria-label="Enlarge thumbnail card 15 of 47">
+                            <img src="./assets/images/strip/TC_15.jpg" alt="Tynker lesson thumbnail card 15" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_16.png"
+                            aria-label="Enlarge thumbnail card 16 of 47">
+                            <img src="./assets/images/strip/TC_16.jpg" alt="Tynker lesson thumbnail card 16" loading="lazy" />
+                        </button>
+                    </div>
+                </div>
+
+                <div class="marquee marquee--media marquee--reverse" style="--marquee-duration: 48s">
+                    <div class="marquee__track">
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_17.png"
+                            aria-label="Enlarge thumbnail card 17 of 47">
+                            <img src="./assets/images/strip/TC_17.jpg" alt="Tynker lesson thumbnail card 17" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_18.png"
+                            aria-label="Enlarge thumbnail card 18 of 47">
+                            <img src="./assets/images/strip/TC_18.jpg" alt="Tynker lesson thumbnail card 18" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_19.png"
+                            aria-label="Enlarge thumbnail card 19 of 47">
+                            <img src="./assets/images/strip/TC_19.jpg" alt="Tynker lesson thumbnail card 19" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_20.png"
+                            aria-label="Enlarge thumbnail card 20 of 47">
+                            <img src="./assets/images/strip/TC_20.jpg" alt="Tynker lesson thumbnail card 20" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_21.png"
+                            aria-label="Enlarge thumbnail card 21 of 47">
+                            <img src="./assets/images/strip/TC_21.jpg" alt="Tynker lesson thumbnail card 21" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_22.png"
+                            aria-label="Enlarge thumbnail card 22 of 47">
+                            <img src="./assets/images/strip/TC_22.jpg" alt="Tynker lesson thumbnail card 22" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_23.png"
+                            aria-label="Enlarge thumbnail card 23 of 47">
+                            <img src="./assets/images/strip/TC_23.jpg" alt="Tynker lesson thumbnail card 23" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_24.png"
+                            aria-label="Enlarge thumbnail card 24 of 47">
+                            <img src="./assets/images/strip/TC_24.jpg" alt="Tynker lesson thumbnail card 24" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_25.png"
+                            aria-label="Enlarge thumbnail card 25 of 47">
+                            <img src="./assets/images/strip/TC_25.jpg" alt="Tynker lesson thumbnail card 25" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_26.png"
+                            aria-label="Enlarge thumbnail card 26 of 47">
+                            <img src="./assets/images/strip/TC_26.jpg" alt="Tynker lesson thumbnail card 26" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_27.png"
+                            aria-label="Enlarge thumbnail card 27 of 47">
+                            <img src="./assets/images/strip/TC_27.jpg" alt="Tynker lesson thumbnail card 27" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_28.png"
+                            aria-label="Enlarge thumbnail card 28 of 47">
+                            <img src="./assets/images/strip/TC_28.jpg" alt="Tynker lesson thumbnail card 28" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_29.png"
+                            aria-label="Enlarge thumbnail card 29 of 47">
+                            <img src="./assets/images/strip/TC_29.jpg" alt="Tynker lesson thumbnail card 29" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_30.png"
+                            aria-label="Enlarge thumbnail card 30 of 47">
+                            <img src="./assets/images/strip/TC_30.jpg" alt="Tynker lesson thumbnail card 30" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_31.png"
+                            aria-label="Enlarge thumbnail card 31 of 47">
+                            <img src="./assets/images/strip/TC_31.jpg" alt="Tynker lesson thumbnail card 31" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_32.png"
+                            aria-label="Enlarge thumbnail card 32 of 47">
+                            <img src="./assets/images/strip/TC_32.jpg" alt="Tynker lesson thumbnail card 32" loading="lazy" />
+                        </button>
+                    </div>
+                </div>
+
+                <div class="marquee marquee--media" style="--marquee-duration: 74s">
+                    <div class="marquee__track">
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_33.png"
+                            aria-label="Enlarge thumbnail card 33 of 47">
+                            <img src="./assets/images/strip/TC_33.jpg" alt="Tynker lesson thumbnail card 33" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_34.png"
+                            aria-label="Enlarge thumbnail card 34 of 47">
+                            <img src="./assets/images/strip/TC_34.jpg" alt="Tynker lesson thumbnail card 34" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_35.png"
+                            aria-label="Enlarge thumbnail card 35 of 47">
+                            <img src="./assets/images/strip/TC_35.jpg" alt="Tynker lesson thumbnail card 35" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_36.png"
+                            aria-label="Enlarge thumbnail card 36 of 47">
+                            <img src="./assets/images/strip/TC_36.jpg" alt="Tynker lesson thumbnail card 36" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_37.png"
+                            aria-label="Enlarge thumbnail card 37 of 47">
+                            <img src="./assets/images/strip/TC_37.jpg" alt="Tynker lesson thumbnail card 37" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_38.png"
+                            aria-label="Enlarge thumbnail card 38 of 47">
+                            <img src="./assets/images/strip/TC_38.jpg" alt="Tynker lesson thumbnail card 38" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_39.png"
+                            aria-label="Enlarge thumbnail card 39 of 47">
+                            <img src="./assets/images/strip/TC_39.jpg" alt="Tynker lesson thumbnail card 39" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_40.png"
+                            aria-label="Enlarge thumbnail card 40 of 47">
+                            <img src="./assets/images/strip/TC_40.jpg" alt="Tynker lesson thumbnail card 40" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_41.png"
+                            aria-label="Enlarge thumbnail card 41 of 47">
+                            <img src="./assets/images/strip/TC_41.jpg" alt="Tynker lesson thumbnail card 41" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_42.png"
+                            aria-label="Enlarge thumbnail card 42 of 47">
+                            <img src="./assets/images/strip/TC_42.jpg" alt="Tynker lesson thumbnail card 42" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_43.png"
+                            aria-label="Enlarge thumbnail card 43 of 47">
+                            <img src="./assets/images/strip/TC_43.jpg" alt="Tynker lesson thumbnail card 43" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_44.png"
+                            aria-label="Enlarge thumbnail card 44 of 47">
+                            <img src="./assets/images/strip/TC_44.jpg" alt="Tynker lesson thumbnail card 44" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_45.png"
+                            aria-label="Enlarge thumbnail card 45 of 47">
+                            <img src="./assets/images/strip/TC_45.jpg" alt="Tynker lesson thumbnail card 45" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_46.png"
+                            aria-label="Enlarge thumbnail card 46 of 47">
+                            <img src="./assets/images/strip/TC_46.jpg" alt="Tynker lesson thumbnail card 46" loading="lazy" />
+                        </button>
+                        <button class="marquee__item" type="button"
+                            data-full="./assets/images/TC/TC_47.png"
+                            aria-label="Enlarge thumbnail card 47 of 47">
+                            <img src="./assets/images/strip/TC_47.jpg" alt="Tynker lesson thumbnail card 47" loading="lazy" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Experience ===== -->
+            <section class="section" id="experience">
+                <div class="wrap">
+                    <div class="section-head" data-reveal>
+                        <h2>Experience</h2>
+                        <span class="label">11 Roles</span>
+                    </div>
+
+                    <div class="exp-list">
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://cirrusaircraft.com" target="_blank" rel="noopener">Cirrus</a>
+                                </h3>
+                                <p class="exp-item__role">Senior Learning Experience Design</p>
+                                <p class="exp-item__years">2025 — Present</p>
+                            </div>
+                            <ul>
+                                <li>
+                                    Lead of AI research and development — defining how generative
+                                    tooling carries an idea from first concept to live product,
+                                    efficiently and fast.
+                                </li>
+                                <li>
+                                    Design presentations for lectures: key points, instructional
+                                    text layouts, and the visual system holding them together.
+                                </li>
+                                <li>
+                                    Produce diagrams for presentation and print, giving subject
+                                    matter experts a ready aid to share with students.
+                                </li>
+                            </ul>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">The Designery</h3>
+                                <p class="exp-item__role">Designer</p>
+                                <p class="exp-item__years">2024 — 2025</p>
+                            </div>
+                            <ul>
+                                <li>
+                                    Built an AI imaging workflow that turned ProKitchen renders
+                                    into photorealistic client visuals in minutes instead of days.
+                                </li>
+                                <li>
+                                    Ran VR walkthroughs on Meta Quest so clients could stand
+                                    inside their kitchen layout before committing to it.
+                                </li>
+                                <li>
+                                    Owned projects end to end — on-site measuring, layout design,
+                                    specification, ordering, delivery and installation scheduling
+                                    for cabinets, countertops and flooring.
+                                </li>
+                                <li>
+                                    Handled client development through networking events and
+                                    contractor relationships to source new design work.
+                                </li>
+                            </ul>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://www.tynker.com" target="_blank" rel="noopener">Tynker</a>
+                                </h3>
+                                <p class="exp-item__role">Game &amp; Marketing Graphics Lead</p>
+                                <p class="exp-item__years">2020 — 2023</p>
+                            </div>
+                            <ul>
+                                <li>Managed a team of international video editors and graphic artists.</li>
+                                <li>Rigged characters using Spine for web-based games, enhancing visual storytelling.</li>
+                                <li>Participated in QA sessions to identify and report bugs for high-quality gameplay.</li>
+                                <li>Developed social media and marketing graphics across projects, driving audience engagement.</li>
+                            </ul>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://www.jackboxgames.com" target="_blank" rel="noopener">Jackbox Games</a>
+                                </h3>
+                                <p class="exp-item__role">Game &amp; Marketing Artist · QA</p>
+                                <p class="exp-item__years">2020 · Contract</p>
+                            </div>
+                            <ul>
+                                <li>Worked on popular games including <em>The Devils and the Details</em> and <em>Talking Points</em>.</li>
+                                <li>Created art assets for gameplay and ran QA sessions for bug identification and reporting.</li>
+                                <li>Developed social media and marketing graphics to drive engagement with target audiences.</li>
+                            </ul>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://www.jellyvision.com" target="_blank" rel="noopener">Jellyvision</a>
+                                </h3>
+                                <p class="exp-item__role">Lead Production Artist</p>
+                                <p class="exp-item__years">2011 — 2020</p>
+                            </div>
+                            <ul>
+                                <li>Led production of After Effects and canvas-formatted animations for B2B SaaS projects.</li>
+                                <li>Work reached 1,500+ companies and 18 million employees — including 114 of the Fortune 500 — helping them make better insurance, 401(k) and financial wellness decisions.</li>
+                                <li>Created visual mockups for interactive web environments to ensure high-quality deliverables.</li>
+                                <li>Recruited, mentored, and directed a team of designers, providing guidance and feedback.</li>
+                            </ul>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://www.webfootgames.com" target="_blank" rel="noopener">Webfoot Technologies</a>
+                                </h3>
+                                <p class="exp-item__role">Lead Game Designer</p>
+                                <p class="exp-item__years">2009 — 2010</p>
+                            </div>
+                            <ul>
+                                <li>
+                                    Led GUI design for several games, including the
+                                    <a href="http://www.webfootgames.com/game.html?gameid=YouDontKnowJack_DS" target="_blank" rel="noopener">You Don't Know Jack</a>
+                                    adaptation for the Nintendo DS.
+                                </li>
+                                <li>
+                                    Managed contracted work and designed minigames and platforming stages for
+                                    <a href="http://www.webfootgames.com/game.html?gameid=FancyNancyTeaPartyTime_DS" target="_blank" rel="noopener">Fancy Nancy DS</a>.
+                                </li>
+                                <li>
+                                    Game artist for
+                                    <a href="http://www.webfootgames.com/game.html?gameid=FabulousFinds_DS" target="_blank" rel="noopener">Fabulous Finds DS</a>
+                                    and
+                                    <a href="http://www.webfootgames.com/game.html?gameid=TheBiggestLoser_DS" target="_blank" rel="noopener">The Biggest Loser DS</a>.
+                                </li>
+                            </ul>
+                        </article>
+
+                        <details class="exp-more">
+                            <summary>
+                                <span class="exp-more__icon" aria-hidden="true">
+                                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6">
+                                        <path d="M1 6h10" />
+                                        <path class="v" d="M6 1v10" />
+                                    </svg>
+                                </span>
+                                <span class="label-more">Show 5 earlier roles</span>
+                                <span class="label-less">Hide earlier roles</span>
+                            </summary>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">15 Letters</h3>
+                                    <p class="exp-item__role">Freelance 3D Artist</p>
+                                    <p class="exp-item__years">2011</p>
+                                </div>
+                                <ul>
+                                    <li>Delivered every aspect of 3D production — environments and characters, including hair and cloth dynamics — for OfficeMax and Allstate web creative.</li>
+                                </ul>
+                            </article>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">Horseland</h3>
+                                    <p class="exp-item__role">MMO Production Artist</p>
+                                    <p class="exp-item__years">2006 — 2009</p>
+                                </div>
+                                <ul>
+                                    <li>Produced art, mini-games, web pages and content for horseland.com, a popular MMO.</li>
+                                    <li>Worked across the full pipeline — 3D Studio Max, Adobe Animate, ActionScript, HTML/CSS/XML and Final Cut.</li>
+                                </ul>
+                            </article>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">ZPD+A</h3>
+                                    <p class="exp-item__role">Contract 3D / CAD Artist</p>
+                                    <p class="exp-item__years">2006</p>
+                                </div>
+                                <ul>
+                                    <li>Generated SketchUp and 3D Studio Max concept renderings alongside architects for Blue Cross Blue Shield and Cicero City Hall.</li>
+                                    <li>Produced the print material for presentation.</li>
+                                </ul>
+                            </article>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">Westcreek Studios</h3>
+                                    <p class="exp-item__role">Lead 3D Modeler</p>
+                                    <p class="exp-item__years">1999 — 2006</p>
+                                </div>
+                                <ul>
+                                    <li>Modeled characters, props and sets for two nationally televised 24-minute films — hundreds of models, all delivered on schedule.</li>
+                                    <li>Led the modeling and special effects team, developing fire, smoke and water techniques in Autodesk Combustion.</li>
+                                    <li>Trained new staff in subdivision modeling; consulted on rendering with Chaos Group (V-Ray) in Bulgaria and Render Core in Hollywood.</li>
+                                </ul>
+                            </article>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">Atomic Imaging</h3>
+                                    <p class="exp-item__role">Internship</p>
+                                    <p class="exp-item__years">1998</p>
+                                </div>
+                                <ul>
+                                    <li>Modeled, rigged, animated, rendered and edited a music video using 3D Studio Max, After Effects and Premiere.</li>
+                                </ul>
+                            </article>
+                        </details>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== Testimonials ===== -->
+            <section class="section band" id="testimonials">
+                <div class="wrap">
+                    <div class="section-head" data-reveal>
+                        <h2>What People Say</h2>
+                        <span class="label">06 Recommendations</span>
+                    </div>
+
+                    <div class="quote-grid">
+                        <figure class="quote" data-reveal>
+                            <blockquote>
+                                Over the past two years, I worked with Yoshi to create dozens of
+                                illustrations for a range of marketing projects. He was a joy to
+                                collaborate with — someone who reliably brought clever ideas to the
+                                table, and nailed the landing when it came to execution, often on
+                                his first stab at it. Can't recommend him enough.
+                            </blockquote>
+                            <figcaption>
+                                <img src="./assets/images/avatar-1.jpeg" alt="" loading="lazy" />
+                                <span>
+                                    <span class="quote__name">Mark Rader</span><br />
+                                    <span class="quote__role">Jellyvision — Marketing</span>
+                                </span>
+                            </figcaption>
+                        </figure>
+
+                        <figure class="quote" data-reveal data-reveal-delay="80">
+                            <blockquote>
+                                What especially impressed me about Yoshi is how tech savvy he is.
+                                He was always on the forefront of figuring out how to adapt our art
+                                for the constantly-evolving web landscape and how to streamline the
+                                process of creating it. On top of that, he is friendly, kind, and
+                                fun to be around. Yoshi would be an asset to any team.
+                            </blockquote>
+                            <figcaption>
+                                <img src="./assets/images/avatar-2.jpeg" alt="" loading="lazy" />
+                                <span>
+                                    <span class="quote__name">Katie Lauffenburger</span><br />
+                                    <span class="quote__role">Jellyvision — Design</span>
+                                </span>
+                            </figcaption>
+                        </figure>
+
+                        <figure class="quote" data-reveal data-reveal-delay="160">
+                            <blockquote>
+                                Jellyvision was the very lucky home for Yoshi's artistic excellence
+                                for almost nine years. Yoshi is creative, hard working, very
+                                efficient, and a lovely human being to boot. He's a multi-faceted
+                                creator and knows how to handle high volume, high pressure project
+                                work as well as iterative product work, which can require two
+                                different mindsets.
+                            </blockquote>
+                            <figcaption>
+                                <img src="./assets/images/avatar-3.jpeg" alt="" loading="lazy" />
+                                <span>
+                                    <span class="quote__name">Amanda Lannert</span><br />
+                                    <span class="quote__role">Jellyvision — CEO</span>
+                                </span>
+                            </figcaption>
+                        </figure>
+
+                        <figure class="quote" data-reveal>
+                            <blockquote>
+                                Yoshi always maintained a positive outlook even during the
+                                inevitable game ending crunch periods. He handled the pressures of
+                                a small development team admirably which made working with him a
+                                pleasure. He is honest, intelligent and hard-working and is a solid
+                                team player.
+                            </blockquote>
+                            <figcaption>
+                                <img src="./assets/images/avatar-4.jpeg" alt="" loading="lazy" />
+                                <span>
+                                    <span class="quote__name">Debra Osborn</span><br />
+                                    <span class="quote__role">Webfoot Games — Project Manager</span>
+                                </span>
+                            </figcaption>
+                        </figure>
+
+                        <figure class="quote" data-reveal data-reveal-delay="80">
+                            <blockquote>
+                                Yoshi is a very creative and bright artist, he consistently offers
+                                a new and creative approach. He is a quick learner and a strong
+                                communicator.
+                            </blockquote>
+                            <figcaption>
+                                <img src="./assets/images/avatar-5.jpeg" alt="" loading="lazy" />
+                                <span>
+                                    <span class="quote__name">Christina Gerskovich</span><br />
+                                    <span class="quote__role">Horseland — CEO</span>
+                                </span>
+                            </figcaption>
+                        </figure>
+
+                        <figure class="quote" data-reveal data-reveal-delay="160">
+                            <blockquote>
+                                Yoshi is not only a very talented individual, but he is also a true
+                                team player who collaborates well across a fully remote, global
+                                team setting. His illustration and graphic design expertise
+                                translate abstract concepts into tangible, visually appealing
+                                creations. He is a great asset to any team.
+                            </blockquote>
+                            <figcaption>
+                                <img src="./assets/images/avatar-6.jpeg" alt="" loading="lazy" />
+                                <span>
+                                    <span class="quote__name">Jamie May</span><br />
+                                    <span class="quote__role">Tynker — Head of Design</span>
+                                </span>
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== CTA ===== -->
+            <section class="cta" id="contact">
+                <div class="wrap">
+                    <p class="label" data-reveal style="margin-bottom: 1.5rem">
+                        Let's make something
+                    </p>
+                    <a class="cta__mail" href="mailto:yoshi.sakaguchi@gmail.com" data-reveal data-reveal-delay="80">
+                        yoshi.sakaguchi@gmail.com
+                    </a>
+                    <div
+                        style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: clamp(2rem, 4vw, 3.5rem)"
+                        data-reveal
+                        data-reveal-delay="160">
+                        <a class="btn" href="./contact.html">Start a project</a>
+                        <a class="btn btn--ghost" href="./assets/resume/resume_sakaguchi_gd.pdf" target="_blank" rel="noopener">
+                            Résumé (PDF)
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ===== Footer ===== -->
+        <footer class="site-footer">
+            <div class="wrap">
+                <p class="label">© Yoshi Sakaguchi 2026</p>
+                <nav class="social" aria-label="Elsewhere">
+                    <a href="https://www.linkedin.com/in/yoshisakaguchi/" target="_blank" rel="noopener">LinkedIn</a>
+                    <a href="https://www.youtube.com/@YoshiSakaguchi" target="_blank" rel="noopener">YouTube</a>
+                    <a href="https://vimeo.com/yoshisakaguchi" target="_blank" rel="noopener">Vimeo</a>
+                </nav>
+            </div>
+        </footer>
+
+        <!-- ===== Lightbox ===== -->
+        <div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="Artwork viewer">
+            <button class="lightbox__btn lightbox__close" type="button" data-lb-close aria-label="Close viewer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+            </button>
+            <button class="lightbox__btn lightbox__prev" type="button" data-lb-prev aria-label="Previous artwork">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M15 5l-7 7 7 7" />
+                </svg>
+            </button>
+            <button class="lightbox__btn lightbox__next" type="button" data-lb-next aria-label="Next artwork">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+
+            <figure class="lightbox__stage">
+                <img data-lb-img src="" alt="" />
+            </figure>
+            <figcaption class="lightbox__meta" data-lb-meta></figcaption>
         </div>
 
-        <!-- Vendor JS -->
-        <script src="./assets/js/vendor.bundle.js"></script>
-
-        <!-- Theme JS -->
-        <script src="./assets/js/theme.bundle.js"></script>
+        <script src="./assets/js/site.js"></script>
     </body>
 </html>

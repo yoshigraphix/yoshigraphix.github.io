@@ -1,430 +1,389 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<!-- Head -->
-<head>
-  <!-- Page Meta Tags-->
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <meta name="keywords" content="">
+        <title>About — Yoshi Sakaguchi</title>
+        <meta name="description" content="Yoshi Sakaguchi is a multimedia artist and designer in East Tennessee, working in illustration, motion and game art." />
+        <link rel="canonical" href="https://yoshigraphix.github.io/about.html" />
 
-  <!-- Favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="./assets/images/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon/favicon-16x16.png">
-  <link rel="mask-icon" href="./assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
-  <meta name="msapplication-TileColor" content="#da532c">
-  <meta name="theme-color" content="#ffffff">
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="About — Yoshi Sakaguchi" />
+        <meta property="og:description" content="Yoshi Sakaguchi is a multimedia artist and designer in East Tennessee, working in illustration, motion and game art." />
+        <meta property="og:url" content="https://yoshigraphix.github.io/about.html" />
+        <meta property="og:image" content="https://yoshigraphix.github.io/assets/images/portrait.jpg" />
+        <meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/svg+xml" href="assets/images/favicon/mark.svg" />
 
-  <!-- Google Font-->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicon/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon/favicon-16x16.png" />
+        <meta name="theme-color" content="#100f0e" />
 
-  <!-- Vendor CSS -->
-  <link rel="stylesheet" href="./assets/css/libs.bundle.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=DM+Mono:wght@400;500&amp;family=Instrument+Sans:wght@400..700&amp;display=swap"
+            rel="stylesheet" />
 
-  <!-- Main CSS -->
-  <link rel="stylesheet" href="./assets/css/theme.bundle.css" />
+        <link rel="stylesheet" href="assets/css/site.css" />
+    </head>
 
-  <!-- Fix for custom scrollbar if JS is disabled-->
-  <noscript>
-    <style>
-      /**
-          * Reinstate scrolling for non-JS clients
-          */
-      .simplebar-content-wrapper {
-        overflow: auto;
-      }
-    </style>
-  </noscript>
+    <body>
+        <a class="skip-link" href="#main">Skip to content</a>
+        <div class="grain" aria-hidden="true"></div>
 
-  <!-- Page Title -->
-  <title>Yoshi Sakaguchi</title>
+        <!-- ===== Header ===== -->
+        <header class="site-header">
+            <div class="wrap">
+                <a class="brand" href="index.html">
+                    <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true">
+                        <circle cx="20" cy="20" r="20" fill="var(--brand)" />
+                        <path
+                            d="M11.4 12 L20 21.6 L28.6 12 M20 21.6 L20 29.6"
+                            fill="none"
+                            stroke="#12100e"
+                            stroke-width="4.6"
+                            stroke-linejoin="miter" />
+                    </svg>
+                    <span>Yoshi Sakaguchi</span>
+                </a>
 
-</head>
-<body class="">
+                <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="Toggle menu">
+                    <svg class="icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M3 7h18M3 17h18" />
+                    </svg>
+                    <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </button>
 
-    <!-- Locomotive Scroll Container-->
-    <div data-scroll-container>
-        <!-- Navbar -->
-        <nav data-scroll-section class="navbar navbar-expand-lg navbar-light bg-transparent mb-5 mb-lg-10">
-          <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center fade-in" href="./index.html" data-scroll>
-             <picture class="avatar me-3" data-scroll data-scroll-speed="10" data-scroll-direction="horizontal" data-scroll-position="top">
-               
-                <img class="img-fluid rounded-square" src="./assets/images/avatar-small.png" alt="Yoshi Sakaguchi">
-              </picture>
-              <span class="fw-bolder fs-6 d-flex justify-content-start" data-scroll-section>
-                <span class="fade-in" data-scroll data-scroll-speed="2" data-scroll-delay=".03" data-scroll-position="top"><span style="color: #6EE7B7">YOSHI</span> SAKAGUCHI</span>
-              </span>
-            </a>
-            <button class="btn-icon navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <i class="ri-menu-3-line"></i>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent" data-scroll data-scroll-speed="4" data-scroll-delay=".6" data-scroll-position="top">
-              <ul class="navbar-nav me-0 ms-auto mb-2 mb-lg-0 mt-4 mt-lg-0">
-                <li class="nav-item">
-                  <a class="nav-link" href="./index.html">Home</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="./about.html">About</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="./work-listing.html">Work</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="./contact.html">Contact</a>
-                </li>
-                <li class="nav-item d-lg-none">
-                  <a class="nav-link btn-toggle-mode" href="#">Toggle Dark/Light Mode</a>
-                </li>
-              </ul>
+                <nav class="nav" data-nav aria-label="Main">
+                    <a href="index.html">Home</a>
+                    <a href="work.html">Work</a>
+                    <a href="about.html" aria-current="page">About</a>
+                    <a href="contact.html">Contact</a>
+                </nav>
             </div>
-            <button class="btn-icon btn-toggle-mode ms-7 fade-in d-none d-lg-flex" data-scroll data-scroll-speed="-10" data-scroll-direction="horizontal" data-scroll-position="top"><i class="ri-sun-line"></i></button>
-          </div>
-        </nav>        <!-- / Navbar-->
+        </header>
 
-        <!-- Main Section-->
-        <section class="container py-3 " data-scroll-section>
-            <!-- Page Content Goes Here -->
-
-            <h1 class="display-3 mb-5" data-scroll data-scroll-speed="6" data-scroll-position="top">About Me</h1>
-
-            <div class="row g-8">
-                <!-- Profile Image-->
-                <div class="col-12 col-md-5" data-scroll data-scroll-speed="6" data-scroll-position="top">
-                    <picture>
-                        <img class="img-fluid" src="./assets/images/avatar.png"
-                            alt="Yoshi Sakaguchi">
-                    </picture>
+        <main id="main">
+            <section class="page-hero">
+                <div class="wrap">
+                    <span class="label label--accent">About</span>
+                    <h1>Artistic Imagineer</h1>
                 </div>
-                <!-- / Profile Image-->
+            </section>
 
-                <!-- / Bio & CV Link-->
-                <div class="col-12 col-md-7">
-                    <div class="row g-5 g-xl-8">
-                        <div class="col-12 col-xl-7" data-scroll data-scroll-speed="4" data-scroll-position="top">
-                            <p class="lead">I'm Yoshi Sakaguchi, an <span style="color: #6EE7B7">Artistic Imagineer</span> based in East Tennessee, United States.</p>
-                        
-                            <p>I'm passionate about creating engaging and easy-to-navigate layouts. I love the look of clean lines, sharp contrasts in <span style="color: #6EE7B7">color</span> schemes, or bold graphic assets paired with sophisticated illustrations.</p>
-
-                            <p>As a multimedia artist, my work is centered around crafting <span style="color: #6EE7B7">dynamic visual experiences</span>. I specialize in designing immersive environments and captivating graphics that resonate with audiences across various platforms.</p>
-
+            <section class="wrap">
+                <div class="about-grid" data-reveal>
+                    <div>
+                        <img class="portrait" src="./assets/images/portrait.jpg" alt="Yoshi Sakaguchi" width="816" height="1000" />
+                    </div>
+                    <div>
+                        <p class="lede" style="max-width: 40ch; margin-bottom: 2rem">
+                            I'm Yoshi Sakaguchi, a multimedia artist based in East Tennessee.
+                        </p>
+                        <p class="body">
+                            I'm passionate about creating engaging, easy-to-navigate layouts. I
+                            love the look of clean lines, sharp contrasts in color, and bold
+                            graphic assets paired with sophisticated illustration.
+                        </p>
+                        <p class="body">
+                            My work centers on crafting dynamic visual experiences — designing
+                            immersive environments and graphics that resonate with audiences
+                            across platforms — aviation, edtech, gaming and B2B SaaS. Currently
+                            leading AI research and development for learning experience
+                            design at Cirrus.
+                        </p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2.5rem">
+                            <a class="btn" href="./assets/resume/resume_sakaguchi_gd.pdf" target="_blank" rel="noopener">Download résumé</a>
+                            <a class="btn btn--ghost" href="./contact.html">Get in touch</a>
                         </div>
-                        <div class="col-12 col-xl-5" data-scroll data-scroll-speed="2" data-scroll-position="top">
-                            <a href="./assets/resume/resume_sakaguchi_gd.pdf" class="btn btn-dark w-100 d-flex align-items-center justify-content-center"><i class="ri-file-download-line ri-lg me-2"></i> Download My Resume</a>
-                            <h5 class="fw-medium mt-6 mb-3">Find Me Online</h5>
-                            <ul class="list-unstyled">
-                                <li class="d-flex align-items-center mb-2"><i class="ri-linkedin-line me-3 ri-lg"></i> <a class="link-body" href="https://www.linkedin.com/in/yoshisakaguchi/">LinkedIn</a></li>
-                             
-                                <li class="d-flex align-items-center mb-2"><i class="ri-youtube-line me-3 ri-lg"></i> <a class="link-body" href="https://www.youtube.com/@YoshiSakaguchi">Youtube</a></li>
-                                <li class="d-flex align-items-center mb-2"><i class="ri-vimeo-line me-3 ri-lg"></i> <a class="link-body" href="https://vimeo.com/yoshisakaguchi">Vimeo</a></li>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="experience">
+                <div class="wrap">
+                    <div class="section-head" data-reveal>
+                        <h2>Experience</h2>
+                        <span class="label">11 Roles</span>
+                    </div>
+                    <div class="exp-list">
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://cirrusaircraft.com" target="_blank" rel="noopener">Cirrus</a>
+                                </h3>
+                                <p class="exp-item__role">Senior Learning Experience Design</p>
+                                <p class="exp-item__years">2025 — Present</p>
+                            </div>
+                            <ul>
+                                <li>Lead of AI research and development — defining how generative tooling carries an idea from first concept to live product, efficiently and fast.</li>
+                                <li>Design presentations for lectures: key points, instructional text layouts, and the visual system holding them together.</li>
+                                <li>Produce diagrams for presentation and print, giving subject matter experts a ready aid to share with students.</li>
                             </ul>
-                        </div>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">The Designery</h3>
+                                <p class="exp-item__role">Designer</p>
+                                <p class="exp-item__years">2024 — 2025</p>
+                            </div>
+                            <ul>
+                                <li>
+                                    Built an AI imaging workflow that turned ProKitchen renders
+                                    into photorealistic client visuals in minutes instead of days.
+                                </li>
+                                <li>
+                                    Ran VR walkthroughs on Meta Quest so clients could stand
+                                    inside their kitchen layout before committing to it.
+                                </li>
+                                <li>
+                                    Owned projects end to end — on-site measuring, layout design,
+                                    specification, ordering, delivery and installation scheduling
+                                    for cabinets, countertops and flooring.
+                                </li>
+                                <li>
+                                    Handled client development through networking events and
+                                    contractor relationships to source new design work.
+                                </li>
+                            </ul>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://www.tynker.com" target="_blank" rel="noopener">Tynker</a>
+                                </h3>
+                                <p class="exp-item__role">Game &amp; Marketing Graphics Lead</p>
+                                <p class="exp-item__years">2020 — 2023</p>
+                            </div>
+                            <ul>
+                                <li>Managed a team of international video editors and graphic artists.</li>
+                                <li>Rigged characters using Spine for web-based games, enhancing visual storytelling.</li>
+                                <li>Participated in QA sessions to identify and report bugs for high-quality gameplay.</li>
+                                <li>Developed social media and marketing graphics across projects, driving audience engagement.</li>
+                            </ul>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://www.jackboxgames.com" target="_blank" rel="noopener">Jackbox Games</a>
+                                </h3>
+                                <p class="exp-item__role">Game &amp; Marketing Artist · QA</p>
+                                <p class="exp-item__years">2020 · Contract</p>
+                            </div>
+                            <ul>
+                                <li>Worked on popular games including <em>The Devils and the Details</em> and <em>Talking Points</em>.</li>
+                                <li>Created art assets for gameplay and ran QA sessions for bug identification and reporting.</li>
+                                <li>Developed social media and marketing graphics to drive engagement with target audiences.</li>
+                            </ul>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://www.jellyvision.com" target="_blank" rel="noopener">Jellyvision</a>
+                                </h3>
+                                <p class="exp-item__role">Lead Production Artist</p>
+                                <p class="exp-item__years">2011 — 2020</p>
+                            </div>
+                            <ul>
+                                <li>Led production of After Effects and canvas-formatted animations for B2B SaaS projects.</li>
+                                <li>Work reached 1,500+ companies and 18 million employees — including 114 of the Fortune 500 — helping them make better insurance, 401(k) and financial wellness decisions.</li>
+                                <li>Created visual mockups for interactive web environments to ensure high-quality deliverables.</li>
+                                <li>Recruited, mentored and directed a team of designers, providing guidance and feedback.</li>
+                            </ul>
+                        </article>
+
+                        <article class="exp-item" data-reveal>
+                            <div>
+                                <h3 class="exp-item__co">
+                                    <a href="https://www.webfootgames.com" target="_blank" rel="noopener">Webfoot Technologies</a>
+                                </h3>
+                                <p class="exp-item__role">Lead Game Designer</p>
+                                <p class="exp-item__years">2009 — 2010</p>
+                            </div>
+                            <ul>
+                                <li>Led GUI design for several games, including the <a href="http://www.webfootgames.com/game.html?gameid=YouDontKnowJack_DS" target="_blank" rel="noopener">You Don't Know Jack</a> adaptation for the Nintendo DS.</li>
+                                <li>Managed contracted work and designed minigames and platforming stages for <a href="http://www.webfootgames.com/game.html?gameid=FancyNancyTeaPartyTime_DS" target="_blank" rel="noopener">Fancy Nancy DS</a>.</li>
+                                <li>Game artist for <a href="http://www.webfootgames.com/game.html?gameid=FabulousFinds_DS" target="_blank" rel="noopener">Fabulous Finds DS</a> and <a href="http://www.webfootgames.com/game.html?gameid=TheBiggestLoser_DS" target="_blank" rel="noopener">The Biggest Loser DS</a>.</li>
+                            </ul>
+                        </article>
+
+                        <details class="exp-more">
+                            <summary>
+                                <span class="exp-more__icon" aria-hidden="true">
+                                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6">
+                                        <path d="M1 6h10" />
+                                        <path class="v" d="M6 1v10" />
+                                    </svg>
+                                </span>
+                                <span class="label-more">Show 5 earlier roles</span>
+                                <span class="label-less">Hide earlier roles</span>
+                            </summary>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">15 Letters</h3>
+                                    <p class="exp-item__role">Freelance 3D Artist</p>
+                                    <p class="exp-item__years">2011</p>
+                                </div>
+                                <ul>
+                                    <li>Delivered every aspect of 3D production — environments and characters, including hair and cloth dynamics — for OfficeMax and Allstate web creative.</li>
+                                </ul>
+                            </article>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">Horseland</h3>
+                                    <p class="exp-item__role">MMO Production Artist</p>
+                                    <p class="exp-item__years">2006 — 2009</p>
+                                </div>
+                                <ul>
+                                    <li>Produced art, mini-games, web pages and content for horseland.com, a popular MMO.</li>
+                                    <li>Worked across the full pipeline — 3D Studio Max, Adobe Animate, ActionScript, HTML/CSS/XML and Final Cut.</li>
+                                </ul>
+                            </article>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">ZPD+A</h3>
+                                    <p class="exp-item__role">Contract 3D / CAD Artist</p>
+                                    <p class="exp-item__years">2006</p>
+                                </div>
+                                <ul>
+                                    <li>Generated SketchUp and 3D Studio Max concept renderings alongside architects for Blue Cross Blue Shield and Cicero City Hall.</li>
+                                    <li>Produced the print material for presentation.</li>
+                                </ul>
+                            </article>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">Westcreek Studios</h3>
+                                    <p class="exp-item__role">Lead 3D Modeler</p>
+                                    <p class="exp-item__years">1999 — 2006</p>
+                                </div>
+                                <ul>
+                                    <li>Modeled characters, props and sets for two nationally televised 24-minute films — hundreds of models, all delivered on schedule.</li>
+                                    <li>Led the modeling and special effects team, developing fire, smoke and water techniques in Autodesk Combustion.</li>
+                                    <li>Trained new staff in subdivision modeling; consulted on rendering with Chaos Group (V-Ray) in Bulgaria and Render Core in Hollywood.</li>
+                                </ul>
+                            </article>
+
+                            <article class="exp-item">
+                                <div>
+                                    <h3 class="exp-item__co">Atomic Imaging</h3>
+                                    <p class="exp-item__role">Internship</p>
+                                    <p class="exp-item__years">1998</p>
+                                </div>
+                                <ul>
+                                    <li>Modeled, rigged, animated, rendered and edited a music video using 3D Studio Max, After Effects and Premiere.</li>
+                                </ul>
+                            </article>
+                        </details>
+
+
                     </div>
                 </div>
-                <!-- / Bio & CV Link-->
-            </div>
+            </section>
 
-            <!-- Experience-->
-            <div class="py-lg-6" data-scroll>
-                <h2 
-                    class="display-6 border-bottom pb-5 mb-5 fade-in-up" 
-                    data-scroll data-scroll-position="bottom"
-                >Experience</h2>                 <!-- Single Experience-->
-                                <div 
-                                    class="row gx-2 mb-5 fade-in-up" 
-                                    data-scroll
-                                    data-scroll-position="bottom" 
-                                >
-                                    <div class="col-12 col-lg-4">
-                                        <p class="fw-bolder mb-1">Tynker</p>
-                                        <span class="text-muted small">(2020 - 2023)</span>
-                                    </div>
-                                    <div class="col-12 col-lg-8">
-                                        <p class="fw-bolder">Game & Marketing Graphics Lead</p>
-                                        <p class="text-muted fw-light fs-6">
-                                            <ul class="text-muted fw-light fs-6">                                 
-                                              <li>Managed a team of international video editors and graphic artists.</li>
-                                              <li>Rigged characters using Spine for web-based games, enhancing visual storytelling.</li>
-                                              <li>Participated in QA sessions to identify and report bugs for high-quality gameplay experiences.</li>
-                                              <li>Developed social media and marketing graphics for various pronnycts, driving audience engagement.</li>
-                                            </ul> 
-                                        </p>
-                                        <a class="link-body" href="https://www.tynker.com">https://www.tynker.com</a>
-                                    </div>
-                                </div>
-                                <!-- / Single Experience -->
-                                <!-- Single Experience-->
-                                <div 
-                                    class="row gx-2 mb-5 fade-in-up" 
-                                    data-scroll
-                                    data-scroll-position="bottom" 
-                                >
-                                    <div class="col-12 col-lg-4">
-                                        <p class="fw-bolder mb-1">Jackbox Games</p>
-                                        <span class="text-muted small">(2020 - Contract)</span>
-                                    </div>
-                                    <div class="col-12 col-lg-8">
-                                        <p class="fw-bolder">Game & Marketing Artist | QA</p>
-                                        <p class="text-muted fw-light fs-6">
-                                            <ul class="text-muted fw-light fs-6">                                 
-                                              <li>Worked on popular games such as Devil’s In The Details and Talking Points.</li>
-                                              <li>Created art assets for gameplay and participated in QA sessions for bug identification and reporting.</li>
-                                              <li>Developed social media and marketing graphics to drive engagement with target audiences.</li>
-                                            </ul> 
-                                            
-                                            
-                                        </p>
-                                        <a class="link-body" href="https://www.jackboxgames.com/games/packs/the-jackbox-party-pack-7">https://www.jackboxgames.com</a>
-                                    </div>
-                                </div>
-                                <!-- / Single Experience -->
-                                <!-- Single Experience-->
-                                <div 
-                                    class="row gx-2 mb-5 fade-in-up" 
-                                    data-scroll
-                                    data-scroll-position="bottom" 
-                                >
-                                    <div class="col-12 col-lg-4">
-                                        <p class="fw-bolder mb-1">Jellyvision</p>
-                                        <span class="text-muted small">(2011 - 2020)</span>
-                                    </div>
-                                    <div class="col-12 col-lg-8">
-                                        <p class="fw-bolder">Lead Production Artist</p>
-                                        <p class="text-muted fw-light fs-6">
-                                            <ul class="text-muted fw-light fs-6">                                 
-                                              <li>Led the production of After Effects and canvas-formatted animations for B2B SaaS projects.</li>
-                                              <li>Created visual mockups for interactive web environments to ensure high-quality deliverables.</li>
-                                              <li>Recruited, mentored, and directed a team of designers, providing guidance and feedback to enhance their skills.</li>
-                                            </ul> 
-                                        </p>
-                                        <a class="link-body" href="https://www.jellyvision.com">https://www.jellysivion.com</a>
-                                    </div>
-                                </div>
-                                <!-- / Single Experience -->
-                                <!-- Single Experience-->
-                                <div 
-                                    class="row gx-2 mb-5 fade-in-up" 
-                                    data-scroll
-                                    data-scroll-position="bottom" 
-                                >
-                                    <div class="col-12 col-lg-4">
-                                        <p class="fw-bolder mb-1">Webfoot Technologies</p>
-                                     <span class="text-muted small">(2009 - 2010)</span>
-                                    </div>
-                                    <div class="col-12 col-lg-8">
-                                        <p class="fw-bolder">Graphic Designer</p>
-                                        <p class="text-muted fw-light fs-6">
-                                            <ul class="text-muted fw-light fs-6">                                 
-                                              <li>Led GUI design for several games, including the <a href="http://www.webfootgames.com/game.html?gameid=YouDontKnowJack_DS">You Don’t Know Jack</a> adaptation for the Nintendo DS.</li>
-                                              <li>Managed contracted work and designed minigames and platforming stages for <a href="http://www.webfootgames.com/game.html?gameid=FancyNancyTeaPartyTime_DS">Fancy Nancy DS</a>.</li>
-                                              <li>Worked as a Game Artist for "<a href="http://www.webfootgames.com/game.html?gameid=FabulousFinds_DS">Fabulous Finds DS</a>" and "<a href="http://www.webfootgames.com/game.html?gameid=TheBiggestLoser_DS">Biggest Loser DS</a>".</li>
-                                            </ul> 
-                                        
-                                        </p>
-                                        <a class="link-body" href="https://www.webfootgames.com">https://www.webfootgames.com</a>
-                                    </div>
-                                </div>
-                                <!-- / Single Experience -->
-            </div>            <!-- / Experience-->
-
-            <!-- / Skills-->
-            <!-- Skills Section-->
-            <div class="pt-2 pb-6 skills" data-scroll>
-                <h2 
-                    class="display-6 border-bottom pb-5 mb-5 fade-in-up" 
-                    data-scroll data-scroll-position="bottom"
-                >Skills</h2>        <div class="row gx-10 gy-5">
-                            <!-- Single Skill-->
-                            <div class="col-12 col-lg-6 fade-in-up"
-                                data-scroll
-                                data-scroll-position="bottom" 
-                            >
-                                <div class="row align-items-center">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <p class="mb-0 fw-bolder">92%</p>
-                                    </div>
-                                    <div class="col-4">
-                                        <p class="mb-0 small lh-1">Illustrator</p>
-                                    </div>
-                                    <div class="col-8">
-                                        <div class="progress f-h-1">
-                                            <div class="progress-bar" role="progressbar" style="width: 92%"
-                                                aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- / Single Skill -->
-                            <!-- Single Skill-->
-                            <div class="col-12 col-lg-6 fade-in-up"
-                                data-scroll
-                                data-scroll-position="bottom" 
-                            >
-                                <div class="row align-items-center">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <p class="mb-0 fw-bolder">75%</p>
-                                    </div>
-                                    <div class="col-4">
-                                        <p class="mb-0 small lh-1">Stable Diffusion</p>
-                                    </div>
-                                    <div class="col-8">
-                                        <div class="progress f-h-1">
-                                            <div class="progress-bar" role="progressbar" style="width: 75%"
-                                                aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- / Single Skill -->
-                            <!-- Single Skill-->
-                            <div class="col-12 col-lg-6 fade-in-up"
-                                data-scroll
-                                data-scroll-position="bottom" 
-                            >
-                                <div class="row align-items-center">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <p class="mb-0 fw-bolder">88%</p>
-                                    </div>
-                                    <div class="col-4">
-                                        <p class="mb-0 small lh-1">Photoshop</p>
-                                    </div>
-                                    <div class="col-8">
-                                        <div class="progress f-h-1">
-                                            <div class="progress-bar" role="progressbar" style="width: 88%"
-                                                aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- / Single Skill -->
-                            <!-- Single Skill-->
-                            <div class="col-12 col-lg-6 fade-in-up"
-                                data-scroll
-                                data-scroll-position="bottom" 
-                            >
-                                <div class="row align-items-center">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <p class="mb-0 fw-bolder">78%</p>
-                                    </div>
-                                    <div class="col-4">
-                                        <p class="mb-0 small lh-1">Video Editing</p>
-                                    </div>
-                                    <div class="col-8">
-                                        <div class="progress f-h-1">
-                                            <div class="progress-bar" role="progressbar" style="width: 78%"
-                                                aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- / Single Skill -->
-                            <!-- Single Skill-->
-                            <div class="col-12 col-lg-6 fade-in-up"
-                                data-scroll
-                                data-scroll-position="bottom" 
-                            >
-                                <div class="row align-items-center">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <p class="mb-0 fw-bolder">90%</p>
-                                    </div>
-                                    <div class="col-4">
-                                        <p class="mb-0 small lh-1">Animate</p>
-                                    </div>
-                                    <div class="col-8">
-                                        <div class="progress f-h-1">
-                                            <div class="progress-bar" role="progressbar" style="width: 90%"
-                                                aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- / Single Skill -->
-                            <!-- Single Skill-->
-                            <div class="col-12 col-lg-6 fade-in-up"
-                                data-scroll
-                                data-scroll-position="bottom" 
-                            >
-                                <div class="row align-items-center">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <p class="mb-0 fw-bolder">80%</p>
-                                    </div>
-                                    <div class="col-4">
-                                        <p class="mb-0 small lh-1">Problem Solving</p>
-                                    </div>
-                                    <div class="col-8">
-                                        <div class="progress f-h-1">
-                                            <div class="progress-bar" role="progressbar" style="width: 80%"
-                                                aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- / Single Skill -->
+            <section class="section section--tight" id="tools">
+                <div class="wrap">
+                    <div class="section-head" data-reveal>
+                        <h2>Tools &amp; Capabilities</h2>
                     </div>
-            </div>
-            <!-- /Skills Section-->            <!-- / Skills-->
+                    <div class="tool-group" data-reveal>
+                        <h3 class="label" style="margin-bottom: 1.25rem">Illustration &amp; design</h3>
+                        <ul class="pills">
+                            <li>Adobe Illustrator</li>
+                            <li>Photoshop</li>
+                            <li>Affinity Designer</li>
+                            <li>Affinity Photo</li>
+                            <li>Vector illustration</li>
+                            <li>Logo &amp; identity</li>
+                        </ul>
+                    </div>
+                    <div class="tool-group" data-reveal>
+                        <h3 class="label" style="margin-bottom: 1.25rem">Motion, video &amp; capture</h3>
+                        <ul class="pills">
+                            <li>After Effects</li>
+                            <li>Adobe Animate</li>
+                            <li>Premiere</li>
+                            <li>Final Cut Pro</li>
+                            <li>Spine rigging</li>
+                            <li>Storyboarding</li>
+                            <li>Canvas animation</li>
+                            <li>Canon DSLR</li>
+                            <li>Lumix Micro 4/3</li>
+                        </ul>
+                    </div>
+                    <div class="tool-group" data-reveal>
+                        <h3 class="label" style="margin-bottom: 1.25rem">3D</h3>
+                        <ul class="pills">
+                            <li>3D Studio Max</li>
+                            <li>Blender</li>
+                            <li>Character Studio</li>
+                            <li>Modeling &amp; rigging</li>
+                            <li>Lighting &amp; rendering</li>
+                            <li>VFX — fire, smoke, water</li>
+                            <li>SketchUp</li>
+                        </ul>
+                    </div>
+                    <div class="tool-group" data-reveal>
+                        <h3 class="label" style="margin-bottom: 1.25rem">Web &amp; AI</h3>
+                        <ul class="pills">
+                            <li>HTML / CSS</li>
+                            <li>Canvas</li>
+                            <li>ActionScript</li>
+                            <li>Stable Diffusion</li>
+                        </ul>
+                    </div>
+                    <div class="tool-group" data-reveal>
+                        <h3 class="label" style="margin-bottom: 1.25rem">Practice</h3>
+                        <ul class="pills">
+                            <li>Creative direction</li>
+                            <li>Team leadership</li>
+                            <li>Mentoring</li>
+                            <li>QA &amp; bug reporting</li>
+                            <li>Agile — Trello, Jira</li>
+                            <li>Remote collaboration</li>
+                        </ul>
+                    </div>
+</div>
+            </section>
 
-            <!-- /Page Content -->
-        </section>
-        <!-- / Main Section-->
+            <section class="cta">
+                <div class="wrap">
+                    <p class="label" data-reveal style="margin-bottom: 1.5rem">Find me online</p>
+                    <a class="cta__mail" href="mailto:yoshi.sakaguchi@gmail.com" data-reveal>
+                        yoshi.sakaguchi@gmail.com
+                    </a>
+                    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: clamp(2rem, 4vw, 3.5rem)" data-reveal>
+                        <a class="btn btn--ghost" href="https://www.linkedin.com/in/yoshisakaguchi/" target="_blank" rel="noopener">LinkedIn</a>
+                        <a class="btn btn--ghost" href="https://www.youtube.com/@YoshiSakaguchi" target="_blank" rel="noopener">YouTube</a>
+                        <a class="btn btn--ghost" href="https://vimeo.com/yoshisakaguchi" target="_blank" rel="noopener">Vimeo</a>
+                    </div>
+                </div>
+            </section>
+        </main>
 
-        <!-- Footer -->
-        <!-- Footer-->
-             <div class="d-flex align-items-center justify-content-center flex-column col-lg-7 col-xl-6 col-xxl-5 text-center mx-auto mt-5 px-4 px-md-0 mt-lg-10" data-scroll-section>
-            <h4 class="display-5 mb-5" data-scroll data-scroll-speed=".8" data-scroll-delay="0.05">Thank you for your time and consideration.</h4>
-             <a href="./assets/resume/resume_sakaguchi_gd.pdf" class="btn btn-dark w-100 d-flex align-items-center justify-content-center"><i class="ri-file-download-line ri-lg me-2"></i> My Resume</a>
-        </div>
-        
-        <footer class="border-top mt-10 pt-5 pb-8" data-scroll-section>
-            <div class="container d-flex justify-content-between">
-                <p class="small">
-                    All rights reserved. ©
-                    <span style="color: #6ee7b7">YOSHI</span> SAKAGUCHI 2024.
-                    
-                </p>
-                <ul class="list-unstyled d-flex align-items-center">
-                    <li class="ms-3">
-                        <a
-                            class="text-decoration-none text-muted"
-                            href="https://www.linkedin.com/in/yoshisakaguchi/"
-                            ><i class="ri-linkedin-fill"></i
-                        ></a>
-                    </li>
-                    <li class="ms-3">
-                        <a
-                            class="text-decoration-none text-muted"
-                            href="https://www.youtube.com/@YoshiSakaguchi "
-                            ><i class="ri-youtube-fill"></i
-                        ></a>
-                    </li>
-                    <li class="ms-3">
-                        <a
-                            class="text-decoration-none text-muted"
-                            href="https://vimeo.com/yoshisakaguchi"
-                            ><i class="ri-vimeo-fill"></i
-                        ></a>
-                    </li>
-                </ul>
+        <!-- ===== Footer ===== -->
+        <footer class="site-footer">
+            <div class="wrap">
+                <p class="label">© Yoshi Sakaguchi 2026</p>
+                <nav class="social" aria-label="Elsewhere">
+                    <a href="https://www.linkedin.com/in/yoshisakaguchi/" target="_blank" rel="noopener">LinkedIn</a>
+                    <a href="https://www.youtube.com/@YoshiSakaguchi" target="_blank" rel="noopener">YouTube</a>
+                    <a href="https://vimeo.com/yoshisakaguchi" target="_blank" rel="noopener">Vimeo</a>
+                </nav>
             </div>
         </footer>
-        <!-- / Footer-->
-        <!-- / Footer-->
-    </div>
-    <!-- /Locomotive Scroll Container-->
 
-    <!-- Theme JS -->
-    <!-- Vendor JS -->
-    <script src="./assets/js/vendor.bundle.js"></script>
-    
-    <!-- Theme JS -->
-    <script src="./assets/js/theme.bundle.js"></script>
-</body>
-
+        <script src="assets/js/site.js"></script>
+    </body>
 </html>
