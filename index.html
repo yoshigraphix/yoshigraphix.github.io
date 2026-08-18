@@ -78,43 +78,22 @@
         <main id="main">
             <!-- ===== Hero ===== -->
             <section class="hero">
-                <!-- Parallax backdrop: bouncing-ball arc with onion-skinned frames -->
-                <div class="hero__bg" aria-hidden="true">
-                    <div class="hero__layer hero__layer--glow" data-parallax="0.16"></div>
-                    <div class="hero__layer hero__layer--grid" data-parallax="0.05"></div>
-
-                    <svg
-                        class="hero__layer hero__layer--art"
-                        data-parallax="0.34"
-                        viewBox="0 0 1200 700"
-                        preserveAspectRatio="xMidYMid slice">
-                        <!-- The arc -->
-                        <path class="hero__path" d="M100 520 Q600 -160 1100 520" />
-
-                        <!-- Onion-skin frames, spaced along the same parabola -->
-                        <circle class="hero__frame" cx="100" cy="520" r="15" style="animation-delay: 0s" />
-                        <circle class="hero__frame" cx="225" cy="371" r="15" style="animation-delay: 0.13s" />
-                        <circle class="hero__frame" cx="350" cy="265" r="15" style="animation-delay: 0.26s" />
-                        <circle class="hero__frame" cx="475" cy="201" r="15" style="animation-delay: 0.39s" />
-                        <circle class="hero__frame" cx="600" cy="180" r="15" style="animation-delay: 0.52s" />
-                        <circle class="hero__frame" cx="725" cy="201" r="15" style="animation-delay: 0.65s" />
-                        <circle class="hero__frame" cx="850" cy="265" r="15" style="animation-delay: 0.78s" />
-                        <circle class="hero__frame" cx="975" cy="371" r="15" style="animation-delay: 0.91s" />
-                        <circle class="hero__frame" cx="1100" cy="520" r="15" style="animation-delay: 1.04s" />
-
-                        <!-- Impact ring where the ball lands -->
-                        <circle class="hero__impact" cx="100" cy="520" r="26" />
-                    </svg>
-                </div>
-
                 <div class="wrap">
                     <div class="hero__eyebrow" data-reveal>
                         <span class="dot" aria-hidden="true"></span>
                         <span class="label">Available for freelance &amp; full-time</span>
                     </div>
 
-                    <h1 class="display hero__name" data-reveal data-reveal-delay="80">
-                        Yoshi<br />Sakaguchi
+                    <h1
+                        class="display hero__name"
+                        data-reveal
+                        data-reveal-delay="80"
+                        data-bounce
+                        aria-label="Yoshi Sakaguchi">
+                        <span class="nm">yosh<span class="nm__i">&#305;<span class="nm__peg"></span></span></span><br />
+                        <span class="nm">sakaguch<span class="nm__i">&#305;<span class="nm__peg"></span></span></span>
+                        <svg class="hero__trace" aria-hidden="true"><path /></svg>
+                        <span class="hero__dot" aria-hidden="true"></span>
                     </h1>
 
                     <div class="hero__meta">
@@ -913,7 +892,7 @@
                         style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: clamp(2rem, 4vw, 3.5rem)"
                         data-reveal
                         data-reveal-delay="160">
-                        <a class="btn" href="./contact.html">Start a project</a>
+                        <a class="btn" href="./contact.html">Get in touch</a>
                         <a class="btn btn--ghost" href="./resume.html">View résumé</a>
                     </div>
                 </div>

@@ -148,40 +148,170 @@
         });
     }
 
-    /* --- Parallax ---------------------------------------------------------- */
+    /* --- Hero name: the bouncing tittle -------------------------------------
 
-    /* Transform-only, rAF-throttled, and skipped entirely under reduced motion. */
+       One green dot travels between the "i" of yoshi and the "i" of sakaguchi.
+       Positions come from measuring .nm__peg (sized in em) rather than any
+       fixed pixels, so it survives the fluid type scale, font loading and
+       resizes. Movement is a quadratic Bezier with eased time — slow off the
+       mark, quick through the middle, settling at the far end. A short trail
+       of fading ghosts follows, and the word it lands on squashes briefly. */
 
-    var layers = document.querySelectorAll("[data-parallax]");
+    var nameEl = document.querySelector("[data-bounce]");
 
-    if (layers.length && !reduced) {
-        var ticking = false;
+    if (nameEl) {
+        var pegs = Array.prototype.slice.call(nameEl.querySelectorAll(".nm__peg"));
+        var words = Array.prototype.slice.call(nameEl.querySelectorAll(".nm"));
+        var dot = nameEl.querySelector(".hero__dot");
+        var tracePath = nameEl.querySelector(".hero__trace path");
 
-        var place = function () {
-            var y = window.scrollY;
-            layers.forEach(function (el) {
-                var rate = parseFloat(el.dataset.parallax) || 0;
-                var host = el.parentElement.parentElement; /* the .hero section */
-                /* Clamp to the host's height: past that it has scrolled out of
-                   view, and an unbounded transform just grows forever. */
-                var travel = Math.min(y, host.offsetHeight) * rate;
-                el.style.transform = "translate3d(0," + travel.toFixed(2) + "px,0)";
+        var GHOSTS = 7;
+        var ghosts = [];
+
+        for (var g = 0; g < GHOSTS; g++) {
+            var el = document.createElement("span");
+            el.className = "hero__ghost";
+            el.setAttribute("aria-hidden", "true");
+            el.style.opacity = "0";
+            nameEl.insertBefore(el, dot);
+            ghosts.push(el);
+        }
+
+        var pts = [];
+        var apexY = 0;
+
+        var measure = function () {
+            var host = nameEl.getBoundingClientRect();
+            pts = pegs.map(function (p) {
+                var r = p.getBoundingClientRect();
+                return {
+                    x: r.left - host.left + r.width / 2,
+                    y: r.top - host.top + r.height / 2,
+                    d: r.width,
+                };
             });
-            ticking = false;
+            if (pts.length < 2 || !pts[0].d) return false;
+
+            var size = pts[0].d;
+            [dot].concat(ghosts).forEach(function (el) {
+                el.style.width = size + "px";
+                el.style.height = size + "px";
+                el.style.marginLeft = -size / 2 + "px";
+                el.style.marginTop = -size / 2 + "px";
+            });
+
+            /* Arc rises above whichever tittle sits higher, scaled to the gap */
+            apexY = Math.min(pts[0].y, pts[1].y) - Math.max(36, Math.abs(pts[1].x - pts[0].x) * 0.3);
+
+            if (tracePath) {
+                tracePath.setAttribute(
+                    "d",
+                    "M" + pts[0].x + " " + pts[0].y +
+                    " Q" + (pts[0].x + pts[1].x) / 2 + " " + apexY +
+                    " " + pts[1].x + " " + pts[1].y
+                );
+            }
+            return true;
         };
 
-        window.addEventListener(
-            "scroll",
-            function () {
-                if (!ticking) {
-                    requestAnimationFrame(place);
-                    ticking = true;
-                }
-            },
-            { passive: true }
-        );
+        var at = function (t, a, b) {
+            var mt = 1 - t;
+            return {
+                x: mt * mt * a.x + 2 * mt * t * ((a.x + b.x) / 2) + t * t * b.x,
+                y: mt * mt * a.y + 2 * mt * t * apexY + t * t * b.y,
+            };
+        };
 
-        place();
+        var place = function (el, p) {
+            el.style.transform = "translate3d(" + p.x + "px," + p.y + "px,0)";
+        };
+
+        /* Slow away, quick through, slow in */
+        var ease = function (t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        };
+
+        var TRAVEL = 1150;
+        var HOLD = 950;
+        var from = 0;
+        var startedAt = null;
+        var holdingUntil = 0;
+
+        var land = function (i) {
+            var w = words[i];
+            if (!w) return;
+            w.classList.remove("nm--land");
+            void w.offsetWidth; /* restart the animation */
+            w.classList.add("nm--land");
+        };
+
+        var frame = function (now) {
+            if (!pts.length) {
+                requestAnimationFrame(frame);
+                return;
+            }
+
+            if (now < holdingUntil) {
+                requestAnimationFrame(frame);
+                return;
+            }
+
+            if (startedAt === null) startedAt = now;
+
+            var raw = Math.min(1, (now - startedAt) / TRAVEL);
+            var t = ease(raw);
+            var a = pts[from];
+            var b = pts[1 - from];
+
+            place(dot, at(t, a, b));
+
+            for (var i = 0; i < ghosts.length; i++) {
+                var lag = (i + 1) * 0.055;
+                var gt = Math.max(0, t - lag);
+                place(ghosts[i], at(gt, a, b));
+                ghosts[i].style.opacity = raw > 0 && raw < 1 ? String(0.3 * (1 - i / ghosts.length)) : "0";
+            }
+
+            if (raw >= 1) {
+                land(1 - from);
+                from = 1 - from;
+                startedAt = null;
+                holdingUntil = now + HOLD;
+            }
+
+            requestAnimationFrame(frame);
+        };
+
+        var start = function () {
+            if (!measure()) return;
+            place(dot, pts[0]);
+            if (reduced) {
+                /* No travel: give each i its own dot and leave it alone */
+                var still = document.createElement("span");
+                still.className = "hero__ghost";
+                still.style.width = still.style.height = pts[1].d + "px";
+                still.style.marginLeft = still.style.marginTop = -pts[1].d / 2 + "px";
+                still.style.opacity = "1";
+                nameEl.appendChild(still);
+                place(still, pts[1]);
+                return;
+            }
+            requestAnimationFrame(frame);
+        };
+
+        /* Wait for the display face — measuring against a fallback puts the
+           dot in the wrong place until the swap lands. */
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(start);
+        } else {
+            window.addEventListener("load", start);
+        }
+
+        var resizeTimer;
+        window.addEventListener("resize", function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(measure, 150);
+        });
     }
 
     /* --- Cursor badge ------------------------------------------------------ */
