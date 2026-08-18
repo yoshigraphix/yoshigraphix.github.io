@@ -1504,6 +1504,19 @@ dd {
    Playback lives on Suno, so this page has to earn its place visually: the
    album art carries it, and each card tells the origin (hummed → directed). */
 
+/* Light-touch note: present enough to be unmissable if anyone wonders, quiet
+   enough not to lead the page. */
+.disclaimer {
+    max-width: 62ch;
+    margin-top: clamp(1.25rem, 2.5vw, 2rem);
+    padding-left: 1rem;
+    border-left: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: 1.7;
+    color: var(--ink-3);
+}
+
 /* Masonry columns rather than a uniform grid: Suno's originals run from 1:1 to
    nearly 1:2, and a fixed-ratio tile would crop them. Columns let every card
    keep its own height so each image is shown whole. */
