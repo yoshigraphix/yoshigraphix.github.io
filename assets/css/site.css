@@ -1988,15 +1988,13 @@ body.is-locked .marquee__track {
    green dot that bounces from one to the other. The "i"s are typed with the
    dotless glyph (U+0131) so the moving dot IS the tittle rather than an extra
    mark floating near one; the h1 carries an aria-label with the real spelling.
-   Everything is measured from .nm__peg, an invisible anchor sized in em, so it
-   tracks the fluid type scale without any hard-coded pixel positions.        */
+   Geometry is measured from the type itself — a baseline strut plus the ink
+   metrics of the face — so it tracks the fluid scale with no fixed pixels.   */
 
 .hero__name {
     position: relative;
     margin-left: -0.055em;
     text-transform: uppercase;
-    --tittle-rise: 0.62em; /* peg height above the letter box bottom */
-    --tittle-size: 0.132em;
 }
 
 .nm {
@@ -2028,15 +2026,14 @@ body.is-locked .marquee__track {
     text-transform: none;
 }
 
-/* Invisible: it exists to be measured */
-.nm__peg {
-    position: absolute;
-    left: 50%;
-    bottom: var(--tittle-rise);
-    width: var(--tittle-size);
-    height: var(--tittle-size);
-    transform: translateX(-50%);
-    pointer-events: none;
+/* A zero-sized inline box on the baseline. Its top edge IS the baseline, which
+   is the only stable reference for where a tittle belongs — the inline box of
+   the letter includes descender space and varies by face. */
+.nm__base {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: baseline;
 }
 
 /* Dashed hint of the path the dot will take */

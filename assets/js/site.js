@@ -160,7 +160,15 @@
     var nameEl = document.querySelector("[data-bounce]");
 
     if (nameEl) {
-        var pegs = Array.prototype.slice.call(nameEl.querySelectorAll(".nm__peg"));
+        var bases = Array.prototype.slice.call(nameEl.querySelectorAll(".nm__base"));
+        var letters = Array.prototype.slice.call(nameEl.querySelectorAll(".nm__i"));
+
+        /* Measured off the rendered face at 200px: the tittle of a dotted "i"
+           is 0.155em across and centred 0.64em above the baseline, and the
+           stem is 0.165em wide. The ball is sized to the stem rather than the
+           original tittle so it reads as deliberate at display size. */
+        var DOT_EM = 0.185;
+        var RISE_EM = 0.642;
         var words = Array.prototype.slice.call(nameEl.querySelectorAll(".nm"));
         var dot = nameEl.querySelector(".hero__dot");
         var tracePath = nameEl.querySelector(".hero__trace path");
@@ -182,12 +190,18 @@
 
         var measure = function () {
             var host = nameEl.getBoundingClientRect();
-            pts = pegs.map(function (p) {
-                var r = p.getBoundingClientRect();
+            var fs = parseFloat(getComputedStyle(nameEl).fontSize) || 0;
+            if (!fs) return false;
+
+            pts = letters.map(function (el, i) {
+                var r = el.getBoundingClientRect();
+                var b = bases[i].getBoundingClientRect();
                 return {
+                    /* horizontal centre of the stem — sidebearings are even here */
                     x: r.left - host.left + r.width / 2,
-                    y: r.top - host.top + r.height / 2,
-                    d: r.width,
+                    /* the strut's top edge is the baseline */
+                    y: b.top - host.top - RISE_EM * fs,
+                    d: DOT_EM * fs,
                 };
             });
             if (pts.length < 2 || !pts[0].d) return false;
@@ -200,8 +214,8 @@
                 el.style.marginTop = -size / 2 + "px";
             });
 
-            /* Arc rises above whichever tittle sits higher, scaled to the gap */
-            apexY = Math.min(pts[0].y, pts[1].y) - Math.max(36, Math.abs(pts[1].x - pts[0].x) * 0.3);
+            /* A generous arc — a low one reads as a slide rather than a bounce */
+            apexY = Math.min(pts[0].y, pts[1].y) - Math.max(64, Math.abs(pts[1].x - pts[0].x) * 0.52);
 
             if (tracePath) {
                 tracePath.setAttribute(
@@ -226,6 +240,21 @@
             el.style.transform = "translate3d(" + p.x + "px," + p.y + "px,0)";
         };
 
+        /* Stretch along the direction of travel, proportional to speed: taut on
+           the way out and in, round at the apex. This is what stops it reading
+           as a bead sliding along a wire. */
+        var placeStretched = function (el, p, prev, size) {
+            if (!prev) return place(el, p);
+            var vx = p.x - prev.x;
+            var vy = p.y - prev.y;
+            var speed = Math.sqrt(vx * vx + vy * vy);
+            var k = Math.min(0.42, speed / (size * 3.2));
+            var ang = (Math.atan2(vy, vx) * 180) / Math.PI;
+            el.style.transform =
+                "translate3d(" + p.x + "px," + p.y + "px,0) rotate(" + ang + "deg) scale(" +
+                (1 + k) + "," + (1 - k * 0.72) + ")";
+        };
+
         /* Linear in time. The arc itself supplies the easing: with a constant
            horizontal rate the quadratic curve slows through the apex and picks
            up toward each landing, which is how a thrown ball actually moves.
@@ -239,6 +268,7 @@
         var TRAVEL = 300;
         var HOLD = 0;
         var from = 0;
+        var lastP = null;
         var startedAt = null;
         var holdingUntil = 0;
 
@@ -268,7 +298,9 @@
             var a = pts[from];
             var b = pts[1 - from];
 
-            place(dot, at(t, a, b));
+            var p = at(t, a, b);
+            placeStretched(dot, p, lastP, pts[0].d);
+            lastP = p;
 
             for (var i = 0; i < ghosts.length; i++) {
                 var lag = (i + 1) * 0.045;
