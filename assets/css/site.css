@@ -1498,6 +1498,124 @@ dd {
     margin-top: clamp(1.5rem, 3vw, 2.5rem);
 }
 
+/* --- Hum Tunes -------------------------------------------------------------
+   Playback lives on Suno, so this page has to earn its place visually: the
+   album art carries it, and each card tells the origin (hummed → directed). */
+
+/* Masonry columns rather than a uniform grid: Suno's originals run from 1:1 to
+   nearly 1:2, and a fixed-ratio tile would crop them. Columns let every card
+   keep its own height so each image is shown whole. */
+.tunes {
+    columns: 3 300px;
+    column-gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.tune {
+    break-inside: avoid;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+    padding: clamp(1rem, 2vw, 1.25rem);
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.tune:hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    transform: translateY(-3px);
+}
+
+/* A button so the artwork is keyboard-reachable, and zoom-in to signal that
+   the full-resolution image is one click away. */
+.tune__art {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    border-radius: calc(var(--radius) - 4px);
+    overflow: hidden;
+    cursor: zoom-in;
+}
+
+.tune__art img {
+    width: 100%;
+    height: auto; /* natural aspect ratio — never cropped */
+    display: block;
+    transition: transform 0.5s var(--ease);
+}
+
+.tune__art:hover img,
+.tune__art:focus-visible img {
+    transform: scale(1.03);
+}
+
+/* Cards whose artwork isn't published get a plain plate rather than a hole */
+.tune__plate {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    border-radius: calc(var(--radius) - 4px);
+    background: linear-gradient(
+        150deg,
+        color-mix(in srgb, var(--brand) 16%, var(--paper-2)) 0%,
+        var(--paper) 70%
+    );
+    border: 1px solid var(--line);
+}
+
+.tune__plate svg {
+    width: 30%;
+    height: auto;
+    color: color-mix(in srgb, var(--ink) 26%, transparent);
+}
+
+.tune__kind {
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border-radius: 100px;
+    border: 1px solid var(--line);
+    color: var(--ink-3);
+}
+
+.tune__kind--original {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.tune h3 {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.tune dl {
+    display: grid;
+    gap: 0.5rem;
+    font-size: var(--step--1);
+    margin-top: auto;
+}
+
+.tune dt {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.tune dd {
+    color: var(--ink-2);
+    margin-bottom: 0.35rem;
+}
+
 /* --- Form ----------------------------------------------------------------- */
 
 .form {

@@ -50,14 +50,17 @@
     /* Collect the artwork list BEFORE cloning, so the lightbox sequence is the
        47 real cards in order rather than every duplicate. */
 
+    /* Anything with [data-full] joins the lightbox — the artwork strip on the
+       home page and the album art on Hum Tunes both use it. Clones are added
+       later with aria-hidden, so they're excluded automatically. */
+
     var gallery = [];
 
-    document.querySelectorAll(".marquee--media .marquee__track").forEach(function (track) {
-        track.querySelectorAll("[data-full]").forEach(function (btn) {
-            gallery.push({
-                full: btn.dataset.full,
-                alt: (btn.querySelector("img") || {}).alt || "",
-            });
+    document.querySelectorAll("[data-full]").forEach(function (btn) {
+        if (btn.closest('[aria-hidden="true"]')) return;
+        gallery.push({
+            full: btn.dataset.full,
+            alt: (btn.querySelector("img") || {}).alt || "",
         });
     });
 
