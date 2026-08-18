@@ -234,8 +234,9 @@
             return t;
         };
 
-        /* Two landings a second: 500ms per traverse, no dwell at either end. */
-        var TRAVEL = 500;
+        /* 300ms per traverse — a ~600ms round trip, i to i and back.
+           Lower TRAVEL = faster. HOLD stays 0 so it never rests. */
+        var TRAVEL = 300;
         var HOLD = 0;
         var from = 0;
         var startedAt = null;

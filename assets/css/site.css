@@ -2007,15 +2007,14 @@ body.is-locked .marquee__track {
 /* The word gives very slightly under the dot. Deliberately near-subliminal:
    at two landings a second anything larger reads as a wobble. */
 .nm--land {
-    animation: nm-squash 0.17s ease-out;
+    animation: nm-squash 0.14s ease-out;
 }
 
+/* Compressed on frame one, then released. Ramping *into* the squash reads as
+   the word reacting late — the give has to land with the dot, not after it. */
 @keyframes nm-squash {
     0% {
-        transform: scale(1, 1);
-    }
-    40% {
-        transform: scale(1.006, 0.986);
+        transform: scale(1.007, 0.983);
     }
     100% {
         transform: scale(1, 1);
