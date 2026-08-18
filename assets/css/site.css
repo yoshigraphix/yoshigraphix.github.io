@@ -7,9 +7,9 @@
 /* --- Tokens --------------------------------------------------------------- */
 
 :root {
-    /* Brand green, sampled from the logo mark. Used raw for the mark itself in
+    /* Brand green, sampled from the YS logo mark (#5cd9a5). Used raw for the mark itself in
        both themes — never for small text on light, where it fails contrast. */
-    --brand: #6ee7b7;
+    --brand: #5cd9a5;
 
     /* Palette — the site is dark-only by design. Saturated illustration reads
        as artwork on near-black, and the brand mint only reaches full strength
@@ -294,13 +294,15 @@ dd {
     text-transform: uppercase;
 }
 
-/* The mark is drawn inline as SVG — the circle IS the shape, so no clipping
-   or border is needed (the old raster was a square being masked round). */
+/* The YS mark is a square artwork with its own green field. Rounded rather
+   than circled — a circle would clip the corners of the letterforms, which is
+   what made the previous mark read as "a square inside a circle". */
 .brand__mark {
     width: 34px;
     height: 34px;
     flex: none;
     display: block;
+    border-radius: 9px;
 }
 
 .nav {
