@@ -1994,8 +1994,8 @@ body.is-locked .marquee__track {
 .hero__name {
     position: relative;
     margin-left: -0.055em;
-    text-transform: lowercase;
-    --tittle-rise: 0.80em; /* peg height above the letter box bottom */
+    text-transform: uppercase;
+    --tittle-rise: 0.62em; /* peg height above the letter box bottom */
     --tittle-size: 0.132em;
 }
 
@@ -2004,20 +2004,18 @@ body.is-locked .marquee__track {
     transform-origin: 50% 100%;
 }
 
-/* Brief squash as the dot lands — the name reacts to the weight */
+/* The word gives very slightly under the dot. Deliberately near-subliminal:
+   at two landings a second anything larger reads as a wobble. */
 .nm--land {
-    animation: nm-squash 0.44s var(--ease);
+    animation: nm-squash 0.17s ease-out;
 }
 
 @keyframes nm-squash {
     0% {
         transform: scale(1, 1);
     }
-    28% {
-        transform: scale(1.035, 0.925);
-    }
-    60% {
-        transform: scale(0.992, 1.018);
+    40% {
+        transform: scale(1.006, 0.986);
     }
     100% {
         transform: scale(1, 1);
@@ -2026,6 +2024,9 @@ body.is-locked .marquee__track {
 
 .nm__i {
     position: relative;
+    /* The one lowercase letter in the name — uppercasing it would turn the
+       dotless glyph into a capital I and there'd be no tittle to bounce. */
+    text-transform: none;
 }
 
 /* Invisible: it exists to be measured */

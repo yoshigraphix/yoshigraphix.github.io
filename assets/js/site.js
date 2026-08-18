@@ -165,7 +165,7 @@
         var dot = nameEl.querySelector(".hero__dot");
         var tracePath = nameEl.querySelector(".hero__trace path");
 
-        var GHOSTS = 7;
+        var GHOSTS = 6;
         var ghosts = [];
 
         for (var g = 0; g < GHOSTS; g++) {
@@ -226,13 +226,17 @@
             el.style.transform = "translate3d(" + p.x + "px," + p.y + "px,0)";
         };
 
-        /* Slow away, quick through, slow in */
+        /* Linear in time. The arc itself supplies the easing: with a constant
+           horizontal rate the quadratic curve slows through the apex and picks
+           up toward each landing, which is how a thrown ball actually moves.
+           Easing the time on top of that made it hang at both ends. */
         var ease = function (t) {
-            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            return t;
         };
 
-        var TRAVEL = 1150;
-        var HOLD = 950;
+        /* Two landings a second: 500ms per traverse, no dwell at either end. */
+        var TRAVEL = 500;
+        var HOLD = 0;
         var from = 0;
         var startedAt = null;
         var holdingUntil = 0;
@@ -266,16 +270,18 @@
             place(dot, at(t, a, b));
 
             for (var i = 0; i < ghosts.length; i++) {
-                var lag = (i + 1) * 0.055;
+                var lag = (i + 1) * 0.045;
                 var gt = Math.max(0, t - lag);
                 place(ghosts[i], at(gt, a, b));
-                ghosts[i].style.opacity = raw > 0 && raw < 1 ? String(0.3 * (1 - i / ghosts.length)) : "0";
+                ghosts[i].style.opacity = String(0.26 * (1 - i / ghosts.length));
             }
 
             if (raw >= 1) {
                 land(1 - from);
                 from = 1 - from;
-                startedAt = null;
+                /* Carry the overshoot into the next traverse so the cadence
+                   doesn't drift on a dropped frame. */
+                startedAt = now - (now - startedAt - TRAVEL);
                 holdingUntil = now + HOLD;
             }
 
@@ -312,6 +318,17 @@
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(measure, 150);
         });
+
+        /* Any change to the heading's own box re-measures: the display face
+           swapping in, the fluid type scale stepping, a container shift. Without
+           this the dot keeps whatever coordinates it had when it first measured
+           and only corrects on a window resize. */
+        if ("ResizeObserver" in window) {
+            var ro = new ResizeObserver(function () {
+                measure();
+            });
+            ro.observe(nameEl);
+        }
     }
 
     /* --- Cursor badge ------------------------------------------------------ */
