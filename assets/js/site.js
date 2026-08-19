@@ -551,11 +551,16 @@
                     var start = performance.now();
                     var duration = 1500;
 
+                    /* Keep whatever precision the author wrote: "9.4" counts
+                       to 9.4, "200" counts to 200. Rounding everything killed
+                       the decimal. */
+                    var decimals = (el.dataset.count.split(".")[1] || "").length;
+
                     var tick = function (now) {
                         var p = Math.min((now - start) / duration, 1);
                         /* easeOutExpo — fast start, gentle settle */
                         var eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
-                        el.textContent = Math.round(target * eased) + suffix;
+                        el.textContent = (target * eased).toFixed(decimals) + suffix;
                         if (p < 1) requestAnimationFrame(tick);
                     };
 
