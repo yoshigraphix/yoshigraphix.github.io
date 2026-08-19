@@ -1317,6 +1317,14 @@ dd {
     a {
         text-decoration: none;
     }
+
+    /* Green on white prints weakly and vanishes on a mono printer — carry the
+       emphasis with weight and the rule instead. */
+    .hl {
+        color: #000;
+        font-weight: 600;
+        text-decoration-color: #999;
+    }
 }
 
 .resume__actions {
@@ -2075,4 +2083,19 @@ body.is-locked .marquee__track {
     .nm--land {
         animation: none;
     }
+}
+
+/* --- Emphasis --------------------------------------------------------------
+   Marks the few facts on a page worth slowing down for. Deliberately rare —
+   the moment a third of the text is green, none of it reads as special. Colour
+   plus a hairline rule, not a highlighter block: it should look like the type
+   was set that way, not like someone ran a marker over it. */
+
+.hl {
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 34%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
 }
