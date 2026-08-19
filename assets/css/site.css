@@ -2107,6 +2107,18 @@ body.is-locked .marquee__track {
     white-space: nowrap;
 }
 
+/* Qualifies a skill without hiding it — "basic", "earlier career". Honest
+   beats impressive: an unqualified claim you can't demonstrate costs more
+   trust than the qualifier ever cost you. */
+.pill__note {
+    opacity: 0.62;
+    font-style: italic;
+}
+
+.pill__note::before {
+    content: " · ";
+}
+
 /* --- Emphasis --------------------------------------------------------------
    Marks the few facts on a page worth slowing down for. Deliberately rare —
    the moment a third of the text is green, none of it reads as special. Colour
