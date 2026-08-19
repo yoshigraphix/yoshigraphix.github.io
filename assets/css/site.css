@@ -1338,8 +1338,7 @@ dd {
        emphasis with weight and the rule instead. */
     .hl {
         color: #000;
-        font-weight: 600;
-        text-decoration-color: #999;
+        font-weight: 700;
     }
 }
 
@@ -2127,11 +2126,10 @@ body.is-locked .marquee__track {
 
 .hl {
     color: var(--accent);
-    font-weight: 500;
-    text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--accent) 34%, transparent);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.22em;
+    /* No rule under it: on a site where links underline, an underlined phrase
+       reads as a link and invites a click that goes nowhere. Colour plus a
+       little extra weight carries the emphasis on its own. */
+    font-weight: 600;
 }
 
 /* --- References ------------------------------------------------------------
