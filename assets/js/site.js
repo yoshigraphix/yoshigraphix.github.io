@@ -447,10 +447,12 @@
 
         var readScroll = function () {
             var host = jt.getBoundingClientRect();
-            /* 0 when the timeline's top reaches mid-viewport, 1 at its bottom */
-            var start = window.innerHeight * 0.5;
-            var p = (start - host.top) / (host.height - window.innerHeight * 0.4);
-            target = Math.max(0, Math.min(1, p));
+            /* Measured from the timeline's own top edge: 0 until it reaches the
+               top of the viewport, 1 once its bottom does. Anchoring to
+               mid-viewport meant the dot was already a few percent along before
+               the reader had scrolled at all. */
+            var travel = Math.max(1, host.height - window.innerHeight);
+            target = Math.max(0, Math.min(1, -host.top / travel));
         };
 
         var tick = function () {

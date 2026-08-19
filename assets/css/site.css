@@ -364,10 +364,22 @@ dd {
     navigation: auto;
 }
 
+/* On the home page the hero dot already owns this name. Letting the nav's
+   HOME dot claim it too would be a duplicate, and a duplicated
+   view-transition-name makes the browser abandon the whole transition. */
+body:has(.hero__dot) .nav a[aria-current="page"]::after {
+    view-transition-name: none;
+}
+
+::view-transition-group(travelling-dot) {
+    animation-duration: 0.38s;
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
 ::view-transition-old(travelling-dot),
 ::view-transition-new(travelling-dot) {
-    animation-duration: 0.55s;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation: none;
+    mix-blend-mode: normal;
 }
 
 /* Mobile nav */
