@@ -220,7 +220,7 @@
                midpoint is (p0 + 2c + p1) / 4, so for a peak that clears the
                higher tittle by PEAK, c = (4(min - PEAK) - y0 - y1) / 2. */
             var span = Math.abs(pts[1].x - pts[0].x);
-            var wanted = Math.max(90, span * 0.62); /* rise above the higher i */
+            var wanted = Math.max(120, span * 0.85); /* rise above the higher i */
 
             /* Don't let the arc climb past the top of the hero, or it disappears
                behind the sticky header on short viewports. */
@@ -281,9 +281,9 @@
             return t;
         };
 
-        /* 300ms per traverse — a ~600ms round trip, i to i and back.
+        /* 500ms per traverse — a ~1s round trip, i to i and back.
            Lower TRAVEL = faster. HOLD stays 0 so it never rests. */
-        var TRAVEL = 300;
+        var TRAVEL = 500;
         var HOLD = 0;
         var from = 0;
         var lastP = null;

@@ -419,7 +419,9 @@ dd {
 /* --- Hero ----------------------------------------------------------------- */
 
 .hero {
-    padding-block: clamp(3rem, 2rem + 6vw, 8rem) var(--section);
+    /* The top value is also the arc's ceiling: the bounce is clamped to the
+       room above the name, so a taller arch needs headroom to live in. */
+    padding-block: clamp(7rem, 2rem + 9vw, 11rem) var(--section);
 }
 
 
@@ -724,6 +726,20 @@ dd {
     font-weight: 700;
     font-size: var(--step-0);
     line-height: 1.2;
+}
+
+/* The name is verifiable, but it mustn't start competing with the quote —
+   the affordance only appears on hover. */
+.quote__name a {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.18em;
+    transition: text-decoration-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+
+.quote__name a:hover {
+    color: var(--accent);
+    text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
 .quote__role {
@@ -2083,6 +2099,12 @@ body.is-locked .marquee__track {
     .nm--land {
         animation: none;
     }
+}
+
+/* Keeps a hyphenated word whole. Browsers treat a hyphen as a break
+   opportunity, so "full-time" happily splits and strands "time" on its own. */
+.nowrap {
+    white-space: nowrap;
 }
 
 /* --- Emphasis --------------------------------------------------------------
