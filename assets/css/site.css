@@ -2216,3 +2216,174 @@ body.is-locked .marquee__track {
         grid-column: 1;
     }
 }
+
+/* --- Journey timeline ------------------------------------------------------
+   A company-history wall you scroll instead of walk. The path is one SVG that
+   curves left and right; the green dot from the hero travels it, leading the
+   reader rather than trailing them. Milestones resolve as it passes.        */
+
+.jt {
+    position: relative;
+    max-width: 900px;
+    margin-inline: auto;
+    padding-block: clamp(2rem, 4vw, 4rem);
+}
+
+/* The path sits behind everything and spans the full column */
+.jt__path {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.jt__path .track {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 2;
+    stroke-dasharray: 2 10;
+    stroke-linecap: round;
+}
+
+/* Drawn portion — the distance already travelled */
+.jt__path .trail {
+    fill: none;
+    stroke: color-mix(in srgb, var(--accent) 55%, transparent);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+.jt__dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 16%, transparent);
+    pointer-events: none;
+    z-index: 2;
+    will-change: transform;
+}
+
+.jt__stop {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 0.9rem;
+    width: min(100%, 420px);
+    padding-block: clamp(2.5rem, 6vw, 5rem);
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+}
+
+.jt__stop.is-on {
+    opacity: 1;
+    transform: none;
+}
+
+/* Alternate sides so the path has a reason to curve */
+.jt__stop:nth-child(even) {
+    margin-left: auto;
+    text-align: right;
+    justify-items: end;
+}
+
+.jt__year {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.jt__head {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--step-2);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+}
+
+.jt__body {
+    color: var(--ink-2);
+    max-width: 46ch;
+}
+
+.jt__media {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    max-width: 260px;
+}
+
+.jt__media img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.jt__cap {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-top: 0.5rem;
+}
+
+/* A face, for the stops that are about a person */
+.jt__who {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+}
+
+.jt__stop:nth-child(even) .jt__who {
+    flex-direction: row-reverse;
+}
+
+.jt__who img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: none;
+    border: 1px solid var(--line);
+}
+
+@media (max-width: 720px) {
+    .jt__stop,
+    .jt__stop:nth-child(even) {
+        width: 100%;
+        margin-left: 0;
+        text-align: left;
+        justify-items: start;
+    }
+
+    .jt__stop:nth-child(even) .jt__who {
+        flex-direction: row;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .jt__stop {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .jt__dot,
+    .jt__path .trail {
+        display: none;
+    }
+}

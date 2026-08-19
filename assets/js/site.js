@@ -389,6 +389,122 @@
         }
     }
 
+    /* --- Journey timeline ---------------------------------------------------
+
+       The path is generated from where the stops actually land, so the curve
+       always matches the content instead of being drawn to fixed coordinates.
+       The dot eases toward the reader's scroll position rather than tracking it
+       exactly — that lag is the whole difference between an object with
+       momentum and a value wired to a scrollbar. */
+
+    var jt = document.querySelector("[data-journey]");
+
+    if (jt) {
+        var stops = Array.prototype.slice.call(jt.querySelectorAll(".jt__stop"));
+        var svg = jt.querySelector(".jt__path");
+        var track = svg.querySelector(".track");
+        var trail = svg.querySelector(".trail");
+        var jtDot = jt.querySelector(".jt__dot");
+
+        var pts = [];
+        var len = 0;
+
+        var buildPath = function () {
+            var host = jt.getBoundingClientRect();
+            svg.setAttribute("viewBox", "0 0 " + host.width + " " + host.height);
+
+            pts = stops.map(function (el) {
+                var r = el.getBoundingClientRect();
+                return {
+                    /* anchor on the side the stop sits on */
+                    x: r.left - host.left + (el.matches(":nth-child(even)") ? r.width - 24 : 24),
+                    y: r.top - host.top + r.height / 2,
+                };
+            });
+            if (pts.length < 2) return;
+
+            /* Catmull-Rom through the anchors, emitted as cubic Beziers — a
+               polyline would kink at every stop. */
+            var d = "M" + pts[0].x + " " + pts[0].y;
+            for (var i = 0; i < pts.length - 1; i++) {
+                var p0 = pts[i - 1] || pts[i];
+                var p1 = pts[i];
+                var p2 = pts[i + 1];
+                var p3 = pts[i + 2] || p2;
+                d +=
+                    " C" + (p1.x + (p2.x - p0.x) / 6) + " " + (p1.y + (p2.y - p0.y) / 6) +
+                    " " + (p2.x - (p3.x - p1.x) / 6) + " " + (p2.y - (p3.y - p1.y) / 6) +
+                    " " + p2.x + " " + p2.y;
+            }
+            track.setAttribute("d", d);
+            trail.setAttribute("d", d);
+            len = track.getTotalLength();
+            trail.style.strokeDasharray = len + " " + len;
+        };
+
+        var target = 0;
+        var eased = 0;
+
+        var readScroll = function () {
+            var host = jt.getBoundingClientRect();
+            /* 0 when the timeline's top reaches mid-viewport, 1 at its bottom */
+            var start = window.innerHeight * 0.5;
+            var p = (start - host.top) / (host.height - window.innerHeight * 0.4);
+            target = Math.max(0, Math.min(1, p));
+        };
+
+        var tick = function () {
+            /* the lag that makes it feel thrown rather than dragged */
+            eased += (target - eased) * 0.09;
+
+            if (len) {
+                var pt = track.getPointAtLength(eased * len);
+                jtDot.style.transform = "translate3d(" + pt.x + "px," + pt.y + "px,0)";
+                trail.style.strokeDashoffset = len - eased * len;
+            }
+            requestAnimationFrame(tick);
+        };
+
+        var reveal = function () {
+            stops.forEach(function (el) {
+                var r = el.getBoundingClientRect();
+                if (r.top < window.innerHeight * 0.82) el.classList.add("is-on");
+            });
+        };
+
+        var refresh = function () {
+            buildPath();
+            readScroll();
+            reveal();
+        };
+
+        window.addEventListener("scroll", function () {
+            readScroll();
+            reveal();
+        }, { passive: true });
+
+        var jtTimer;
+        window.addEventListener("resize", function () {
+            clearTimeout(jtTimer);
+            jtTimer = setTimeout(refresh, 150);
+        });
+
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(refresh);
+        } else {
+            window.addEventListener("load", refresh);
+        }
+        refresh();
+
+        if (!reduced) requestAnimationFrame(tick);
+        else stops.forEach(function (el) { el.classList.add("is-on"); });
+
+        /* Images landing changes every stop's position underneath the path */
+        jt.querySelectorAll("img").forEach(function (im) {
+            if (!im.complete) im.addEventListener("load", refresh);
+        });
+    }
+
     /* --- Cursor badge ------------------------------------------------------ */
 
     document.querySelectorAll("[data-badge]").forEach(function (media) {
