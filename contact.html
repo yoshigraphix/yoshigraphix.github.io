@@ -99,14 +99,18 @@
                     <h2>Send a Message</h2>
                 </div>
 
-                <!-- ==================================================================
-                     TODO — Formspree endpoint.
-                     1. Sign up at https://formspree.io (free tier)
-                     2. Create a form, copy the endpoint id (looks like: xdorwqzk)
-                     3. Replace YOUR_FORM_ID below.
-                     Until then this form will not deliver — the email links above will.
-                     ================================================================== -->
-                <form class="form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" data-reveal>
+                <!-- Posts to Formspree, which forwards to the address on that
+                     account. _subject labels the notification email; _gotcha is
+                     a honeypot Formspree drops silently when a bot fills it. -->
+                <form class="form" action="https://formspree.io/f/xleqyrej" method="POST" data-reveal>
+                    <input type="hidden" name="_subject" value="New message from yoshigraphix.github.io" />
+                    <input
+                        type="text"
+                        name="_gotcha"
+                        tabindex="-1"
+                        autocomplete="off"
+                        aria-hidden="true"
+                        style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden" />
                     <div class="form__row">
                         <div class="field">
                             <label for="name">Your name</label>
