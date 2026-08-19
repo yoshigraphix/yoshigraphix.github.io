@@ -214,8 +214,26 @@
                 el.style.marginTop = -size / 2 + "px";
             });
 
-            /* A generous arc — a low one reads as a slide rather than a bounce */
-            apexY = Math.min(pts[0].y, pts[1].y) - Math.max(64, Math.abs(pts[1].x - pts[0].x) * 0.52);
+            /* A quadratic curve only climbs HALF way to its control point, so
+               setting the control point to the wanted height drew an arc half
+               as tall as intended. Solve for the control instead: the curve's
+               midpoint is (p0 + 2c + p1) / 4, so for a peak that clears the
+               higher tittle by PEAK, c = (4(min - PEAK) - y0 - y1) / 2. */
+            var span = Math.abs(pts[1].x - pts[0].x);
+            var wanted = Math.max(90, span * 0.62); /* rise above the higher i */
+
+            /* Don't let the arc climb past the top of the hero, or it disappears
+               behind the sticky header on short viewports. */
+            var hero = nameEl.closest(".hero");
+            var headroom = 1e4;
+            if (hero) {
+                var offset = nameEl.getBoundingClientRect().top - hero.getBoundingClientRect().top;
+                headroom = Math.max(40, offset + Math.min(pts[0].y, pts[1].y) - 8);
+            }
+
+            var PEAK = Math.min(wanted, headroom);
+            var top = Math.min(pts[0].y, pts[1].y) - PEAK;
+            apexY = (4 * top - pts[0].y - pts[1].y) / 2;
 
             if (tracePath) {
                 tracePath.setAttribute(
@@ -350,6 +368,13 @@
         window.addEventListener("resize", function () {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(measure, 150);
+        });
+
+        /* The reveal animation holds the heading 22px low until it finishes, so
+           the first measurement sees more headroom above it than really exists.
+           Re-measure once that transition ends. */
+        nameEl.addEventListener("transitionend", function (e) {
+            if (e.target === nameEl) measure();
         });
 
         /* Any change to the heading's own box re-measures: the display face
