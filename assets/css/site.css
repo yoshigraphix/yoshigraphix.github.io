@@ -2316,17 +2316,30 @@ body.is-locked .marquee__track {
     max-width: 46ch;
 }
 
+/* Holds one poster or a pair. Small on purpose — these illustrate a stop,
+   they aren't the work being shown. */
 .jt__media {
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    overflow: hidden;
-    max-width: 260px;
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
 }
 
 .jt__media img {
-    width: 100%;
+    width: 118px;
     height: auto;
     display: block;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.jt__stop:nth-child(even) .jt__media {
+    justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+    .jt__stop:nth-child(even) .jt__media {
+        justify-content: flex-start;
+    }
 }
 
 .jt__cap {
