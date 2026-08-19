@@ -468,6 +468,86 @@ body:has(.hero__dot) .nav a[aria-current="page"]::after {
 }
 
 
+.hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: clamp(1.5rem, 1rem + 2vw, 3rem);
+}
+
+.hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1.5rem, 4vw, 5rem);
+    align-items: end;
+    justify-content: space-between;
+    margin-top: clamp(2rem, 1rem + 4vw, 4.5rem);
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+}
+
+/* Small pulsing "available" dot */
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+    position: relative;
+}
+
+.dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: inherit;
+    animation: pulse 2.4s var(--ease) infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    70%,
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+/* Hero call to action. A filled button here fought the type above it — the
+   hero is already a big quiet block, and a solid slab of cream in the corner
+   read as a stray UI control. This is a rule and an arrow instead: the same
+   green that now means "clickable" everywhere else on the site. */
+.hero__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    transition: gap 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.hero__cta:hover {
+    gap: 1.35rem;
+    border-bottom-color: var(--accent);
+}
+
+.hero__cta svg {
+    transition: transform 0.3s var(--ease);
+}
+
+.hero__cta:hover svg {
+    transform: translateX(2px);
+}
+
 /* --- Work cards ----------------------------------------------------------- */
 
 .work-list {
