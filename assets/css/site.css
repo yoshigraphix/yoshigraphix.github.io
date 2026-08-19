@@ -2390,17 +2390,17 @@ body.is-locked .marquee__track {
     flex-direction: row-reverse;
 }
 
+/* Green marks the name as clickable at a glance — the role beside it stays
+   muted, so the colour is doing one job and reads as an affordance rather
+   than decoration. */
 .jt__who a {
-    color: var(--ink-2);
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-underline-offset: 0.18em;
-    transition: color 0.25s var(--ease), text-decoration-color 0.25s var(--ease);
+    color: var(--accent);
+    font-weight: 500;
+    transition: opacity 0.25s var(--ease);
 }
 
 .jt__who a:hover {
-    color: var(--accent);
-    text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent);
+    opacity: 0.72;
 }
 
 .jt__who img {
