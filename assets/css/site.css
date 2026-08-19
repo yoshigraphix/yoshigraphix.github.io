@@ -2099,3 +2099,73 @@ body.is-locked .marquee__track {
     text-decoration-thickness: 1px;
     text-underline-offset: 0.22em;
 }
+
+/* --- References ------------------------------------------------------------
+   Name, where you overlapped, and how to verify it. The name links to the
+   person, the company to the company — two different destinations, so they
+   need to read as two distinct links rather than one long one. */
+
+.ref-list {
+    display: grid;
+}
+
+.ref {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 0.5rem 2rem;
+    padding-block: clamp(1.25rem, 1rem + 1vw, 1.9rem);
+    border-top: 1px solid var(--line);
+}
+
+.ref:last-child {
+    border-bottom: 1px solid var(--line);
+}
+
+.ref__name {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+}
+
+/* Only linked names get the affordance — unlinked ones stay plain text */
+.ref__name a {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.18em;
+    transition: text-decoration-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+
+.ref__name a:hover {
+    color: var(--accent);
+    text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.ref__meta {
+    grid-column: 1;
+    color: var(--ink-2);
+    font-size: var(--step-0);
+}
+
+.ref__meta a:hover {
+    color: var(--accent);
+}
+
+.ref__when {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+    .ref {
+        grid-template-columns: 1fr;
+    }
+
+    .ref__when {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
