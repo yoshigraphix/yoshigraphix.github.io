@@ -2349,6 +2349,14 @@ body.is-locked .marquee__track {
     border-radius: var(--radius);
 }
 
+/* Cut-out art with a transparent background: a border would draw a box
+   around a shape that has no edges. */
+.jt__media--cut img {
+    border: none;
+    border-radius: 0;
+    width: 148px;
+}
+
 .jt__stop:nth-child(even) .jt__media {
     justify-content: flex-end;
 }
@@ -2380,6 +2388,19 @@ body.is-locked .marquee__track {
 
 .jt__stop:nth-child(even) .jt__who {
     flex-direction: row-reverse;
+}
+
+.jt__who a {
+    color: var(--ink-2);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.18em;
+    transition: color 0.25s var(--ease), text-decoration-color 0.25s var(--ease);
+}
+
+.jt__who a:hover {
+    color: var(--accent);
+    text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
 .jt__who img {
