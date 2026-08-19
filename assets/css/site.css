@@ -326,25 +326,48 @@ dd {
 .nav a::after {
     content: "";
     position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    background: currentColor;
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.35s var(--ease);
+    left: 50%;
+    bottom: -2px;
+    width: 6px;
+    height: 6px;
+    margin-left: -3px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: scale(0);
+    transition: transform 0.3s var(--ease);
 }
 
 .nav a:hover,
+/* The current page is marked in green with a dot beneath it — the same green
+   dot that lives in the hero, parked wherever you happen to be. */
 .nav a[aria-current="page"] {
-    color: var(--ink);
+    color: var(--accent);
 }
 
-.nav a:hover::after,
+.nav a:hover::after {
+    transform: scale(0.6);
+    opacity: 0.5;
+}
+
 .nav a[aria-current="page"]::after {
-    transform: scaleX(1);
-    transform-origin: left;
+    transform: scale(1);
+    opacity: 1;
+    /* The name the browser morphs the hero dot into across a navigation */
+    view-transition-name: travelling-dot;
+}
+
+/* Cross-document view transitions: where supported, the dot animates from the
+   hero into the nav — and back into the bounce on the way Home — instead of
+   cutting. Elsewhere it simply appears in its new place; the idea still reads,
+   it just doesn't travel. */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(travelling-dot),
+::view-transition-new(travelling-dot) {
+    animation-duration: 0.55s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Mobile nav */
@@ -413,6 +436,14 @@ dd {
         font-size: var(--step-1);
         font-family: var(--font-display);
         font-weight: 800;
+    }
+
+    /* No dot in the full-screen menu: the current item is already green, and a
+       dot centred beneath a big stacked link reads as a stray bullet. Dropping
+       it also removes the view-transition-name, so the hero dot has nothing to
+       morph into here — correct, since the menu closes on tap anyway. */
+    .nav a::after {
+        display: none;
     }
 }
 
@@ -2075,6 +2106,12 @@ body.is-locked .marquee__track {
     stroke-width: 2;
     stroke-dasharray: 2 10;
     stroke-linecap: round;
+}
+
+/* The hero dot and the nav dot share a view-transition-name, which is what
+   lets the browser carry one into the other across a page load. */
+.hero__dot {
+    view-transition-name: travelling-dot;
 }
 
 .hero__dot,
