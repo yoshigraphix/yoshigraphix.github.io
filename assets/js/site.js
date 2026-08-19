@@ -459,7 +459,24 @@
 
             if (len) {
                 var pt = track.getPointAtLength(eased * len);
-                jtDot.style.transform = "translate3d(" + pt.x + "px," + pt.y + "px,0)";
+
+                /* Swell on arrival: distance to the nearest stop drives a scale
+                   from 1 up to ~9, with opacity falling as it grows so it reads
+                   as light behind the card rather than a disc on top of it. */
+                var near = 1e9;
+                for (var s2 = 0; s2 < pts.length; s2++) {
+                    var dx = pts[s2].x - pt.x;
+                    var dy = pts[s2].y - pt.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < near) near = dist;
+                }
+                var closeness = Math.max(0, 1 - near / 170);
+                var scale = 1 + closeness * closeness * 8;
+                var alpha = 1 - closeness * 0.74;
+
+                jtDot.style.transform =
+                    "translate3d(" + pt.x + "px," + pt.y + "px,0) scale(" + scale.toFixed(3) + ")";
+                jtDot.style.opacity = alpha.toFixed(3);
                 trail.style.strokeDashoffset = len - eased * len;
             }
             requestAnimationFrame(tick);

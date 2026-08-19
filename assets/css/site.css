@@ -2267,8 +2267,10 @@ body.is-locked .marquee__track {
     background: var(--accent);
     box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 16%, transparent);
     pointer-events: none;
-    z-index: 2;
-    will-change: transform;
+    /* behind the stops: as it swells at a milestone it should light the card
+       from behind rather than cover it */
+    z-index: 0;
+    will-change: transform, opacity;
 }
 
 .jt__stop {
@@ -2322,6 +2324,21 @@ body.is-locked .marquee__track {
     display: flex;
     gap: 0.6rem;
     flex-wrap: wrap;
+}
+
+.jt__zoom {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+    line-height: 0;
+    border-radius: var(--radius);
+    transition: transform 0.35s var(--ease);
+}
+
+.jt__zoom:hover,
+.jt__zoom:focus-visible {
+    transform: translateY(-3px) scale(1.03);
 }
 
 .jt__media img {

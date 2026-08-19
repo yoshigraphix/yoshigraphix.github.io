@@ -27,7 +27,7 @@
             href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=DM+Mono:wght@400;500&amp;family=Instrument+Sans:wght@400..700&amp;display=swap"
             rel="stylesheet" />
 
-        <link rel="stylesheet" href="assets/css/site.css?v=21" />
+        <link rel="stylesheet" href="assets/css/site.css?v=22" />
             <meta name="robots" content="noindex" />
 </head>
 
@@ -109,8 +109,8 @@
                         <h2 class="jt__head">Westcreek Studios</h2>
                         <p class="jt__body"><em>The First Easter</em> and <em>The Prince of Peace</em>, both nationally broadcast. 300+ characters. Flew to Bulgaria to fix the renderer. Then the projects stopped landing and the studio closed.</p>
                         <figure class="jt__media">
-                            <img src="./assets/images/timeline/first-easter.jpg" alt="The First Easter" loading="lazy" />
-                            <img src="./assets/images/timeline/prince-of-peace.jpg" alt="The Prince of Peace" loading="lazy" />
+                            <button class="jt__zoom" type="button" data-full="./assets/images/timeline/first-easter.jpg" aria-label="Enlarge The First Easter"><img src="./assets/images/timeline/first-easter.jpg" alt="The First Easter" loading="lazy" /></button>
+                            <button class="jt__zoom" type="button" data-full="./assets/images/timeline/prince-of-peace.jpg" aria-label="Enlarge The Prince of Peace"><img src="./assets/images/timeline/prince-of-peace.jpg" alt="The Prince of Peace" loading="lazy" /></button>
                         </figure>
                         <p class="jt__cap">Posters reimagined, 2026 — the films took two years each</p>
                     </article>
@@ -123,6 +123,12 @@
                         <p class="jt__year">2009 — 11</p>
                         <h2 class="jt__head">Webfoot</h2>
                         <p class="jt__body">Nintendo DS, so very 2D. Adapted <em>You Don't Know Jack</em> with Jellyvision, consulting with their creative director.</p>
+                        <figure class="jt__media">
+                            <button class="jt__zoom" type="button" data-full="./assets/images/timeline/ydkjds.jpg" aria-label="Enlarge You Don't Know Jack DS cover">
+                                <img src="./assets/images/timeline/ydkjds.jpg" alt="You Don't Know Jack, Nintendo DS" loading="lazy" />
+                            </button>
+                        </figure>
+                        <p class="jt__cap">The game that introduced me to Jellyvision</p>
                     </article>
                     <article class="jt__stop">
                         <p class="jt__year">2011</p>
@@ -181,6 +187,21 @@
             </div>
         </footer>
 
-        <script src="assets/js/site.js?v=21"></script>
+        <!-- ===== Lightbox ===== -->
+        <div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="Image viewer">
+            <button class="lightbox__btn lightbox__close" type="button" data-lb-close aria-label="Close viewer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <button class="lightbox__btn lightbox__prev" type="button" data-lb-prev aria-label="Previous">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7" /></svg>
+            </button>
+            <button class="lightbox__btn lightbox__next" type="button" data-lb-next aria-label="Next">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5l7 7-7 7" /></svg>
+            </button>
+            <figure class="lightbox__stage"><img data-lb-img src="" alt="" /></figure>
+            <figcaption class="lightbox__meta" data-lb-meta></figcaption>
+        </div>
+
+        <script src="assets/js/site.js?v=22"></script>
     </body>
 </html>
