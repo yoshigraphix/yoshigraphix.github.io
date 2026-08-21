@@ -2706,3 +2706,30 @@ body.is-locked .marquee__track {
     font-size: var(--step--1);
     line-height: 1.6;
 }
+
+/* The end of the journey. A reader who has scrolled thirteen stops has spent
+   more attention here than anywhere else on the site — sending them into a
+   dead end wastes exactly the person worth keeping. */
+.jt-end {
+    max-width: 900px;
+    margin-inline: auto;
+    margin-top: clamp(3rem, 6vw, 6rem);
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--line);
+}
+
+.jt-end__line {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--step-2);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    max-width: 22ch;
+    margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.jt-end__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1.5rem, 4vw, 3rem);
+}
