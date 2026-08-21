@@ -524,6 +524,28 @@
         });
     }
 
+    /* --- Reel facade --------------------------------------------------------
+
+       The poster is a button; the YouTube frame is only built when it's
+       pressed. Until then the page ships no third-party script and sets no
+       third-party cookie — which matters when most visitors never press play. */
+
+    document.querySelectorAll("[data-reel]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            var id = btn.dataset.reel;
+            var frame = document.createElement("iframe");
+            frame.src =
+                "https://www.youtube-nocookie.com/embed/" + id +
+                "?autoplay=1&rel=0&modestbranding=1";
+            frame.title = "Mythicraft reel";
+            frame.allow =
+                "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+            frame.allowFullscreen = true;
+            btn.replaceWith(frame);
+            frame.focus();
+        });
+    });
+
     /* --- Cursor badge ------------------------------------------------------ */
 
     document.querySelectorAll("[data-badge]").forEach(function (media) {
