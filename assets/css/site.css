@@ -1401,8 +1401,33 @@ body:has(.hero__dot) .nav a[aria-current="page"]::after {
    no site chrome, no decoration, nothing split awkwardly across a page break. */
 
 @media print {
-    /* US Letter. Turn the browser's own header/footer off in the print dialog. */
-    @page { size: 8.5in 11in; margin: 0.5in 0.6in; }
+    /* US Letter. Turn the browser's own header/footer off in the print dialog:
+       it stamps a timestamp and the raw URL, dating the application and
+       announcing that this was printed from a web page. The margin boxes below
+       replace it with a proper running footer.
+
+       The footer sits INSIDE the page margin, so it costs no content height and
+       cannot push a two-page résumé onto a third. Margin boxes are Chrome-only
+       (Safari and Firefox ignore them); the footer simply does not appear there,
+       which degrades cleanly. */
+    @page {
+        size: 8.5in 11in;
+        margin: 0.5in 0.6in;
+
+        /* A résumé gets separated on a desk — page 2 needs to say whose it is. */
+        @bottom-left {
+            content: "Yoshi Sakaguchi";
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 7.6pt;
+            color: #555;
+        }
+        @bottom-right {
+            content: "Page " counter(page) " of " counter(pages);
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 7.6pt;
+            color: #555;
+        }
+    }
 
     .site-header,
     .site-footer,
