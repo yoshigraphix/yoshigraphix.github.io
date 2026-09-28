@@ -1401,6 +1401,9 @@ body:has(.hero__dot) .nav a[aria-current="page"]::after {
    no site chrome, no decoration, nothing split awkwardly across a page break. */
 
 @media print {
+    /* US Letter. Turn the browser's own header/footer off in the print dialog. */
+    @page { size: 8.5in 11in; margin: 0.5in 0.6in; }
+
     .site-header,
     .site-footer,
     .grain,
@@ -1423,7 +1426,10 @@ body:has(.hero__dot) .nav a[aria-current="page"]::after {
     body {
         background: #fff;
         color: #000;
-        font-size: 10.5pt;
+        font-size: 9.6pt;
+        line-height: 1.34;
+        orphans: 3;   /* never strand 1-2 lines across a page break */
+        widows: 3;
     }
 
     .wrap {
@@ -1431,35 +1437,63 @@ body:has(.hero__dot) .nav a[aria-current="page"]::after {
         padding-inline: 0;
     }
 
-    .page-hero {
-        padding-block: 0 0.5rem;
+    /* The hero is sized for a screen; on paper it is only a masthead. */
+    .page-hero { padding-block: 0 0.35rem; }
+    .page-hero h1 { font-size: 21pt; margin-bottom: 2pt; }
+    /* Doubled class so the 46ch screen measure further up cannot win on
+       source order; on paper the lede should use the full text column. */
+    .page-hero .lede.lede { font-size: 9.8pt; max-width: none; margin: 0; }
+    .page-hero .label { font-size: 8pt; }
+
+    .resume__contact {
+        gap: 0.25rem 0.9rem;
+        padding-bottom: 7pt;
+        font-size: 8.4pt;
     }
 
-    .page-hero h1 {
-        font-size: 26pt;
-    }
-
-    .page-hero .lede {
-        font-size: 10.5pt;
-    }
-
-    .resume__role,
+    /* Only a ROLE may refuse to split. Professional Experience is one section
+       taller than a page, so break-inside:avoid on .resume__section made the
+       browser shove the entire block to page 2 and leave page 1 half empty. */
     .resume__section {
-        break-inside: avoid;
+        break-inside: auto;
+        padding-block: 9pt;
     }
+
+    .resume__section > h2 {
+        margin-bottom: 6pt;
+        font-size: 8.4pt;
+        break-after: avoid;   /* a heading never ends a page */
+    }
+
+    .resume__role {
+        break-inside: avoid;
+        gap: 0.15rem;
+    }
+
+    .resume__role + .resume__role {
+        margin-top: 7pt;
+        padding-top: 7pt;
+    }
+
+    .resume__role h3 { font-size: 10.4pt; break-after: avoid; }
+    .resume__where { font-size: 8.4pt; }
+    .resume__role p { max-width: none; }
+
+    .resume__list { gap: 3pt; max-width: none; }
+    .resume__list li { padding-left: 1.1rem; }
 
     [data-reveal] {
         opacity: 1 !important;
         transform: none !important;
     }
 
-    a {
-        text-decoration: none;
-    }
+    a { text-decoration: none; }
 
     /* Green on white prints weakly and vanishes on a mono printer — carry the
-       emphasis with weight and the rule instead. */
-    .hl {
+       emphasis with weight instead. Doubled class to out-specify the .hl rule
+       further down the sheet, which otherwise wins on source order and put the
+       green back on the page. */
+    .hl.hl {
         color: #000;
         font-weight: 700;
     }
@@ -2732,4 +2766,176 @@ body.is-locked .marquee__track {
     display: flex;
     flex-wrap: wrap;
     gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* --- Case study ------------------------------------------------------------
+   A page that argues rather than exhibits. Deliberately short: a visitor with
+   two minutes should get the whole claim without scrolling twice. */
+
+.cs__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1.5rem, 5vw, 4rem);
+    padding-block: clamp(1.75rem, 3vw, 2.5rem);
+    border-block: 1px solid var(--line);
+}
+
+.cs__stat {
+    display: grid;
+    gap: 0.3rem;
+}
+
+.cs__stat b {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--step-3);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+}
+
+.cs__stat span {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.cs__points {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem);
+    padding-block: clamp(2.5rem, 5vw, 4rem);
+    max-width: 68ch;
+}
+
+.cs__point h2 {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.6rem;
+}
+
+.cs__point p {
+    color: var(--ink-2);
+}
+
+.cs__shots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    padding-top: clamp(1rem, 2vw, 2rem);
+}
+
+/* Title above the image, not a grey note beneath it — the name of the tool is
+   the point, and a caption under a screenshot reads as an afterthought. */
+.cs__shot figcaption {
+    margin-bottom: 0.9rem;
+}
+
+.cs__shot figcaption h3 {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+}
+
+.cs__shot figcaption p {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--ink-3);
+}
+
+/* Both shots are captured at the same window size, so one ratio holds them
+   level without cropping either. */
+.cs__shot img {
+    aspect-ratio: 1200 / 866;
+    object-fit: cover;
+}
+
+.cs__shot button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: none;
+    cursor: zoom-in;
+    line-height: 0;
+    transition: border-color 0.3s var(--ease);
+}
+
+.cs__shot button:hover,
+.cs__shot button:focus-visible {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.cs__shot img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* --- Voice sample ----------------------------------------------------------
+   Sits in the stats row: the numbers are written there, and this is the same
+   numbers spoken by the voice the page is describing. preload="none", so the
+   file is only fetched if someone actually wants it. */
+
+.vo {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-left: auto;
+}
+
+.vo__btn {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-ink);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.vo__btn:hover,
+.vo__btn:focus-visible {
+    transform: scale(1.07);
+    box-shadow: 0 10px 30px -8px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.vo__btn .pause {
+    display: none;
+}
+
+.vo[data-playing="true"] .vo__btn .play {
+    display: none;
+}
+
+.vo[data-playing="true"] .vo__btn .pause {
+    display: block;
+}
+
+.vo__label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--ink-3);
+    max-width: 22ch;
+}
+
+.vo__label b {
+    display: block;
+    color: var(--ink-2);
+    font-weight: 500;
+}
+
+@media (max-width: 760px) {
+    .vo {
+        margin-left: 0;
+        width: 100%;
+        padding-top: 0.5rem;
+    }
 }
