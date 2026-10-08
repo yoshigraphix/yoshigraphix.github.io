@@ -1,0 +1,12 @@
+{
+  "url": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage?bbox=-83.89368155382789%2C35.79493652110188%2C-83.87585643247428%2C35.809393438097935&bboxSR=4326&imageSR=4326&size=2048%2C2048&format=jpg&f=image&adjustAspectRatio=false",
+  "attribution": "USDA NAIP / USGS The National Map",
+  "accessed": "2026-10-08",
+  "bounds": [
+    -83.89368155382789,
+    35.79493652110188,
+    -83.87585643247428,
+    35.809393438097935
+  ],
+  "note": "Orthophoto draped on terrain; capture date not verified. Not Google imagery."
+}
