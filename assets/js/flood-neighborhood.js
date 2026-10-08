@@ -25,7 +25,7 @@ function updateWater(){
  $('rise-value').textContent=r.toFixed(1);$('water-elevation').textContent=fmt(m.water);$('ground-elevation').textContent=fmt(m.ground);$('threshold').textContent=m.threshold>0?`+${fmt(m.threshold)}`:'Reference already at/above ground';$('difference').textContent=`${fmt(Math.abs(m.difference))} ${m.difference>=0?'above':'below'} ground`;
  water.position.y=m.water/FEET_PER_METER-base;water.visible=true;
  if (river) river.position.y = Number($('rise').value) / FEET_PER_METER;
- $('status').textContent='Drag to rotate · Scroll / pinch to zoom · Right-drag to pan · True vertical scale · Reference is not an observed river level.';render();
+ $('status').textContent='Drag to rotate · Scroll / pinch to zoom · White horizon fog · True vertical scale · Reference is not an observed river level.';render();
 }
 function setView(close=false){
  if(!orbit)return;
@@ -38,7 +38,11 @@ async function init(){try{
  const loaded=await Promise.all([loadJson('../assets/data/flood-terrain.json'),loadJson('../assets/data/neighborhood-osm.json'),loadJson('../assets/data/illustrative-scenery.json'),new THREE.TextureLoader().loadAsync('../assets/data/neighborhood-aerial.jpg')]);
  data=loaded[0];const osm=loaded[1],objects=loaded[2],texture=loaded[3];
  if(data.heights.length!==data.size**2||!data.heights.every(Number.isFinite))throw new Error('Invalid terrain');
- base=Math.min(...data.heights);scene=new THREE.Scene();scene.background=new THREE.Color('#172820');
+ base=Math.min(...data.heights);scene=new THREE.Scene();
+ // Blank white sky with distance fog: the horizon dissolves into white instead
+ // of ending at a hard dark edge. No cloud texture or extra sky detail is used.
+ scene.background=new THREE.Color('#fbfbf7');
+ scene.fog=new THREE.Fog(0xfbfbf7,1450,4300);
  camera=new THREE.PerspectiveCamera(45,1,1,15000);renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;
  scene.add(new THREE.HemisphereLight(0xffffff,0x607040,2.2));const sun=new THREE.DirectionalLight(0xfff0d6,2.1);sun.position.set(-600,1200,400);scene.add(sun);
  orbit=new OrbitControls(camera,canvas);orbit.minDistance=100;orbit.maxDistance=6400;orbit.maxPolarAngle=Math.PI*.48;orbit.minPolarAngle=.05;orbit.addEventListener('change',render);
