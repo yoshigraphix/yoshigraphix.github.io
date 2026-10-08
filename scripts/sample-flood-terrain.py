@@ -2,8 +2,8 @@ import math,json,urllib.request,io
 from pathlib import Path
 from PIL import Image
 lat,lon=35.80216497959991,-83.88476899315108
-radius=804.672
-n=81
+radius=1609.344
+n=161
 z=14
 cache={}
 sources=[]

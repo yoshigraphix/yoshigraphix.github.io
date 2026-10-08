@@ -14,7 +14,7 @@ test('water clips crossing edges, without covering dry vertices',()=>{
 test('flat terrain and exact equality do not divide by zero',()=>{
  const tri=[{x:0,y:0,z:2},{x:1,y:0,z:2},{x:0,y:1,z:2}];assert.deepEqual(waterPolygon(tri,2),tri);
 });
-test('bundled data covers the requested center and half-mile radius',()=>{
+test('bundled data covers the requested center and one-mile radius',()=>{
  const d=JSON.parse(readFileSync(new URL('../assets/data/flood-terrain.json',import.meta.url)));
- assert.deepEqual(d.center,[35.80216497959991,-83.88476899315108]);assert.equal(d.radiusMeters,804.672);assert.equal(d.heights.length,d.size**2);assert.ok(d.heights.every(v=>Number.isFinite(v)&&v>0&&v<1000));assert.ok(d.sources.length>=1);assert.ok(Math.abs(d.radiusMeters*FEET_PER_METER-2640)<1e-9);
+ assert.deepEqual(d.center,[35.80216497959991,-83.88476899315108]);assert.equal(d.radiusMeters,1609.344);assert.equal(d.heights.length,d.size**2);assert.ok(d.heights.every(v=>Number.isFinite(v)&&v>0&&v<1000));assert.ok(d.sources.length>=1);assert.ok(Math.abs(d.radiusMeters*FEET_PER_METER-5280)<1e-9);
 });
