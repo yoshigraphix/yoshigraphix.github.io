@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flood Level Lab — Yoshi Sakaguchi</title>
+<meta name="description" content="An interactive 3D terrain experiment with real elevation data and a hypothetical water-level slider.">
+<link rel="icon" href="../assets/images/favicon/ys-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/site.css?v=40"><link rel="stylesheet" href="../assets/css/flood-level.css">
+</head><body><a class="skip-link" href="#main">Skip to content</a>
+        <header class="site-header">
+            <div class="wrap">
+                <a class="brand" href="../index.html">
+                    <img class="brand__mark" src="../assets/images/favicon/ys-logo.svg" alt="" width="34" height="34" />
+                    <span>Yoshi Sakaguchi</span>
+                </a>
+
+                <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="Toggle menu">
+                    <svg class="icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M3 7h18M3 17h18" />
+                    </svg>
+                    <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </button>
+
+                <nav class="nav" data-nav aria-label="Main">
+                    <a href="../index.html">Home</a>
+                    <a href="../work.html" aria-current="page">Work</a>
+                    <a href="../resume.html">Résumé</a>
+                    <a href="../references.html">References</a>
+                    <a href="../about.html">About</a>
+                    <a href="../hum-tunes.html">Hum Tunes</a>
+                    <a href="../contact.html">Contact</a>
+                </nav>
+            </div>
+        </header>
+
+<main id="main" class="flood-page wrap">
+<a class="arrow-link" href="../work.html#personal-projects">← Personal Projects</a>
+<div class="lab-heading"><div><span class="label label--accent">Personal project / 01 · Prototype</span><h1>Flood Level Lab<span>.</span></h1></div><p>Your neighborhood.<br>A different waterline.</p></div>
+<p class="lab-intro">Explore a one-mile radius around the Little River neighborhood with free aerial imagery and real terrain. Simple 3D models appear only within the inner 0.33 miles. Drag to orbit, scroll or pinch to zoom, and raise the waterline.</p>
+<div class="lab-notice"><strong>Terrain experiment, not a flood forecast.</strong> Blue marks terrain below a flat water surface, including disconnected low areas. It does not establish whether river water could reach a building.</div>
+<div class="lab-layout">
+<section class="lab-view" aria-label="Interactive terrain">
+<div class="view-top"><span class="label">1-mile radius · 2 miles across</span><span class="live-tag">Free aerial + terrain</span></div>
+<canvas id="terrain" tabindex="0" aria-label="3D neighborhood. Drag to rotate, scroll or pinch to zoom. Use the labeled controls for keyboard navigation. Center-point elevation is given in the adjacent readouts.">Your browser needs canvas support. Elevation readouts remain available beside this view.</canvas>
+<div class="view-bottom"><span><i class="land-key"></i> Ground &nbsp; <i class="water-key"></i> Below water plane</span><span>● Supplied center</span></div>
+<p class="scenery-note">Aerial: USDA NAIP / USGS · Roads and river: <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a> · Dark blue ribbon: approximate sloped river channel. House and bridge heights are approximate scenery, not surveys.</p><p id="status" role="status">Loading local elevation data…</p>
+<div class="camera-controls"><button id="neighborhood-view" type="button">Neighborhood close-up</button><button id="overview" type="button">Whole area</button><label><input id="scenery" type="checkbox" checked> Inner 0.33-mile models</label><label>Rotate <input id="rotation" type="range" min="-180" max="180" value="-25"></label><label>Tilt <input id="tilt" type="range" min="15" max="85" value="40"></label><button id="reset-view" type="button">Reset view</button></div>
+</section>
+<aside class="lab-panel" aria-label="Water level controls">
+<span class="label label--accent">Change the waterline</span>
+<label for="rise">Rise above your reference</label><div class="rise-value"><output id="rise-value" for="rise">0</output><span>ft</span></div>
+<input id="rise" type="range" min="0" max="150" step="0.5" value="0" disabled><div class="range-ends"><span>0 ft</span><span>+150 ft</span></div>
+<label for="baseline">Reference water elevation (feet)</label><input id="baseline" type="number" step="0.1" disabled>
+<p class="control-help">Starts at the lowest sampled ground elevation as a demonstration reference. This is <strong>not the current river level</strong>. Enter a known water elevation only after checking that its vertical datum matches the terrain.</p>
+<dl class="readouts"><div><dt>Hypothetical water elevation</dt><dd id="water-elevation">—</dd></div><div><dt>Ground at supplied center</dt><dd id="ground-elevation">—</dd></div><div><dt>Rise from reference to center ground</dt><dd id="threshold">—</dd></div><div><dt>Water relative to center ground</dt><dd id="difference">—</dd></div></dl>
+<p class="control-help">Elevations are approximate and rounded to whole feet. The center marker represents sampled ground, not a surveyed floor or building.</p>
+</aside></div>
+<section class="lab-notes"><div><span class="label label--accent">Behind the experiment</span><h2>Real terrain. A simplified question.</h2><p>Free USDA NAIP aerial photography is draped over an elevation grid. OpenStreetMap supplies road and bridge alignments. Simple houses and road/bridge models are limited to the inner 0.33 miles. The outer area is aerial imagery draped over terrain, with no added models. Generated trees have been removed. House positions, dimensions and heights are approximate. The scene uses true vertical scale. The center marker and one-mile boundary are annotations.</p></div><div><h3>What this version can tell you</h3><p>How a chosen horizontal elevation compares with sampled ground. It cannot tell you how many feet the actual river must rise to flood your house. That requires an observed river reference, compatible vertical datums, surveyed building elevations, and hydraulic modeling.</p><h3>Known limits</h3><p>No river connectivity, flow, drainage, culverts, levees, building-interior flooding, rainfall, or flood timing. The scenery does not affect the water calculation. Terrain is sampled about every 20 meters; source resolution, age, and vertical accuracy vary. The circular mesh boundary is approximate. Do not use this for safety, insurance, or evacuation decisions.</p><h3>Data &amp; credits</h3><p><a href="https://registry.opendata.aws/terrain-tiles/">Mapzen Terrain Tiles on AWS</a>, accessed October 8, 2026. United States 3DEP and global GMTED2010 and SRTM terrain data courtesy of the U.S. Geological Survey. Decoded and resampled for this prototype; not endorsed by USGS. <a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md">Source attribution</a>.</p><p>Aerial imagery: <a href="https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer">USDA NAIP / USGS The National Map</a> (capture date unverified). Roads: <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, ODbL</a>. <a href="../assets/data/neighborhood-osm.json">Download the map extract</a>. All imagery and model assets are bundled locally; no paid APIs or Google imagery.</p><p id="location-detail"></p></div></section>
+<noscript><p>This interactive prototype needs JavaScript enabled.</p></noscript>
+</main><footer class="site-footer"><div class="wrap"><p class="label">© Yoshi Sakaguchi 2026</p><a href="../work.html">Back to work</a></div></footer>
+<script src="../assets/js/site.js?v=40"></script><script type="module" src="../assets/js/flood-neighborhood.js"></script></body></html>
