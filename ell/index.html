@@ -72,6 +72,9 @@
     padding:0 30px;min-height:70px;border-radius:999px;border:2px solid #c3c9d1;
     background:rgba(255,255,255,.94);cursor:pointer;white-space:nowrap}
   .ctl button:active{background:#eef0f3}
+  .ctl button.primary{background:#2b3038;color:#fff;border-color:#2b3038}
+  .ctl button.primary:active{background:#111317}
+  .ctl #btnBack{padding:0 24px;font-size:28px}
   .ctl .onmap{display:none}
   .stage.is-map .ctl .onmap{display:block}
   .help{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font-size:19px;color:#aeb4bc;
@@ -285,6 +288,8 @@
   <div class="ctl">
     <button class="onmap" id="btnWorld">🌍 The whole world</button>
     <button class="onmap" id="btnReset">Reset</button>
+    <button id="btnBack" aria-label="Previous slide">←</button>
+    <button id="btnNext" class="primary">Next →</button>
     <button id="btnFull">⛶ Full screen</button>
   </div>
 </div></div>
@@ -532,7 +537,8 @@
     if(document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen();
   }
-  [['btnFull',toggleFull],['btnWorld',function(){worldMode();}],['btnReset',function(){resetMap();}]]
+  [['btnFull',toggleFull],['btnWorld',function(){worldMode();}],['btnReset',function(){resetMap();}],
+   ['btnNext',function(){go(1);}],['btnBack',function(){go(-1);}]]
   .forEach(function(p){
     var el=document.getElementById(p[0]); if(!el) return;
     el.addEventListener('click',function(e){ e.stopPropagation(); p[1](); });
