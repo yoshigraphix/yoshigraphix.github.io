@@ -88,15 +88,15 @@
   /* ---------- map ---------- */
   /* Opening image, full bleed. The art is busy, so the question sits on a
      gradient scrim over the dark rock at the bottom rather than floating on it. */
-  #heroSlide{padding:0;overflow:hidden;background:#0a0c10}
+  .photo{padding:0;overflow:hidden;background:#0a0c10}
   .herobg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-  #heroSlide::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  .photo::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
     background:linear-gradient(0deg,rgba(8,10,14,.90) 0%,rgba(8,10,14,.50) 24%,rgba(8,10,14,0) 50%)}
   .heroq{position:absolute;left:78px;bottom:96px;z-index:2;color:#fff;font-size:100px;
     font-weight:800;letter-spacing:-2.5px;line-height:1.05;text-shadow:0 6px 36px rgba(0,0,0,.55)}
   .heroq small{display:block;font-size:34px;font-weight:600;letter-spacing:1px;
     color:#dfe3e8;margin-top:22px;text-shadow:0 3px 18px rgba(0,0,0,.6)}
-  #heroSlide .num{color:rgba(255,255,255,.55);z-index:2}
+  .photo .num{color:rgba(255,255,255,.55);z-index:2}
 
   #mapSlide{background:#CFE6F4;padding:0}
   /* The South Pacific is empty water — the only place on an equirectangular
@@ -139,7 +139,7 @@
 <div id="fit"><div class="stage" id="stage">
 
   <!-- 1 — WHO IS YOUR HERO -->
-  <section class="slide" id="heroSlide">
+  <section class="slide photo" id="heroSlide">
     <div class="num"></div>
     <img class="herobg" src="images/heroes.jpg" alt="" />
     <div class="heroq">Who is your hero?
@@ -156,7 +156,16 @@
     <div class="ref" data-step>The Bible &nbsp;&middot;&nbsp; <span>John 10:11</span></div>
   </section>
 
-  <!-- 2 — SHEEP -->
+  <!-- 3 — THE VERSE IN ONE PICTURE, before any vocabulary -->
+  <section class="slide photo" id="fightSlide">
+    <div class="num"></div>
+    <img class="herobg" src="images/fight.jpg" alt="" />
+    <div class="heroq">He protects his sheep.
+      <small>Let them look first. Then ask: What do you see?</small>
+    </div>
+  </section>
+
+  <!-- 4 — SHEEP -->
   <section class="slide">
     <div class="num"></div>
     <div class="row">
@@ -174,7 +183,7 @@
     </div>
   </section>
 
-  <!-- 3 — SHEPHERD -->
+  <!-- 5 — SHEPHERD -->
   <section class="slide">
     <div class="num"></div>
     <div class="row">
@@ -192,7 +201,7 @@
     </div>
   </section>
 
-  <!-- 4 — PROTECT -->
+  <!-- 6 — PROTECT -->
   <section class="slide">
     <div class="num"></div>
     <div class="row">
