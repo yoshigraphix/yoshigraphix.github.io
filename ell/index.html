@@ -35,7 +35,7 @@
   .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
     padding:84px 110px}
   .slide.on{display:flex}
-  .slide:has(.langs){padding-bottom:392px}
+  .slide:has(.langs){padding-bottom:496px}
 
   .eyebrow{font-size:28px;letter-spacing:8px;text-transform:uppercase;color:var(--dim);
     font-weight:800;margin-bottom:32px}
@@ -60,7 +60,7 @@
   .col{display:flex;flex-direction:column;gap:10px}
   .grow{flex:1}
 
-  .langs{position:absolute;left:110px;right:110px;bottom:156px;display:flex;
+  .langs{position:absolute;left:110px;right:110px;bottom:286px;display:flex;
     border-top:2px solid var(--rule);padding-top:24px}
   .lang{flex:1}
   .lang .name{font-size:21px;color:var(--dim);letter-spacing:3px;margin-bottom:8px;font-weight:700}
@@ -71,7 +71,7 @@
   .bar{position:absolute;left:0;bottom:0;height:8px;background:var(--accent);transition:width .25s ease;z-index:5}
   .ctl{position:absolute;right:46px;bottom:40px;display:flex;gap:16px;z-index:6}
   .ctl button{font-family:inherit;font-size:24px;font-weight:700;color:#2b3038;
-    padding:0 30px;min-height:70px;border-radius:999px;border:2px solid #c3c9d1;
+    padding:0 26px;min-height:64px;border-radius:999px;border:2px solid #c3c9d1;
     background:rgba(255,255,255,.94);cursor:pointer;white-space:nowrap}
   .ctl button:active{background:#eef0f3}
   .ctl button.primary{background:#2b3038;color:#fff;border-color:#2b3038}
@@ -229,10 +229,10 @@
       <span style="color:var(--head)">&ldquo;I am the shepherd.<br />You are the sheep.&rdquo;</span></div>
     <div class="mid" style="margin-top:30px" data-step>He is the greatest hero.</div>
     <div class="langs" data-step>
-      <div class="lang"><div class="name">JAPANESE</div><div class="val" style="font-size:34px">いのちを<br />ささげる</div></div>
+      <div class="lang"><div class="name">JAPANESE</div><div class="val" style="font-size:34px">いのちを<br />ささげる</div><div class="rom">inochi wo sasageru</div></div>
       <div class="lang"><div class="name">SPANISH</div><div class="val" style="font-size:34px">dar su vida</div></div>
-      <div class="lang"><div class="name">UKRAINIAN</div><div class="val" style="font-size:34px">віддати<br />життя</div></div>
-      <div class="lang"><div class="name">ARABIC</div><div class="val ar" style="font-size:34px">يبذل حياته</div></div>
+      <div class="lang"><div class="name">UKRAINIAN</div><div class="val" style="font-size:34px">віддати<br />життя</div><div class="rom">viddaty zhyttia</div></div>
+      <div class="lang"><div class="name">ARABIC</div><div class="val ar" style="font-size:34px">يبذل حياته</div><div class="rom">yabdhil hayatahu</div></div>
     </div>
   </section>
 
@@ -254,19 +254,19 @@
           <th style="width:21%">UKRAINIAN</th><th style="width:17%">ARABIC</th></tr>
       <tr><td class="w">sheep</td>
           <td class="t">羊<div class="r">hitsuji</div></td><td class="t">oveja</td>
-          <td class="t">вівця<div class="r">vivtsia</div></td><td class="t ar">خروف</td></tr>
+          <td class="t">вівця<div class="r">vivtsia</div></td><td class="t"><span class="ar">خروف</span><div class="r">kharouf</div></td></tr>
       <tr><td class="w">shepherd</td>
           <td class="t">羊飼い<div class="r">hitsuji-kai</div></td><td class="t">pastor</td>
-          <td class="t">пастух<div class="r">pastukh</div></td><td class="t ar">راعي</td></tr>
+          <td class="t">пастух<div class="r">pastukh</div></td><td class="t"><span class="ar">راعي</span><div class="r">ra&#39;i</div></td></tr>
       <tr><td class="w">protect</td>
           <td class="t">守る<div class="r">mamoru</div></td><td class="t">proteger</td>
-          <td class="t">захищати<div class="r">zakhyshchaty</div></td><td class="t ar">يحمي</td></tr>
+          <td class="t">захищати<div class="r">zakhyshchaty</div></td><td class="t"><span class="ar">يحمي</span><div class="r">yahmi</div></td></tr>
       <tr><td class="w">good</td>
           <td class="t">よい<div class="r">yoi</div></td><td class="t">bueno</td>
-          <td class="t">добрий<div class="r">dobryi</div></td><td class="t ar">جيد</td></tr>
+          <td class="t">добрий<div class="r">dobryi</div></td><td class="t"><span class="ar">جيد</span><div class="r">jayyid</div></td></tr>
       <tr><td class="w">lay down<br />his life</td>
           <td class="t">いのちをささげる</td><td class="t">dar su vida</td>
-          <td class="t">віддати життя</td><td class="t ar">يبذل حياته</td></tr>
+          <td class="t">віддати життя</td><td class="t"><span class="ar">يبذل حياته</span><div class="r">yabdhil hayatahu</div></td></tr>
     </table>
     <div class="sents">
       <div>This is a sheep.</div>
