@@ -546,6 +546,32 @@
         });
     });
 
+    /* --- Voice sample -------------------------------------------------------
+
+       One button, one clip. preload="none" keeps the file off the wire until
+       someone asks for it, and the button reflects real audio state rather than
+       a flag we set optimistically — so a stall or an error can't leave it
+       showing "pause" over silence. */
+
+    document.querySelectorAll("[data-vo]").forEach(function (vo) {
+        var btn = vo.querySelector("[data-vo-btn]");
+        var audio = vo.querySelector("[data-vo-audio]");
+        if (!btn || !audio) return;
+
+        btn.addEventListener("click", function () {
+            if (audio.paused) audio.play();
+            else audio.pause();
+        });
+
+        ["play", "pause", "ended"].forEach(function (ev) {
+            audio.addEventListener(ev, function () {
+                var on = !audio.paused && !audio.ended;
+                vo.dataset.playing = String(on);
+                btn.setAttribute("aria-label", on ? "Pause the voice sample" : "Play a voice sample");
+            });
+        });
+    });
+
     /* --- Cursor badge ------------------------------------------------------ */
 
     document.querySelectorAll("[data-badge]").forEach(function (media) {
@@ -631,4 +657,53 @@
     reveals.forEach(function (el) {
         io.observe(el);
     });
+})();
+
+/* --- Share ----------------------------------------------------------------
+   The site is often opened from a home-screen shortcut, which runs without
+   browser chrome and therefore without a share menu. navigator.share raises
+   the real OS sheet there; everywhere else we fall back to the clipboard.
+   No alert(), per the usual rule — a toast instead. */
+(function () {
+    var btn = document.querySelector("[data-share]");
+    if (!btn) return;
+
+    var canonical = document.querySelector('link[rel="canonical"]');
+    var url = (canonical && canonical.href) || window.location.href;
+    var title = document.title;
+
+    function toast(msg) {
+        var el = document.createElement("div");
+        el.className = "toast";
+        el.setAttribute("role", "status");
+        el.textContent = msg;
+        document.body.appendChild(el);
+        setTimeout(function () {
+            el.classList.add("is-off");
+            setTimeout(function () { el.remove(); }, 300);
+        }, 2200);
+    }
+
+    btn.addEventListener("click", function () {
+        if (navigator.share) {
+            navigator.share({ title: title, url: url }).catch(function (err) {
+                // Dismissing the sheet is not a failure; say nothing.
+                if (err && err.name === "AbortError") return;
+                copy();
+            });
+            return;
+        }
+        copy();
+    });
+
+    function copy() {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(
+                function () { toast("Link copied"); },
+                function () { toast(url); }
+            );
+        } else {
+            toast(url);
+        }
+    }
 })();

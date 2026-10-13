@@ -1015,6 +1015,68 @@ body:has(.hero__dot) .nav a[aria-current="page"]::after {
     gap: 1rem;
 }
 
+/* --- Share -------------------------------------------------------------- */
+
+/* Added to the home screen, the site runs standalone with no browser chrome,
+   so there is no share menu to reach for. The page has to offer its own. */
+.hero-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.1rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.share-btn:hover {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 2rem;
+    transform: translate(-50%, 1rem);
+    z-index: 300;
+    padding: 0.8rem 1.4rem;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    /* No entrance animation. Any fade-in leaves the toast parked on its hidden
+       keyframe if the animation clock does not run, and a notification that
+       might not appear is worse than one that does not slide. It fades OUT
+       only, which is safe: the resting state is already visible. */
+    opacity: 1;
+    transform: translate(-50%, 0);
+    pointer-events: none;
+    transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+
+.toast.is-off {
+    opacity: 0;
+    transform: translate(-50%, 1rem);
+}
+
 /* --- Meta bar ------------------------------------------------------------- */
 
 .meta-bar {
