@@ -2409,10 +2409,13 @@ body.is-locked .marquee__track {
     letter-spacing: -0.02em;
 }
 
-/* Only linked names get the affordance — unlinked ones stay plain text */
+/* Only linked names get the affordance — unlinked ones stay plain text.
+   The underline stays faintly visible rather than appearing on hover: on a
+   phone there is no hover, and an invisible link reads as plain text. */
 .ref__name a {
     text-decoration: underline;
-    text-decoration-color: transparent;
+    text-decoration-color: color-mix(in srgb, currentColor 32%, transparent);
+    text-decoration-thickness: 1px;
     text-underline-offset: 0.18em;
     transition: text-decoration-color 0.25s var(--ease), color 0.25s var(--ease);
 }
@@ -3025,4 +3028,108 @@ body.is-locked .marquee__track {
         width: 100%;
         padding-top: 0.5rem;
     }
+}
+
+/* --- Password gate -------------------------------------------------------- */
+
+/* Shown in place of a private case study until the password decrypts it. */
+.gate {
+    display: grid;
+    place-items: center;
+    min-height: clamp(26rem, 62vh, 40rem);
+    padding-block: clamp(2.5rem, 6vw, 5rem);
+}
+
+.gate__card {
+    max-width: 34rem;
+    padding: clamp(1.6rem, 1.2rem + 1.6vw, 2.6rem);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+
+.gate__title {
+    margin-top: 0.7rem;
+    font-size: var(--step-2);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+}
+
+.gate__lede {
+    margin-top: 0.8rem;
+    color: var(--ink-2);
+    font-size: var(--step-0);
+    line-height: 1.6;
+}
+
+.gate__form {
+    margin-top: clamp(1.4rem, 3vw, 2rem);
+}
+
+.gate__label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.gate__input {
+    width: 100%;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--step-0);
+    letter-spacing: 0.08em;
+}
+
+.gate__input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-color: var(--accent);
+}
+
+.gate__msg {
+    margin-top: 0.65rem;
+    color: var(--ink-2);
+    font-size: var(--step--1);
+}
+
+.gate__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: clamp(1.1rem, 2.5vw, 1.6rem);
+}
+
+.gate__actions .btn[disabled] {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+/* Lock marker on the work listing, so a gated project reads as deliberate
+   rather than broken. */
+.work-card__lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: 0.55rem;
+    padding: 0.12rem 0.45rem 0.14rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    vertical-align: 0.14em;
+}
+
+.work-card__lock svg {
+    flex: none;
 }

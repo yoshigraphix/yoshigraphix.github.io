@@ -665,45 +665,53 @@
    the real OS sheet there; everywhere else we fall back to the clipboard.
    No alert(), per the usual rule — a toast instead. */
 (function () {
-    var btn = document.querySelector("[data-share]");
-    if (!btn) return;
+    /* Exposed as ygxInitShare because the password-gated case study injects its
+       hero — and therefore its Share button — long after this file has run. */
+    function init() {
+        var btn = document.querySelector("[data-share]");
+        if (!btn || btn.dataset.shareReady) return;
+        btn.dataset.shareReady = "1";
 
-    var canonical = document.querySelector('link[rel="canonical"]');
-    var url = (canonical && canonical.href) || window.location.href;
-    var title = document.title;
+        var canonical = document.querySelector('link[rel="canonical"]');
+        var url = (canonical && canonical.href) || window.location.href;
+        var title = document.title;
 
-    function toast(msg) {
-        var el = document.createElement("div");
-        el.className = "toast";
-        el.setAttribute("role", "status");
-        el.textContent = msg;
-        document.body.appendChild(el);
-        setTimeout(function () {
-            el.classList.add("is-off");
-            setTimeout(function () { el.remove(); }, 300);
-        }, 2200);
+        function toast(msg) {
+            var el = document.createElement("div");
+            el.className = "toast";
+            el.setAttribute("role", "status");
+            el.textContent = msg;
+            document.body.appendChild(el);
+            setTimeout(function () {
+                el.classList.add("is-off");
+                setTimeout(function () { el.remove(); }, 300);
+            }, 2200);
+        }
+
+        btn.addEventListener("click", function () {
+            if (navigator.share) {
+                navigator.share({ title: title, url: url }).catch(function (err) {
+                    // Dismissing the sheet is not a failure; say nothing.
+                    if (err && err.name === "AbortError") return;
+                    copy();
+                });
+                return;
+            }
+            copy();
+        });
+
+        function copy() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(
+                    function () { toast("Link copied"); },
+                    function () { toast(url); }
+                );
+            } else {
+                toast(url);
+            }
+        }
     }
 
-    btn.addEventListener("click", function () {
-        if (navigator.share) {
-            navigator.share({ title: title, url: url }).catch(function (err) {
-                // Dismissing the sheet is not a failure; say nothing.
-                if (err && err.name === "AbortError") return;
-                copy();
-            });
-            return;
-        }
-        copy();
-    });
-
-    function copy() {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(url).then(
-                function () { toast("Link copied"); },
-                function () { toast(url); }
-            );
-        } else {
-            toast(url);
-        }
-    }
+    init();
+    window.ygxInitShare = init;
 })();
