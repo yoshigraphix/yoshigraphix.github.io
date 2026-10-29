@@ -1,3 +1,9 @@
 .DS_Store
 *.afphoto
 *.afdesign
+
+# Assets that belong to pages not yet published. They land here when the site
+# is synced; keep them out of the public repo rather than deleting them.
+/assets/audio/
+/assets/images/cirrus/
+/assets/images/embark-title.jpg

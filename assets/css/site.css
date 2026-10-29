@@ -3133,3 +3133,102 @@ body.is-locked .marquee__track {
 .work-card__lock svg {
     flex: none;
 }
+
+/* --- ELL lesson list ------------------------------------------------------ */
+
+/* Stacked rows: thumbnail left, description right. One lesson gets added most
+   weeks, so the row is deliberately plain — it has to survive a long list. */
+.lesson-list {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+}
+
+.lesson-card {
+    display: grid;
+    grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1.25rem, 1rem + 2vw, 2.5rem);
+    padding-top: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    border-top: 1px solid var(--line);
+}
+
+.lesson-card:first-child {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.lesson-card__media {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper-2);
+    aspect-ratio: 16 / 9;
+}
+
+.lesson-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease);
+}
+
+a.lesson-card__media:hover img {
+    transform: scale(1.03);
+}
+
+.lesson-card__title {
+    margin-top: 0.55rem;
+}
+
+/* The draft row has no label above its heading, so it needs no offset. */
+.lesson-card__title:first-child {
+    margin-top: 0;
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+}
+
+.lesson-card__title a:hover {
+    color: var(--accent);
+}
+
+.lesson-card__body {
+    margin-top: 0.7rem;
+    max-width: 58ch;
+    color: var(--ink-2);
+    font-size: var(--step-0);
+    line-height: 1.6;
+}
+
+.lesson-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem 1.4rem;
+    margin-top: clamp(1rem, 2vw, 1.5rem);
+}
+
+/* A lesson that isn't written yet: shown so the list reads as a plan, but
+   nothing to click, because there is nothing behind it. */
+.lesson-card.is-draft .lesson-card__media {
+    opacity: 0.5;
+}
+
+.lesson-card__status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.85rem;
+    border: 1px dashed var(--line);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+@media (max-width: 720px) {
+    .lesson-card {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-label="Colossians 1:13 — lesson in progress">
+    <rect width="800" height="450" fill="#ffffff" />
+    <rect x="0" y="0" width="800" height="450" fill="none" stroke="#dfe3e8" stroke-width="2" />
+    <g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" text-anchor="middle">
+        <text x="400" y="196" font-size="74" font-weight="700" fill="#111317" letter-spacing="-1">COLOSSIANS</text>
+        <text x="400" y="286" font-size="74" font-weight="700" fill="#C2410C" letter-spacing="-1">1:13</text>
+        <text x="400" y="358" font-size="25" font-weight="600" fill="#6b7280" letter-spacing="5">IN PROGRESS</text>
+    </g>
+</svg>
