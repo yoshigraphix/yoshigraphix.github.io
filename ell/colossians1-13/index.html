@@ -30,6 +30,8 @@
       direction:rtl;unicode-bidi:isolate;text-align:left}
 
   #fit{position:fixed;inset:0;overflow:hidden}
+  /* Size comes from fit(): the stage matches the screen's shape so there are
+     never letterbox bars. 1920x1080 is only the starting case. */
   .stage{width:1920px;height:1080px;position:absolute;left:50%;top:50%;
     transform-origin:center center}
 
@@ -40,7 +42,8 @@
 
   .eyebrow{font-size:28px;letter-spacing:8px;text-transform:uppercase;color:var(--dim);
     font-weight:800;margin-bottom:32px}
-  .verse{font-size:82px;font-weight:800;line-height:1.16;letter-spacing:-1.5px;text-wrap:balance}
+  .verse{font-size:82px;font-weight:800;line-height:1.16;letter-spacing:-1.5px;text-wrap:balance;
+    max-width:1700px}
   .verse b{color:var(--accent);font-weight:800}
   .ref{margin-top:46px;font-size:40px;font-weight:700;color:var(--dim);letter-spacing:.5px}
   .ref span{color:var(--head)}
@@ -83,7 +86,7 @@
   [data-step].shown{opacity:1}
 
   /* ---------- title ---------- */
-  .title{font-size:200px;font-weight:800;letter-spacing:-6px;line-height:1}
+  .title{font-size:200px;font-weight:800;letter-spacing:-6px;line-height:1;max-width:1700px}
 
   /* ---------- story frames ---------- */
   /* The nine renders are already exactly 1920x1080, so they are laid in
@@ -113,6 +116,57 @@
   .sents{margin-top:30px;display:flex;gap:40px}
   .sents div{flex:1;font-size:28px;font-weight:700;border-left:7px solid var(--accent);padding-left:18px;line-height:1.3}
   .shoot{position:absolute;right:110px;top:132px;font-size:26px;color:var(--dim);letter-spacing:2px}
+
+  /* ---------- portrait ---------- */
+  /* The portrait stage is the one whose height varies with the device, so
+     nothing below measures from the bottom edge: the vocabulary strip stops
+     being absolutely placed and becomes an ordinary flow child. The thumbnail
+     gets an explicit height rather than a percentage, because WebKit will not
+     resolve a percentage height on an image inside a flex column and lets it
+     run off the screen while everything looks fine in Chrome. */
+  .is-portrait .slide{padding:72px 64px}
+  .is-portrait .slide:has(.langs){padding-bottom:72px}
+
+  .is-portrait .title{font-size:132px;letter-spacing:-4px}
+  .is-portrait .verse{font-size:60px;letter-spacing:-1px}
+  .is-portrait .ref{font-size:32px;margin-top:34px}
+  .is-portrait .eyebrow{font-size:24px;letter-spacing:6px;margin-bottom:24px}
+
+  .is-portrait .row{flex-direction:column;align-items:stretch;gap:34px}
+  .is-portrait .thumb{width:100%;height:536px}
+  .is-portrait .word{font-size:104px;letter-spacing:-3px}
+  .is-portrait .say{font-size:30px;letter-spacing:5px}
+  .is-portrait .sentence{font-size:44px;margin-top:18px;border-left-width:8px;padding-left:24px}
+  .is-portrait .same{font-size:28px;margin-top:14px}
+
+  .is-portrait .langs{position:static;display:grid;grid-template-columns:1fr 1fr;
+    gap:32px 28px;margin-top:54px}
+  .is-portrait .lang .val{font-size:42px}
+  .is-portrait .lang .name{font-size:19px}
+  .is-portrait .lang .rom{font-size:21px}
+
+  /* A 16:9 render cover-cropped into a portrait screen becomes a narrow slice
+     with the figure's head and arms cut off, so in portrait the picture is a
+     16:9 panel with the caption underneath it, the pair centred in the tall
+     screen. The dark ground around it is a deliberate frame, not the letterbox
+     the whole deck used to sit in. The panel height is explicit rather than a
+     ratio, for the same WebKit reason as the thumbnails. */
+  .is-portrait .photo{padding:0}
+  .is-portrait .photobg{position:static;flex:none;width:100%;height:608px}
+  .is-portrait .plate{position:static;left:auto;bottom:auto;max-width:none;
+    margin:44px 48px 0;padding:26px 34px 28px}
+  .is-portrait .plate .line{font-size:46px}
+  .is-portrait .plate .line2{font-size:38px;margin-top:14px}
+
+  .is-portrait .num{right:48px;top:48px}
+  .is-portrait .shoot{display:none}
+  .is-portrait .sum th{font-size:17px;letter-spacing:2px;padding-right:10px}
+  .is-portrait .sum td{padding:14px 10px 14px 0}
+  .is-portrait .sum .w{font-size:31px}
+  .is-portrait .sum .t{font-size:25px}
+  .is-portrait .sum .r{font-size:15px}
+  .is-portrait .sents{flex-direction:column;gap:16px;margin-top:26px}
+  .is-portrait .sents div{font-size:26px;border-left-width:5px;padding-left:14px}
 </style>
 </head>
 <body>
@@ -387,11 +441,31 @@
     el.addEventListener('pointerdown',function(e){ e.stopPropagation(); });
   });
 
+  // The stage used to be a fixed 1920x1080 box scaled to fit, which left bars
+  // on every screen that was not exactly 16:9 — including a MacBook in full
+  // screen and any phone held either way. Instead the SHORT edge of the screen
+  // is pinned to 1080 design pixels and the long edge becomes whatever the
+  // screen actually is, so the stage fills it exactly.
+  //
+  // Which edge that is decides which measurements are safe. In landscape the
+  // height is always 1080, so every vertical number in the stylesheet keeps a
+  // constant basis and the landscape layout is untouched. In portrait the
+  // height is the variable one, which is why the portrait rules lay out in
+  // flow and never anchor a fixed distance from the bottom.
+  var BASE=1080, MIN_LONG=1280;
   function fit(){
-    var k=Math.min(innerWidth/1920, innerHeight/1080);
+    var vw=innerWidth, vh=innerHeight, portrait=vh>vw, k, W, H;
+    if(portrait){ k=vw/BASE; W=BASE; H=Math.max(MIN_LONG, Math.round(vh/k)); }
+    else        { k=vh/BASE; H=BASE; W=Math.max(MIN_LONG, Math.round(vw/k)); }
+    stage.style.width=W+'px'; stage.style.height=H+'px';
     stage.style.transform='translate(-50%,-50%) scale('+k+')';
+    stage.classList.toggle('is-portrait', portrait);
   }
-  addEventListener('resize',fit); fit(); render();
+  addEventListener('resize',fit);
+  // iOS reports the old viewport during orientationchange, so refit once the
+  // rotation has actually landed.
+  addEventListener('orientationchange',function(){ setTimeout(fit,200); });
+  fit(); render();
 })();
 </script>
 </body>
