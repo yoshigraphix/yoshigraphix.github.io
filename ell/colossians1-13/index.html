@@ -5,15 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <!-- Added to the Home Screen, iOS launches this without browser chrome, which is
      the only way to get a clean full screen on an iPhone: Safari on iPhone does
-     not support the Fullscreen API, so the button below is a no-op there. -->
+     not support the Fullscreen API, so the button below hides itself there. -->
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <title>Colossians 1:13</title>
 <style>
-  /* Same fixed 16:9 stage as the John 10:11 deck, so a TV, a laptop and a
-     projector all show an identical layout. White ground, near-black type,
-     one bold accent picked to match the rust-red cords in the renders. */
   :root{
     --ink:#111317; --ground:#ffffff; --accent:#C2410C; --dim:#6b7280; --rule:#dfe3e8;
     --head:#2b3038;
@@ -30,44 +27,52 @@
       direction:rtl;unicode-bidi:isolate;text-align:left}
 
   #fit{position:fixed;inset:0;overflow:hidden}
-  /* Size comes from fit(): the stage matches the screen's shape so there are
+  /* Size comes from fit(): the stage matches the screen's shape, so there are
      never letterbox bars. 1920x1080 is only the starting case. */
+  /* fit() republishes --sw as the stage's design width. In landscape the height
+     is pinned at 1080 but the width is whatever the screen is, so type that is
+     flat pixels wraps onto an extra line on a narrow stage and walks the slide
+     into the controls. Sizing it as a ratio of --sw holds every slide to the
+     same proportions it has at 1920: a 16:9 screen renders identically, and a
+     4:3 or a laptop scales down instead of reflowing. The min() is the other
+     half of it — an ultrawide stage is wider than 1920 but no taller, so type
+     allowed to grow with the width walks straight into the controls. The fallback here keeps
+     the calc()s valid for the first paint, before fit() has run. */
   .stage{width:1920px;height:1080px;position:absolute;left:50%;top:50%;
-    transform-origin:center center}
+    transform-origin:center center;--sw:1920}
 
   .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
     padding:84px 110px}
   .slide.on{display:flex}
-  .slide:has(.langs){padding-bottom:496px}
 
   .eyebrow{font-size:28px;letter-spacing:8px;text-transform:uppercase;color:var(--dim);
-    font-weight:800;margin-bottom:32px}
-  .verse{font-size:82px;font-weight:800;line-height:1.16;letter-spacing:-1.5px;text-wrap:balance;
+    font-weight:800;margin-bottom:34px}
+  .title{font-size:min(200px, calc(var(--sw) * .1042px));font-weight:800;letter-spacing:-6px;line-height:1;max-width:1700px}
+  .verse{font-size:min(82px, calc(var(--sw) * .0427px));font-weight:800;line-height:1.16;letter-spacing:-1.5px;text-wrap:balance;
     max-width:1700px}
   .verse b{color:var(--accent);font-weight:800}
   .ref{margin-top:46px;font-size:40px;font-weight:700;color:var(--dim);letter-spacing:.5px}
   .ref span{color:var(--head)}
-  .word{font-size:150px;font-weight:800;letter-spacing:-4px;line-height:1;color:var(--head)}
-  .say{font-size:38px;color:var(--dim);letter-spacing:6px;margin-top:12px;text-transform:uppercase}
-  .sentence{font-size:56px;font-weight:700;line-height:1.25;margin-top:22px;
-    border-left:10px solid var(--accent);padding-left:30px}
-  .same{font-size:34px;color:var(--dim);font-weight:700;margin-top:18px;letter-spacing:1px}
 
-  .row{display:flex;align-items:center;gap:70px}
-  .col{display:flex;flex-direction:column;gap:10px}
-  .grow{flex:1}
-  /* The vocabulary pictures are the story frames themselves, so they stay 16:9
-     and are never cropped to a square — a centre crop would cut the hand off
-     frame 7 and the sandals off frame 9. */
-  .thumb{width:620px;height:349px;object-fit:cover;border-radius:18px;flex:none;
-    box-shadow:0 10px 36px rgba(17,19,23,.18)}
+  /* The two meaning slides. Each line is its own reveal so they can be said one
+     at a time and echoed back. */
+  .beat{font-size:min(84px, calc(var(--sw) * .04375px));font-weight:800;line-height:1.16;letter-spacing:-1.5px;max-width:1540px}
+  .beat + .beat{margin-top:32px}
+  .beat.key{color:var(--accent)}
 
-  .langs{position:absolute;left:110px;right:110px;bottom:286px;display:flex;
-    border-top:2px solid var(--rule);padding-top:24px}
-  .lang{flex:1}
-  .lang .name{font-size:21px;color:var(--dim);letter-spacing:3px;margin-bottom:8px;font-weight:700}
-  .lang .val{font-size:44px;font-weight:700;line-height:1.1}
-  .lang .rom{font-size:23px;color:var(--dim);margin-top:6px}
+  /* Vocabulary. These carry no picture on purpose: the slide before each one is
+     the picture, and the whole point of this layout is that the four languages
+     are readable from the back of a room on a TV. */
+  .word{font-size:min(160px, calc(var(--sw) * .0833px));font-weight:800;letter-spacing:-5px;line-height:1;color:var(--head)}
+  .say{font-size:min(40px, calc(var(--sw) * .0208px));color:var(--dim);letter-spacing:6px;margin-top:14px;text-transform:uppercase}
+  .sentence{font-size:min(60px, calc(var(--sw) * .03125px));font-weight:700;line-height:1.25;margin-top:30px;
+    border-left:12px solid var(--accent);padding-left:32px}
+
+  .langs{display:grid;grid-template-columns:1fr 1fr;gap:36px 70px;margin-top:62px;
+    border-top:2px solid var(--rule);padding-top:38px}
+  .lang .name{font-size:min(28px, calc(var(--sw) * .01458px));color:var(--dim);letter-spacing:4px;margin-bottom:10px;font-weight:700}
+  .lang .val{font-size:min(88px, calc(var(--sw) * .0458px));font-weight:700;line-height:1.1}
+  .lang .rom{font-size:min(34px, calc(var(--sw) * .0177px));color:var(--dim);margin-top:8px}
 
   .num{position:absolute;right:110px;top:70px;font-size:25px;color:#b9bec6;letter-spacing:4px;font-weight:800}
   .bar{position:absolute;left:0;bottom:0;height:8px;background:var(--accent);transition:width .25s ease;z-index:5}
@@ -85,88 +90,132 @@
   [data-step]{opacity:0;transition:opacity .3s ease}
   [data-step].shown{opacity:1}
 
-  /* ---------- title ---------- */
-  .title{font-size:200px;font-weight:800;letter-spacing:-6px;line-height:1;max-width:1700px}
-
-  /* ---------- story frames ---------- */
-  /* The nine renders are already exactly 1920x1080, so they are laid in
-     full-bleed with no cropping. The set runs light -> near-black -> light
-     again, so a caption cannot be white-on-scrim the way the John deck's was:
-     an opaque plate is the one treatment that reads on every frame. */
-  .photo{padding:0;overflow:hidden;background:#0a0c10}
-  .photobg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-  /* The set runs from near-white to near-black, so the slide number needs its
-     own ground rather than a colour that only works at one end. */
-  .photo .num{color:#fff;background:rgba(8,10,14,.38);padding:7px 18px;border-radius:999px;
-    top:58px;right:92px;z-index:2}
-  .plate{position:absolute;left:92px;bottom:108px;z-index:2;max-width:1180px;
-    background:#fff;border-left:12px solid var(--accent);border-radius:6px;
-    padding:30px 44px 32px;box-shadow:0 18px 60px rgba(8,10,14,.38)}
-  .plate .line{font-size:62px;font-weight:800;line-height:1.2;letter-spacing:-1px;color:var(--ink)}
-  .plate .line2{font-size:50px;font-weight:700;line-height:1.25;margin-top:18px;color:var(--accent)}
+  /* ---------- demonstration frames ---------- */
+  /* The photographs are square studio shots on white, so they sit ON the
+     deck's ground as a picture beside its caption, rather than bleeding to the
+     edges. A square is what makes these slides work in both orientations: it
+     needs no crop in either, so it goes beside the caption in landscape and
+     above it in portrait. Full-bleed was the opposite — a 16:9 frame had to
+     either crop the shot or leave a band of dead ground around it.
+     The picture is a ratio of --sw like the type, so the two columns hold the
+     same proportions at every width. */
+  .photo{flex-direction:row;align-items:center;
+    gap:min(80px, calc(var(--sw) * .0417px))}
+  .photobg{order:2;flex:none;object-fit:contain;
+    width:min(720px, calc(var(--sw) * .375px));
+    height:min(720px, calc(var(--sw) * .375px))}
+  .photo .num{color:#b9bec6}
+  .plate{order:1;flex:1 1 auto;min-width:0;padding:6px 0}
+  .plate .line{font-size:min(62px, calc(var(--sw) * .0323px));font-weight:800;line-height:1.2;letter-spacing:-1px;color:var(--ink)}
+  /* The gapped sentence. The class says it out loud while the picture is still
+     in front of them, which is the reason the picture is there at all — a
+     caption that names the action teaches nobody, because there is nothing
+     left to work out. Not every frame carries one: the opening line-up and the
+     two payoff frames stay plain. */
+  .ask{font-size:min(56px, calc(var(--sw) * .0292px));font-weight:800;line-height:1.5;
+    letter-spacing:-1px;color:var(--ink);text-wrap:balance}
+  /* On the one slide that keeps its caption, the question must not read as the
+     next sentence of it. */
+  .line + .ask{margin-top:24px}
+  /* Every blank already holds its word, transparent, and fills in on its own
+     step. Holding the word in place is what keeps the line from reflowing as
+     the class answers — and the width of a blank is a fair clue to the length
+     of the word, which is the kind of help a beginner can use. */
+  .bl{display:inline-block;min-width:1.9em;padding:0 .07em;text-align:center;
+    border-bottom:.09em solid var(--accent)}
+  .bl i{font-style:normal;color:var(--accent)}
+  .plate .line2{font-size:min(50px, calc(var(--sw) * .026px));font-weight:700;line-height:1.25;margin-top:18px;color:var(--accent)}
 
   /* ---------- summary ---------- */
   .sum{width:100%;border-collapse:collapse;margin-top:6px}
-  .sum th{font-size:22px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;
-    text-align:left;padding:0 18px 12px 0;border-bottom:3px solid var(--accent);font-weight:800}
-  .sum td{padding:18px 18px 18px 0;border-bottom:1px solid var(--rule);vertical-align:top}
-  .sum .w{font-size:42px;font-weight:800;color:var(--head)}
-  .sum .t{font-size:34px;font-weight:600}
-  .sum .r{font-size:19px;color:var(--dim);margin-top:3px}
-  .sents{margin-top:30px;display:flex;gap:40px}
-  .sents div{flex:1;font-size:28px;font-weight:700;border-left:7px solid var(--accent);padding-left:18px;line-height:1.3}
-  .shoot{position:absolute;right:110px;top:132px;font-size:26px;color:var(--dim);letter-spacing:2px}
+  .sum th{font-size:24px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;
+    text-align:left;padding:0 18px 14px 0;border-bottom:3px solid var(--accent);font-weight:800}
+  .sum td{padding:12px 18px 12px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+  /* Seven rows reach the bottom of the stage, where the Next and Full screen
+     buttons live, so this one slide keeps its own clearance. */
+  .slide.summary{padding-bottom:140px}
+  .sum .w{font-size:44px;font-weight:800;color:var(--head)}
+  .sum .t{font-size:36px;font-weight:600}
+  .sum .r{font-size:20px;color:var(--dim);margin-top:3px}
+  /* Sits on the eyebrow's line, not below it, where it used to land on the
+     Arabic column heading. */
+  .shoot{position:absolute;right:110px;top:86px;font-size:26px;color:var(--dim);letter-spacing:2px}
+
+  /* ---------- the reason ---------- */
+  /* The deck's only inverted slide. Everything before it explains; this is the
+     one line that should stop the room, so it shares the look of nothing else
+     in the deck — dark ground, warm light, type twice the size of any other
+     sentence. */
+  .reason{background:#0b0e13;color:#fff}
+  .reason .num{color:#6b7280}
+  /* Like the type above, this slide sizes itself off --sw. It is the one that
+     cannot wrap at all: a second line of 198px type is 208px, which on a
+     1440-wide stage pushed the whole slide past the bottom edge. */
+  .lead{font-size:min(56px, calc(var(--sw) * .0292px));font-weight:700;line-height:1.2;color:#c7cdd6}
+  .lead + .lead{margin-top:14px}
+  .shout{font-size:min(198px, calc(var(--sw) * .1031px));font-weight:800;letter-spacing:-7px;
+    line-height:1.05;margin-top:32px;white-space:nowrap;
+    color:#FFC24B;text-shadow:0 0 70px rgba(255,194,75,.28)}
+  .reason .langs{border-top-color:rgba(255,255,255,.18);margin-top:48px;padding-top:34px}
+  .reason .lang .name{color:#8b93a0}
+  .reason .lang .val{font-size:min(60px, calc(var(--sw) * .0313px));color:#fff}
+  .reason .lang .rom{color:#8b93a0;font-size:min(30px, calc(var(--sw) * .0156px))}
 
   /* ---------- portrait ---------- */
   /* The portrait stage is the one whose height varies with the device, so
-     nothing below measures from the bottom edge: the vocabulary strip stops
-     being absolutely placed and becomes an ordinary flow child. The thumbnail
-     gets an explicit height rather than a percentage, because WebKit will not
-     resolve a percentage height on an image inside a flex column and lets it
-     run off the screen while everything looks fine in Chrome. */
+     nothing below measures from the bottom edge. The picture panel gets an
+     explicit height rather than a ratio, because WebKit will not resolve a
+     percentage height on an image inside a flex column and lets it run off
+     the screen while Chrome looks fine. */
   .is-portrait .slide{padding:72px 64px}
-  .is-portrait .slide:has(.langs){padding-bottom:72px}
-
   .is-portrait .title{font-size:132px;letter-spacing:-4px}
   .is-portrait .verse{font-size:60px;letter-spacing:-1px}
   .is-portrait .ref{font-size:32px;margin-top:34px}
   .is-portrait .eyebrow{font-size:24px;letter-spacing:6px;margin-bottom:24px}
+  .is-portrait .beat{font-size:58px}
+  .is-portrait .beat + .beat{margin-top:24px}
 
-  .is-portrait .row{flex-direction:column;align-items:stretch;gap:34px}
-  .is-portrait .thumb{width:100%;height:536px}
-  .is-portrait .word{font-size:104px;letter-spacing:-3px}
-  .is-portrait .say{font-size:30px;letter-spacing:5px}
-  .is-portrait .sentence{font-size:44px;margin-top:18px;border-left-width:8px;padding-left:24px}
-  .is-portrait .same{font-size:28px;margin-top:14px}
+  .is-portrait .word{font-size:116px;letter-spacing:-3px}
+  .is-portrait .say{font-size:32px;letter-spacing:5px}
+  .is-portrait .sentence{font-size:46px;margin-top:22px;border-left-width:9px;padding-left:26px}
+  .is-portrait .langs{gap:30px 36px;margin-top:48px;padding-top:30px}
+  .is-portrait .lang .val{font-size:60px}
+  .is-portrait .lang .name{font-size:22px}
+  .is-portrait .lang .rom{font-size:26px}
 
-  .is-portrait .langs{position:static;display:grid;grid-template-columns:1fr 1fr;
-    gap:32px 28px;margin-top:54px}
-  .is-portrait .lang .val{font-size:42px}
-  .is-portrait .lang .name{font-size:19px}
-  .is-portrait .lang .rom{font-size:21px}
+  /* The same two pieces, stacked. The portrait stage is always 1080 wide, so
+     the picture gets a flat square measured off that width rather than a
+     percentage — WebKit will not resolve a percentage height on an image and
+     silently falls back to its natural size. */
+  .is-portrait .photo{flex-direction:column;align-items:stretch;gap:0}
+  /* 820 is set by the SHORTEST portrait stage, not the tallest. fit() floors
+     the long edge at 1280, and at that height a square plus its caption has to
+     finish above the controls — a picture sized for a phone runs straight
+     into them on a squarer tablet. */
+  .is-portrait .photobg{order:0;align-self:center;width:820px;height:820px}
+  /* flex:none matters: the caption grows to fill the column otherwise, and its
+     left rule is drawn down the whole slide. */
+  .is-portrait .plate{order:1;flex:none;margin-top:52px;padding:4px 0}
+  .is-portrait .plate .line{font-size:50px}
+  .is-portrait .ask{font-size:46px}
+  .is-portrait .plate .line2{font-size:40px;margin-top:16px}
 
-  /* A 16:9 render cover-cropped into a portrait screen becomes a narrow slice
-     with the figure's head and arms cut off, so in portrait the picture is a
-     16:9 panel with the caption underneath it, the pair centred in the tall
-     screen. The dark ground around it is a deliberate frame, not the letterbox
-     the whole deck used to sit in. The panel height is explicit rather than a
-     ratio, for the same WebKit reason as the thumbnails. */
-  .is-portrait .photo{padding:0}
-  .is-portrait .photobg{position:static;flex:none;width:100%;height:608px}
-  .is-portrait .plate{position:static;left:auto;bottom:auto;max-width:none;
-    margin:44px 48px 0;padding:26px 34px 28px}
-  .is-portrait .plate .line{font-size:46px}
-  .is-portrait .plate .line2{font-size:38px;margin-top:14px}
+  /* Right-aligned controls and a centre-aligned hint collide on a phone. */
+  .is-portrait .help{bottom:126px}
 
   .is-portrait .num{right:48px;top:48px}
   .is-portrait .shoot{display:none}
-  .is-portrait .sum th{font-size:17px;letter-spacing:2px;padding-right:10px}
+  .is-portrait .sum th{font-size:18px;letter-spacing:2px;padding-right:10px}
   .is-portrait .sum td{padding:14px 10px 14px 0}
-  .is-portrait .sum .w{font-size:31px}
-  .is-portrait .sum .t{font-size:25px}
-  .is-portrait .sum .r{font-size:15px}
-  .is-portrait .sents{flex-direction:column;gap:16px;margin-top:26px}
-  .is-portrait .sents div{font-size:26px;border-left-width:5px;padding-left:14px}
+  .is-portrait .sum .w{font-size:32px}
+  .is-portrait .sum .t{font-size:26px}
+  .is-portrait .sum .r{font-size:16px}
+
+  .is-portrait .lead{font-size:40px}
+  .is-portrait .shout{font-size:104px;letter-spacing:-4px;margin-top:26px;white-space:normal}
+  .is-portrait .reason .langs{margin-top:40px;padding-top:28px}
+  .is-portrait .reason .lang .val{font-size:40px}
+  .is-portrait .reason .lang .rom{font-size:24px}
 </style>
 </head>
 <body>
@@ -178,91 +227,162 @@
     <div class="title">Colossians 1:13</div>
   </section>
 
-  <!-- 2 — ONE CORD -->
+  <!-- 2 — THE TABLE -->
   <section class="slide photo">
     <div class="num"></div>
-    <img class="photobg" src="images/01-one-cord.jpg" alt="A small grey clay doll steps playfully over one red cord." />
-    <div class="plate" data-step><div class="line">I do one small wrong thing.</div></div>
+    <img class="photobg" src="images/01-table.jpg" alt="Oil, water, dish soap and an empty glass." />
+    <div class="plate" data-step><div class="line">Look.</div></div>
   </section>
 
-  <!-- 3 — I CAN BREAK IT -->
+  <!-- 3 — POUR THE OIL -->
   <section class="slide photo">
     <div class="num"></div>
-    <img class="photobg" src="images/02-i-can-break-it.jpg" alt="The doll holds the two broken ends of the cord, smiling." />
-    <div class="plate" data-step><div class="line">It is easy to stop. I can break it.</div></div>
-  </section>
-
-  <!-- 4 — MORE CORDS -->
-  <section class="slide photo">
-    <div class="num"></div>
-    <img class="photobg" src="images/03-more-cords.jpg" alt="Many cords cross the floor and one catches the doll's ankle." />
-    <div class="plate" data-step><div class="line">I do it again. And again. And again.</div></div>
-  </section>
-
-  <!-- 5 — ENTANGLED -->
-  <section class="slide photo">
-    <div class="num"></div>
-    <img class="photobg" src="images/04-entangled.jpg" alt="The doll is on its knees, cords wound around its body." />
-    <div class="plate" data-step><div class="line">Now it is not so easy.</div></div>
-  </section>
-
-  <!-- 6 — STRUGGLING -->
-  <section class="slide photo">
-    <div class="num"></div>
-    <img class="photobg" src="images/05-struggling.jpg" alt="The doll sits wrapped in cords, one arm reaching out." />
-    <div class="plate" data-step><div class="line">I pull. I pull.</div></div>
-  </section>
-
-  <!-- 7 — BOUND. The dominion beat: the question is the point of the lesson,
-       so it arrives as its own reveal and not as part of the caption. -->
-  <section class="slide photo">
-    <div class="num"></div>
-    <img class="photobg" src="images/06-bound.jpg" alt="The doll sits bowed in near darkness, densely bound." />
+    <img class="photobg" src="images/02-pour-oil.jpg" alt="Oil being poured into the glass." />
     <div class="plate" data-step>
-      <div class="line">I cannot get out.</div>
-      <div class="line2" data-step>Who is the boss of me now?</div>
+      <div class="ask"><span class="bl"><i data-step>Pour</i></span> the <span class="bl"><i data-step>oil</i></span> into the <span class="bl"><i data-step>glass</i></span>.</div>
     </div>
   </section>
 
-  <!-- 8 — RESCUE APPROACHES -->
-  <section class="slide photo">
-    <div class="num"></div>
-    <img class="photobg" src="images/07-rescue-approaches.jpg" alt="A hand in an ivory sleeve brings shears toward the cords." />
-    <div class="plate" data-step><div class="line">Someone comes from outside.</div></div>
-  </section>
-
-  <!-- 9 — REACHING -->
-  <section class="slide photo">
-    <div class="num"></div>
-    <img class="photobg" src="images/08-reaching-for-jesus.jpg" alt="The cords are cut and the doll reaches up for an open hand." />
-    <div class="plate" data-step><div class="line">He cuts the ropes. He takes my hand.</div></div>
-  </section>
-
-  <!-- 10 — EMBRACE -->
-  <section class="slide photo">
-    <div class="num"></div>
-    <img class="photobg" src="images/09-embrace.jpg" alt="The free doll holds on to his robe, his hand resting on its head." />
-    <div class="plate" data-step><div class="line">Out of the dark. Into his kingdom.</div></div>
-  </section>
-
-  <!-- 11 — THE VERSE -->
+  <!-- 4 — WORD: POUR -->
   <section class="slide">
     <div class="num"></div>
-    <div class="verse">&ldquo;For he has <b>rescued</b> us <b>from</b> the dominion of
-      <b>darkness</b> and brought us <b>into</b> the <b>kingdom</b> of the Son he loves.&rdquo;</div>
+    <div class="word">pour</div><div class="say">por</div>
+    <div class="sentence" data-step>I pour the oil into the glass.</div>
+    <div class="langs" data-step>
+      <div class="lang"><div class="name">JAPANESE</div><div class="val">注ぐ</div><div class="rom">sosogu</div></div>
+      <div class="lang"><div class="name">SPANISH</div><div class="val">verter</div></div>
+      <div class="lang"><div class="name">UKRAINIAN</div><div class="val">наливати</div><div class="rom">nalyvaty</div></div>
+      <div class="lang"><div class="name">ARABIC</div><div class="val ar">يَصُبّ</div><div class="rom">yasubb</div></div>
+    </div>
+  </section>
+
+  <!-- 5 — POUR THE WATER -->
+  <section class="slide photo">
+    <div class="num"></div>
+    <img class="photobg" src="images/03-pour-water.jpg" alt="Water being poured into the same glass." />
+    <div class="plate" data-step>
+      <div class="ask"><span class="bl"><i data-step>Pour</i></span> the <span class="bl"><i data-step>water</i></span> into the <span class="bl"><i data-step>glass</i></span>.</div>
+    </div>
+  </section>
+
+  <!-- 6 — MIX -->
+  <section class="slide photo">
+    <div class="num"></div>
+    <img class="photobg" src="images/04-mix.jpg" alt="A spoon stirring the glass." />
+    <div class="plate" data-step>
+      <div class="ask"><span class="bl"><i data-step>Mix</i></span> the oil and the water.</div>
+    </div>
+  </section>
+
+  <!-- 7 — WORD: MIX -->
+  <section class="slide">
+    <div class="num"></div>
+    <div class="word">mix</div><div class="say">mix</div>
+    <div class="sentence" data-step>I mix the oil and the water.</div>
+    <div class="langs" data-step>
+      <div class="lang"><div class="name">JAPANESE</div><div class="val">混ぜる</div><div class="rom">mazeru</div></div>
+      <div class="lang"><div class="name">SPANISH</div><div class="val">mezclar</div></div>
+      <div class="lang"><div class="name">UKRAINIAN</div><div class="val">змішувати</div><div class="rom">zmishuvaty</div></div>
+      <div class="lang"><div class="name">ARABIC</div><div class="val ar">يَخلِط</div><div class="rom">yakhlit</div></div>
+    </div>
+  </section>
+
+  <!-- 8 — SEPARATE -->
+  <section class="slide photo">
+    <div class="num"></div>
+    <img class="photobg" src="images/05-separate.jpg" alt="The glass at rest, a golden oil layer above clear water." />
+    <div class="plate" data-step>
+      <div class="line">Look. The oil goes up. The water stays down.</div>
+      <div class="ask" data-step>The oil and the water <span class="bl"><i data-step>separate</i></span>.</div>
+    </div>
+  </section>
+
+  <!-- 9 — WORD: SEPARATE -->
+  <section class="slide">
+    <div class="num"></div>
+    <div class="word">separate</div><div class="say">SEP &middot; a &middot; rate</div>
+    <div class="sentence" data-step>The oil and the water separate.</div>
+    <div class="langs" data-step>
+      <div class="lang"><div class="name">JAPANESE</div><div class="val">分かれる</div><div class="rom">wakareru</div></div>
+      <div class="lang"><div class="name">SPANISH</div><div class="val">separarse</div></div>
+      <div class="lang"><div class="name">UKRAINIAN</div><div class="val">розділятися</div><div class="rom">rozdiliatysia</div></div>
+      <div class="lang"><div class="name">ARABIC</div><div class="val ar">يَنفَصِل</div><div class="rom">yanfasil</div></div>
+    </div>
+  </section>
+
+  <!-- 10 — MEANING: the gap. Nothing here is something the learner did; the
+       verse puts everyone on the same side of it, teacher included. -->
+  <section class="slide">
+    <div class="num"></div>
+    <div class="beat">Oil and water do not mix.</div>
+    <div class="beat" data-step>We are in the dark.</div>
+    <div class="beat" data-step>God is light.</div>
+    <div class="beat key" data-step>We cannot go to God.</div>
+  </section>
+
+  <!-- 11 — ADD THE SOAP -->
+  <section class="slide photo">
+    <div class="num"></div>
+    <img class="photobg" src="images/06-add-soap.jpg" alt="A drop of dish soap going into the glass." />
+    <div class="plate" data-step>
+      <div class="ask">Add the <span class="bl"><i data-step>dish</i></span> <span class="bl"><i data-step>soap</i></span>.</div>
+    </div>
+  </section>
+
+  <!-- 12 — MIX AGAIN -->
+  <section class="slide photo">
+    <div class="num"></div>
+    <img class="photobg" src="images/07-mix-soap.jpg" alt="Stirring the glass again, now with soap in it." />
+    <div class="plate" data-step><div class="line">I mix again.</div></div>
+  </section>
+
+  <!-- 13 — ONE LIQUID -->
+  <section class="slide photo">
+    <div class="num"></div>
+    <img class="photobg" src="images/08-white.jpg" alt="The same glass, now milky white, with no layers." />
+    <div class="plate" data-step>
+      <div class="line">Now it is white.</div>
+      <div class="line2" data-step>Where is the oil? Where is the water?</div>
+    </div>
+  </section>
+
+  <!-- 14 — WORD: CONNECT -->
+  <section class="slide">
+    <div class="num"></div>
+    <div class="word">connect</div><div class="say">con &middot; NECT</div>
+    <div class="sentence" data-step>The soap connects the oil and the water.</div>
+    <div class="langs" data-step>
+      <div class="lang"><div class="name">JAPANESE</div><div class="val">つなぐ</div><div class="rom">tsunagu</div></div>
+      <div class="lang"><div class="name">SPANISH</div><div class="val">unir</div></div>
+      <div class="lang"><div class="name">UKRAINIAN</div><div class="val">з&rsquo;єднувати</div><div class="rom">ziednuvaty</div></div>
+      <div class="lang"><div class="name">ARABIC</div><div class="val ar">يَربِط</div><div class="rom">yarbit</div></div>
+    </div>
+  </section>
+
+  <!-- 15 — MEANING: Jesus. The soap works because it is in both liquids at
+       once, which is the whole analogy and the reason it is a soap and not a
+       stronger spoon. -->
+  <section class="slide">
+    <div class="num"></div>
+    <div class="beat">The soap is in the oil.</div>
+    <div class="beat" data-step>The soap is in the water.</div>
+    <div class="beat" data-step>The soap holds them together.</div>
+    <div class="beat key" data-step>Jesus connects us to God.</div>
+  </section>
+
+  <!-- 16 — THE VERSE -->
+  <section class="slide">
+    <div class="num"></div>
+    <div class="verse">&ldquo;For he has <b>rescued</b> us from the dominion of
+      <b>darkness</b> and brought us into the <b>kingdom</b> of the Son he loves.&rdquo;</div>
     <div class="ref" data-step><span>Colossians 1:13</span></div>
   </section>
 
-  <!-- 12 — DARK -->
+  <!-- 17 — WORD: DARK -->
   <section class="slide">
     <div class="num"></div>
-    <div class="row">
-      <img class="thumb" src="images/06-bound.jpg" alt="" />
-      <div class="col grow">
-        <div class="word">dark</div><div class="say">dark</div>
-        <div class="sentence" data-step>It is dark. I cannot see.</div>
-      </div>
-    </div>
+    <div class="word">dark</div><div class="say">dark</div>
+    <div class="sentence" data-step>We were in the dark.</div>
     <div class="langs" data-step>
       <div class="lang"><div class="name">JAPANESE</div><div class="val">暗い</div><div class="rom">kurai</div></div>
       <div class="lang"><div class="name">SPANISH</div><div class="val">oscuro</div></div>
@@ -271,16 +391,11 @@
     </div>
   </section>
 
-  <!-- 13 — RESCUE -->
+  <!-- 18 — WORD: RESCUE -->
   <section class="slide">
     <div class="num"></div>
-    <div class="row">
-      <img class="thumb" src="images/07-rescue-approaches.jpg" alt="" />
-      <div class="col grow">
-        <div class="word">rescue</div><div class="say">RES &middot; cue</div>
-        <div class="sentence" data-step>He rescued me.</div>
-      </div>
-    </div>
+    <div class="word">rescue</div><div class="say">RES &middot; cue</div>
+    <div class="sentence" data-step>God rescued us.</div>
     <div class="langs" data-step>
       <div class="lang"><div class="name">JAPANESE</div><div class="val">救う</div><div class="rom">sukuu</div></div>
       <div class="lang"><div class="name">SPANISH</div><div class="val">rescatar</div></div>
@@ -289,16 +404,11 @@
     </div>
   </section>
 
-  <!-- 14 — KINGDOM -->
+  <!-- 19 — WORD: KINGDOM -->
   <section class="slide">
     <div class="num"></div>
-    <div class="row">
-      <img class="thumb" src="images/09-embrace.jpg" alt="" />
-      <div class="col grow">
-        <div class="word">kingdom</div><div class="say">KING &middot; dom</div>
-        <div class="sentence" data-step>Jesus is the king. This is his kingdom.</div>
-      </div>
-    </div>
+    <div class="word">kingdom</div><div class="say">KING &middot; dom</div>
+    <div class="sentence" data-step>Jesus is the king. This is his kingdom.</div>
     <div class="langs" data-step>
       <div class="lang"><div class="name">JAPANESE</div><div class="val">王国</div><div class="rom">oukoku</div></div>
       <div class="lang"><div class="name">SPANISH</div><div class="val">reino</div></div>
@@ -307,34 +417,30 @@
     </div>
   </section>
 
-  <!-- 15 — OUT OF ... INTO. The verse says "from", so the equivalence is shown
-       on the slide rather than left for someone to trip over. -->
-  <section class="slide">
-    <div class="num"></div>
-    <div class="row">
-      <img class="thumb" src="images/08-reaching-for-jesus.jpg" alt="" />
-      <div class="col grow">
-        <div class="word">out of &hellip; into</div>
-        <div class="sentence" data-step>Out of the dark. Into the kingdom.</div>
-        <div class="same" data-step>out of = from</div>
-      </div>
-    </div>
-    <div class="langs" data-step>
-      <div class="lang"><div class="name">JAPANESE</div><div class="val">〜から 〜へ</div><div class="rom">kara &hellip; e</div></div>
-      <div class="lang"><div class="name">SPANISH</div><div class="val">de&hellip; a&hellip;</div></div>
-      <div class="lang"><div class="name">UKRAINIAN</div><div class="val">з&hellip; до&hellip;</div><div class="rom">z &hellip; do</div></div>
-      <div class="lang"><div class="name">ARABIC</div><div class="val ar">مِن… إلى…</div><div class="rom">min &hellip; ila</div></div>
-    </div>
-  </section>
-
-  <!-- 16 — SUMMARY -->
-  <section class="slide">
+  <!-- 20 — SUMMARY -->
+  <section class="slide summary">
     <div class="num"></div>
     <div class="eyebrow">Today&rsquo;s words</div>
     <div class="shoot">📷 take a picture</div>
     <table class="sum">
-      <tr><th style="width:24%">ENGLISH</th><th style="width:17%">JAPANESE</th><th style="width:16%">SPANISH</th>
-          <th style="width:22%">UKRAINIAN</th><th style="width:21%">ARABIC</th></tr>
+      <tr><th style="width:22%">ENGLISH</th><th style="width:18%">JAPANESE</th><th style="width:16%">SPANISH</th>
+          <th style="width:23%">UKRAINIAN</th><th style="width:21%">ARABIC</th></tr>
+      <tr><td class="w">pour</td>
+          <td class="t">注ぐ<div class="r">sosogu</div></td><td class="t">verter</td>
+          <td class="t">наливати<div class="r">nalyvaty</div></td>
+          <td class="t"><span class="ar">يَصُبّ</span><div class="r">yasubb</div></td></tr>
+      <tr><td class="w">mix</td>
+          <td class="t">混ぜる<div class="r">mazeru</div></td><td class="t">mezclar</td>
+          <td class="t">змішувати<div class="r">zmishuvaty</div></td>
+          <td class="t"><span class="ar">يَخلِط</span><div class="r">yakhlit</div></td></tr>
+      <tr><td class="w">separate</td>
+          <td class="t">分かれる<div class="r">wakareru</div></td><td class="t">separarse</td>
+          <td class="t">розділятися<div class="r">rozdiliatysia</div></td>
+          <td class="t"><span class="ar">يَنفَصِل</span><div class="r">yanfasil</div></td></tr>
+      <tr><td class="w">connect</td>
+          <td class="t">つなぐ<div class="r">tsunagu</div></td><td class="t">unir</td>
+          <td class="t">з&rsquo;єднувати<div class="r">ziednuvaty</div></td>
+          <td class="t"><span class="ar">يَربِط</span><div class="r">yarbit</div></td></tr>
       <tr><td class="w">dark</td>
           <td class="t">暗い<div class="r">kurai</div></td><td class="t">oscuro</td>
           <td class="t">темний<div class="r">temnyi</div></td>
@@ -347,15 +453,23 @@
           <td class="t">王国<div class="r">oukoku</div></td><td class="t">reino</td>
           <td class="t">царство<div class="r">tsarstvo</div></td>
           <td class="t"><span class="ar">مَملَكة</span><div class="r">mamlaka</div></td></tr>
-      <tr><td class="w">out of &hellip; into</td>
-          <td class="t">〜から 〜へ<div class="r">kara &hellip; e</div></td><td class="t">de&hellip; a&hellip;</td>
-          <td class="t">з&hellip; до&hellip;<div class="r">z &hellip; do</div></td>
-          <td class="t"><span class="ar">مِن… إلى…</span><div class="r">min &hellip; ila</div></td></tr>
     </table>
-    <div class="sents">
-      <div>It is dark. I cannot see.</div>
-      <div>He rescued me.</div>
-      <div>Out of the dark. Into the kingdom.</div>
+  </section>
+
+  <!-- 21 — THE REASON. Last, and deliberately unlike every slide before it:
+       the experiment explained how, and this is the only slide that says why.
+       It carries the sentence in all four languages because this is the one
+       line nobody in the room should have to translate for themselves. -->
+  <section class="slide reason">
+    <div class="num"></div>
+    <div class="lead">All of this happened.</div>
+    <div class="lead" data-step>Why?</div>
+    <div class="shout" data-step>God loves you.</div>
+    <div class="langs" data-step>
+      <div class="lang"><div class="name">JAPANESE</div><div class="val">神はあなたを愛しています</div><div class="rom">Kami wa anata o aishite imasu</div></div>
+      <div class="lang"><div class="name">SPANISH</div><div class="val">Dios te ama</div></div>
+      <div class="lang"><div class="name">UKRAINIAN</div><div class="val">Бог любить тебе</div><div class="rom">Boh liubyt tebe</div></div>
+      <div class="lang"><div class="name">ARABIC</div><div class="val ar">اللهُ يُحِبُّك</div><div class="rom">Allāhu yuhibbuk</div></div>
     </div>
   </section>
 
@@ -398,28 +512,21 @@
     bar.style.width=((at+1)/seq.length*100)+'%';
   }
   function go(d){ at=Math.max(0,Math.min(seq.length-1,at+d)); render(); help.classList.add('hide'); }
-  function gotoSlide(n){
-    for(var i=0;i<seq.length;i++) if(seq[i].slide===n && seq[i].step===-1){at=i;render();return;}
-  }
 
   document.addEventListener('keydown',function(e){
     if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(1);}
     else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(-1);}
     else if(e.key==='Home'){at=0;render();}
     else if(e.key==='f'||e.key==='F'){ toggleFull(); }
-    else if(e.key>='1'&&e.key<='9'){gotoSlide(+e.key-1);help.classList.add('hide');}
   });
 
   document.addEventListener('click',function(e){
     go(e.clientX < window.innerWidth*0.18 ? -1 : 1);
   });
 
-  // Buttons, not just keys: on a phone there is no keyboard, and this deck gets
-  // screen-shared to a TV from one.
   // Three places refuse full screen: Safari on iPhone has no Fullscreen API at
-  // all, a sandboxed iframe (the desktop app's own file preview) denies it, and
-  // a rejected request resolves to nothing visible. In every one of those the
-  // button is a lie, so it removes itself rather than sit there doing nothing.
+  // all, a sandboxed frame denies it, and a rejected request resolves to
+  // nothing visible. In each the button is a lie, so it removes itself.
   var root=document.documentElement;
   var reqFull=root.requestFullscreen||root.webkitRequestFullscreen;
   var exitFull=document.exitFullscreen||document.webkitExitFullscreen;
@@ -434,6 +541,7 @@
     }
   }
   if(!reqFull || document.fullscreenEnabled===false || document.webkitFullscreenEnabled===false) hideFull();
+
   [['btnFull',toggleFull],['btnNext',function(){go(1);}],['btnBack',function(){go(-1);}]]
   .forEach(function(p){
     var el=document.getElementById(p[0]); if(!el) return;
@@ -441,23 +549,21 @@
     el.addEventListener('pointerdown',function(e){ e.stopPropagation(); });
   });
 
-  // The stage used to be a fixed 1920x1080 box scaled to fit, which left bars
-  // on every screen that was not exactly 16:9 — including a MacBook in full
-  // screen and any phone held either way. Instead the SHORT edge of the screen
-  // is pinned to 1080 design pixels and the long edge becomes whatever the
-  // screen actually is, so the stage fills it exactly.
+  // The stage is not a fixed box scaled to fit, which left bars on every screen
+  // that was not exactly 16:9. The SHORT edge of the screen is pinned to 1080
+  // design pixels and the long edge becomes whatever the screen is.
   //
-  // Which edge that is decides which measurements are safe. In landscape the
-  // height is always 1080, so every vertical number in the stylesheet keeps a
-  // constant basis and the landscape layout is untouched. In portrait the
-  // height is the variable one, which is why the portrait rules lay out in
-  // flow and never anchor a fixed distance from the bottom.
+  // Which edge varies decides what is safe to measure. In landscape the height
+  // is always 1080, so every vertical number in the stylesheet keeps a constant
+  // basis. In portrait the height is the variable one, which is why the
+  // portrait rules lay out in flow and never anchor to the bottom edge.
   var BASE=1080, MIN_LONG=1280;
   function fit(){
     var vw=innerWidth, vh=innerHeight, portrait=vh>vw, k, W, H;
     if(portrait){ k=vw/BASE; W=BASE; H=Math.max(MIN_LONG, Math.round(vh/k)); }
     else        { k=vh/BASE; H=BASE; W=Math.max(MIN_LONG, Math.round(vw/k)); }
     stage.style.width=W+'px'; stage.style.height=H+'px';
+    stage.style.setProperty('--sw', W);
     stage.style.transform='translate(-50%,-50%) scale('+k+')';
     stage.classList.toggle('is-portrait', portrait);
   }
