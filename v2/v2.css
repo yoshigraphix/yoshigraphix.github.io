@@ -21,12 +21,24 @@
     --line: #d9d3c5;
     --line-2: #c4bcaa;
 
-    /* v1's mint (#5cd9a5) is a dark-ground colour and fails badly on paper.
-       This is the same hue taken down until it carries small text (6.9:1).
+    /* THE MARK. These are the three triangles, and they belong to the logo
+       only. WCAG exempts logotypes from contrast, which is the only reason
+       gold can exist at 1.82:1 on paper. Never set type in them. */
+    --brand-coral: #e76f61;
+    --brand-gold: #ddaf32;
+    --brand-green: #3d9b78;
+
+    /* THE ACCENT. The mark's coral, taken down until it carries small text.
+       No single colour clears 4.5:1 on both cream and near-black — passing on
+       cream caps luminance at 0.157, passing on dark needs 0.197 — so this is
+       the cream value and the dark ground gets its own below.
+       4.78:1 on paper, and 4.52:1 on --accent-soft, which is the tighter of
+       the two because the locked tag sets coral type on a coral tint.
        It is the only colour on the page that is not ink, and it means one
        thing: you can act on this. */
-    --accent: #0e6b4d;
-    --accent-soft: #e2efe8;
+    --accent: #c8301e;
+    --accent-on-dark: #df412e; /* 4.5:1 on #100f0e, for anything inverted */
+    --accent-soft: #fae7e3;
 
     /* Display — Instrument Serif: high contrast, a real didone edge, the
        register of a catalogue rather than a landing page.
@@ -186,13 +198,12 @@ a {
     letter-spacing: 0.16em;
     text-transform: uppercase;
 }
-/* The mark is a letterform, not a badge, so it is set to the wordmark's own
-   cap height rather than to a box size. The nudge pulls its optical centre
-   onto the baseline of the name beside it. */
+/* The mark is a square of three triangles with no margin of its own, so it is
+   set a little smaller than a boxed logo would be and gets no optical nudge —
+   its own centre is already the centre of the square. */
 .brand__y {
-    width: 22px;
-    height: 22px;
-    margin-top: -1px;
+    width: 24px;
+    height: 24px;
 }
 
 .nav {
