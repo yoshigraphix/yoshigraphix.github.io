@@ -1,0 +1,810 @@
+/* =============================================================================
+   yoshigraphix — version 2
+   -----------------------------------------------------------------------------
+   v1 is a dark studio: loud, confident, a game-studio register. This is its
+   opposite on purpose — a gallery. Warm paper, near-black ink, one green, wide
+   margins, and the work hung as plates with captions.
+
+   Nothing here is shared with v1. The folder carries its own stylesheet and its
+   own copies of the images, so the two versions can never break each other and
+   either one can be thrown away whole.
+   ========================================================================== */
+
+:root {
+    /* Paper, not white. A flat #fff makes saturated artwork look like it is
+       floating in a browser; a warm ground makes it look hung on a wall. */
+    --paper: #f4f1ea;
+    --paper-2: #ece8de; /* wells, plate backings */
+    --ink: #16150f; /* 15.8:1 on paper */
+    --ink-2: #4e4a40; /* 8.4:1  — body at ease */
+    --ink-3: #817c6f; /* 4.6:1  — labels, dates; never below 14px */
+    --line: #d9d3c5;
+    --line-2: #c4bcaa;
+
+    /* v1's mint (#5cd9a5) is a dark-ground colour and fails badly on paper.
+       This is the same hue taken down until it carries small text (6.9:1).
+       It is the only colour on the page that is not ink, and it means one
+       thing: you can act on this. */
+    --accent: #0e6b4d;
+    --accent-soft: #e2efe8;
+
+    /* Display — Instrument Serif: high contrast, a real didone edge, the
+       register of a catalogue rather than a landing page.
+       Body    — Instrument Sans: same family voice, no drag at small sizes.
+       Mono    — DM Mono: drawn, not engineered; for plate numbers and labels. */
+    --display: "Instrument Serif", "Times New Roman", Georgia, serif;
+    --body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --t--1: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
+    --t-0: clamp(1rem, 0.97rem + 0.15vw, 1.08rem);
+    --t-1: clamp(1.18rem, 1.1rem + 0.4vw, 1.4rem);
+    --t-2: clamp(1.7rem, 1.4rem + 1.4vw, 2.6rem);
+    --t-3: clamp(2.4rem, 1.8rem + 3vw, 4.4rem);
+    --t-4: clamp(3rem, 1.6rem + 6.4vw, 7.5rem);
+
+    --gutter: clamp(1.25rem, 0.6rem + 3vw, 4.5rem);
+    --section: clamp(5rem, 3rem + 8vw, 10rem);
+    --measure: 58ch;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    /* The sticky bar is short; this keeps an anchored heading clear of it. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: var(--t-0);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: inherit;
+}
+
+::selection {
+    background: var(--accent);
+    color: var(--paper);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.wrap {
+    width: 100%;
+    max-width: 82rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+}
+
+.skip {
+    position: absolute;
+    left: -9999px;
+}
+.skip:focus {
+    left: var(--gutter);
+    top: 0.75rem;
+    z-index: 100;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.75rem 1rem;
+}
+
+/* ---------- small caps labels --------------------------------------------- */
+/* The one typographic device that runs through every section: a mono label,
+   letter-spaced, sitting on a hairline. It is what makes a page of varied
+   content read as one catalogue. */
+.label {
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.rule {
+    border: 0;
+    border-top: 1px solid var(--line);
+}
+
+.sec {
+    padding-block: var(--section);
+}
+
+.sec__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(2.5rem, 1rem + 4vw, 5rem);
+}
+
+.sec__head h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: var(--t-2);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+}
+
+/* ---------- top bar -------------------------------------------------------- */
+.bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s var(--ease);
+}
+.bar.is-stuck {
+    border-bottom-color: var(--line);
+}
+
+.bar__in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4rem;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+.brand img {
+    width: 26px;
+    height: 26px;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 0.4rem + 1.6vw, 2.25rem);
+}
+.nav a {
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink-2);
+    padding-block: 0.9rem; /* keeps the tap target at 44px without moving anything */
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.nav a:hover,
+.nav a:focus-visible {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+}
+.nav .is-cta {
+    color: var(--accent);
+}
+
+/* On a phone the four nav items do not fit beside the name, and a hamburger
+   for four anchors is theatre. They wrap to their own line instead. */
+@media (max-width: 36rem) {
+    .bar__in {
+        flex-wrap: wrap;
+        padding-block: 0.5rem;
+        min-height: 0;
+    }
+    .nav {
+        width: 100%;
+        justify-content: space-between;
+        gap: 0.5rem;
+        border-top: 1px solid var(--line);
+        padding-top: 0.1rem;
+    }
+    .nav a {
+        padding-block: 0.8rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+    }
+}
+
+/* ---------- hero ----------------------------------------------------------- */
+.hero {
+    padding-top: clamp(3rem, 1rem + 7vw, 7rem);
+    padding-bottom: clamp(3rem, 1rem + 6vw, 6rem);
+}
+
+.hero__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: clamp(2rem, 1rem + 3vw, 3.5rem);
+}
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .dot {
+        animation: pulse 2.8s var(--ease) infinite;
+    }
+}
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
+}
+
+/* The claim. Serif, large, and allowed to break where the meaning breaks —
+   the line endings are authored, not accidental. */
+.hero__claim {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: var(--t-4);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    max-width: 18ch;
+}
+.hero__claim em {
+    font-style: italic;
+    color: var(--accent);
+}
+
+.hero__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+    margin-top: clamp(2.5rem, 1rem + 4vw, 4.5rem);
+}
+@media (min-width: 60rem) {
+    .hero__grid {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        align-items: start;
+        gap: clamp(3rem, 1rem + 6vw, 7rem);
+    }
+}
+
+.hero__lede {
+    font-size: var(--t-1);
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: var(--measure);
+}
+.hero__lede strong {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.facts {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line);
+}
+.fact {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--line);
+    align-items: baseline;
+}
+.fact dd {
+    font-size: var(--t-0);
+}
+.fact a {
+    color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+@media (max-width: 26rem) {
+    .fact {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+    }
+}
+
+/* ---------- buttons -------------------------------------------------------- */
+/* No size change on any state — hover and press are carried by colour and a
+   fill that wipes in, never by the control growing or shrinking. */
+.btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.6rem;
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    overflow: hidden;
+    isolation: isolate;
+}
+.btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease);
+    z-index: -1;
+}
+.btn:hover::before,
+.btn:focus-visible::before {
+    transform: scaleX(1);
+}
+.btn:hover,
+.btn:focus-visible {
+    color: var(--paper);
+}
+.btn--solid {
+    background: var(--ink);
+    color: var(--paper);
+}
+.btn--solid::before {
+    background: var(--accent);
+}
+.btn--solid:hover,
+.btn--solid:focus-visible {
+    color: var(--paper);
+}
+
+.btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+/* ---------- work plates ---------------------------------------------------- */
+.plates {
+    display: grid;
+    gap: clamp(4rem, 2rem + 6vw, 8rem);
+}
+
+.plate {
+    display: grid;
+    gap: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+}
+
+/* Desktop and iPad landscape: picture and caption side by side, and every
+   other plate turns around so the eye has to travel. iPad PORTRAIT (768) is
+   deliberately below this line — at that width a side-by-side caption column
+   is 240px wide and the captions set ragged. It stacks instead. */
+@media (min-width: 62rem) {
+    .plate {
+        grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+        align-items: center;
+        gap: clamp(2rem, 0.5rem + 4vw, 4.5rem);
+    }
+    .plate:nth-child(even) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr);
+    }
+    .plate:nth-child(even) .plate__fig {
+        order: 2;
+    }
+}
+
+.plate__fig {
+    margin: 0;
+    background: var(--paper-2);
+    /* A hairline is the whole frame. Saturated artwork on warm paper needs an
+       edge or it bleeds into the ground; it does not need a shadow. */
+    border: 1px solid var(--line);
+    overflow: hidden;
+}
+.plate__fig img {
+    width: 100%;
+    aspect-ratio: 10 / 7;
+    object-fit: cover;
+    /* Held back a hair so the plates sit on the paper rather than shouting off
+       it; full saturation returns on hover, which is the reward for looking. */
+    filter: saturate(0.92);
+    transition: filter 0.5s var(--ease);
+}
+.plate:hover .plate__fig img,
+.plate:focus-within .plate__fig img {
+    filter: saturate(1.06);
+}
+
+.plate__no {
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.18em;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+.plate__no::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+    transition: background 0.4s var(--ease);
+}
+.plate:hover .plate__no::after,
+.plate:focus-within .plate__no::after {
+    background: var(--accent);
+}
+
+.plate__title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: var(--t-2);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    margin-bottom: 0.7rem;
+}
+.plate__title a {
+    text-decoration: none;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.4s var(--ease);
+}
+.plate:hover .plate__title a,
+.plate__title a:focus-visible {
+    background-size: 100% 1px;
+}
+
+.plate__body {
+    color: var(--ink-2);
+    max-width: 44ch;
+}
+
+.plate__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.tag {
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    border: 1px solid var(--line);
+    padding: 0.3rem 0.6rem;
+}
+.tag--locked {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.more {
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--accent);
+    border-bottom: 1px solid currentColor;
+    padding-block: 0.6rem;
+}
+
+/* The about row borrows the hero grid but centres: the portrait is much taller
+   than the two paragraphs beside it, and top-aligned they left a tall column
+   of empty paper. */
+.about {
+    align-items: center;
+}
+@media (min-width: 60rem) {
+    .about {
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.85fr);
+    }
+}
+
+/* ---------- what I do ------------------------------------------------------ */
+.cols {
+    display: grid;
+    gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+}
+@media (min-width: 56rem) {
+    .cols {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+.col h3 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: var(--t-1);
+    line-height: 1.1;
+    margin: 0.8rem 0 0.6rem;
+}
+.col p {
+    color: var(--ink-2);
+}
+.col__top {
+    border-top: 1px solid var(--ink);
+    padding-top: 0.9rem;
+}
+
+/* ---------- quotes --------------------------------------------------------- */
+.quotes {
+    display: grid;
+    gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+}
+@media (min-width: 56rem) {
+    .quotes {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+.quote blockquote {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: var(--t-1);
+    line-height: 1.32;
+    letter-spacing: -0.005em;
+}
+.quote figcaption {
+    margin-top: 1.1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+}
+.quote cite {
+    font-style: normal;
+    display: block;
+    font-weight: 600;
+}
+
+/* ---------- career spine --------------------------------------------------- */
+/* The timeline is gone. What a hiring manager needs from thirty years is where
+   he was, when, and what it was for — one line each, scannable in ten seconds. */
+.spine {
+    border-top: 1px solid var(--line);
+}
+.spine__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.15rem 1.5rem;
+    padding-block: 1.15rem;
+    border-bottom: 1px solid var(--line);
+}
+@media (min-width: 48rem) {
+    .spine__row {
+        grid-template-columns: 8.5rem minmax(0, 15rem) minmax(0, 1fr);
+        align-items: baseline;
+        gap: 1.5rem;
+    }
+}
+.spine__when {
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    white-space: nowrap;
+}
+.spine__who {
+    font-weight: 600;
+}
+.spine__what {
+    color: var(--ink-2);
+}
+.spine__row--now .spine__who {
+    color: var(--accent);
+}
+
+/* ---------- contact -------------------------------------------------------- */
+.contact {
+    background: var(--paper-2);
+    border-top: 1px solid var(--line);
+}
+.contact__grid {
+    display: grid;
+    gap: clamp(2.5rem, 1rem + 5vw, 5rem);
+}
+@media (min-width: 60rem) {
+    .contact__grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+        gap: clamp(3rem, 1rem + 6vw, 7rem);
+    }
+}
+
+.mailto {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 0.9rem + 2.4vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    text-decoration: none;
+    word-break: break-word;
+    border-bottom: 1px solid var(--line-2);
+    display: inline-block;
+    padding-bottom: 0.2rem;
+    transition: border-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+.mailto:hover,
+.mailto:focus-visible {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.elsewhere {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+.elsewhere a {
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--line-2);
+    padding-block: 0.7rem;
+    transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.elsewhere a:hover,
+.elsewhere a:focus-visible {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+/* Four fields. Every one removed is a message that actually gets sent — the
+   old form asked for a company and a service category before it asked what
+   the person wanted. */
+.form {
+    display: grid;
+    gap: 1.25rem;
+}
+.field label {
+    display: block;
+    font-family: var(--mono);
+    font-size: var(--t--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.45rem;
+}
+.field input,
+.field textarea {
+    width: 100%;
+    font-family: var(--body);
+    font-size: var(--t-0);
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line-2);
+    border-radius: 0;
+    padding: 0.85rem 1rem;
+    min-height: 3rem;
+    transition: border-color 0.2s var(--ease);
+}
+.field textarea {
+    min-height: 9rem;
+    resize: vertical;
+}
+.field input:focus,
+.field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+.form__row {
+    display: grid;
+    gap: 1.25rem;
+}
+@media (min-width: 34rem) {
+    .form__row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+.form__note {
+    font-size: var(--t--1);
+    color: var(--ink-3);
+}
+.hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* ---------- footer --------------------------------------------------------- */
+.foot {
+    border-top: 1px solid var(--line);
+    padding-block: 2.5rem 3rem;
+}
+.foot__in {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.foot a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+.foot a:hover {
+    border-bottom-color: var(--accent);
+}
+
+/* ---------- reveal --------------------------------------------------------- */
+/* One effect, used once per block, 12px of travel. v1's reveal is the reason
+   three of its sections photograph as empty rectangles before they trigger —
+   so here the markup is visible by default and JS opts in, which means a
+   failed script leaves a readable page rather than a blank one. */
+.js [data-rise] {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.js [data-rise].is-in {
+    opacity: 1;
+    transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    .js [data-rise] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+@media print {
+    .bar,
+    .contact,
+    .btns,
+    .foot {
+        display: none;
+    }
+    body {
+        background: #fff;
+        color: #000;
+    }
+}
