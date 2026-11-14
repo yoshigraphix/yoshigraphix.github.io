@@ -186,9 +186,13 @@ a {
     letter-spacing: 0.16em;
     text-transform: uppercase;
 }
-.brand img {
-    width: 26px;
-    height: 26px;
+/* The mark is a letterform, not a badge, so it is set to the wordmark's own
+   cap height rather than to a box size. The nudge pulls its optical centre
+   onto the baseline of the name beside it. */
+.brand__y {
+    width: 22px;
+    height: 22px;
+    margin-top: -1px;
 }
 
 .nav {
