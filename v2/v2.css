@@ -212,8 +212,12 @@ a {
     color: var(--ink);
     border-bottom-color: var(--accent);
 }
-.nav .is-cta {
+/* The nav marks where you are, not where I'd like you to go: the section
+   currently under the bar takes the accent. Colour and rule only — no size
+   change, so nothing in the bar shifts as you scroll. */
+.nav a.is-here {
     color: var(--accent);
+    border-bottom-color: var(--accent);
 }
 
 /* On a phone the four nav items do not fit beside the name, and a hamburger

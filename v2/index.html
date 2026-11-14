@@ -42,7 +42,7 @@
                     <a href="#work">Work</a>
                     <a href="#approach">Approach</a>
                     <a href="#career">Career</a>
-                    <a class="is-cta" href="#contact">Contact</a>
+                    <a href="#contact">Contact</a>
                 </nav>
             </div>
         </header>
@@ -519,11 +519,46 @@
                     });
                 }
 
-                // The top bar earns its hairline only once the page has moved.
+                // The top bar earns its hairline only once the page has moved,
+                // and marks which section you are currently reading.
                 var bar = document.getElementById("bar");
+                var links = [].slice.call(document.querySelectorAll(".nav a[href^='#']"));
+                var spots = links
+                    .map(function (a) {
+                        return { link: a, sec: document.getElementById(a.hash.slice(1)) };
+                    })
+                    .filter(function (s) {
+                        return s.sec;
+                    });
+
+                var mark = function (hit) {
+                    spots.forEach(function (s) {
+                        s.link.classList.toggle("is-here", s === hit);
+                    });
+                };
+
+                var spy = function () {
+                    // A section counts as current once its top passes just under
+                    // the bar. Measured live, so it survives the phone layout
+                    // where the nav wraps onto its own line and the bar is taller.
+                    var line = window.scrollY + bar.offsetHeight + 24;
+                    var hit = null;
+                    spots.forEach(function (s) {
+                        if (s.sec.offsetTop <= line) hit = s;
+                    });
+                    // At the very bottom the last section may be too short to
+                    // reach the line on its own; it is plainly what you are on.
+                    if (innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+                        hit = spots[spots.length - 1];
+                    }
+                    mark(hit);
+                };
+
                 var onScroll = function () {
                     bar.classList.toggle("is-stuck", window.scrollY > 8);
+                    spy();
                 };
+                addEventListener("resize", spy, { passive: true });
                 addEventListener("scroll", onScroll, { passive: true });
                 onScroll();
             })();
