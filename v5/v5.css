@@ -1,0 +1,1247 @@
+/* ===========================================================================
+   v5 — "BROADSHEET"
+   A printed thing that happens to be on a screen.
+
+   The first four versions are all the same species: one ground colour, a
+   column of sections, chrome pinned to an edge. v1 is dark with mint, v2 is
+   cream, v3 is white, v4 is near-black — but structurally they are siblings.
+
+   This one is a newspaper. Every section owns a different COLOUR FIELD, which
+   is the one move none of the others make. The type is a didone set at poster
+   sizes, the body runs in real columns with a drop cap, the pictures are
+   "plates" with numbered captions, and the reel is a strip you drag sideways.
+   The chrome lives along the bottom, where none of the others put it.
+
+   Nothing here touches v1–v4. Every path is local to /v5/.
+   =========================================================================== */
+
+:root {
+    color-scheme: light;
+
+    /* THE FIELDS. Four grounds, used whole — not as accents.
+       Each one is checked against the type it has to carry. */
+    --bone: #eae2d2; /* paper */
+    --bone-2: #ded4c0; /* a second paper, for plates and rules */
+    --ink: #15141a; /* 14.22:1 on bone */
+    --oxblood: #8f2418; /* bone on it: 6.70:1 */
+    --forest: #1d5c45; /* bone on it: 6.11:1 */
+    --gold: #e3bb4e; /* 10.01:1 against ink — a DARK-field colour only */
+
+    /* Muted type, per field. Each is measured against its own ground. */
+    --ink-2: #4a4754; /* 7.55:1 on bone */
+    --ink-3: #585662; /* 5.58:1 on bone, 4.89:1 on bone-2 — the caption grey */
+    --bone-dim: #cfc4ae; /* on ink 10.4:1, on oxblood 4.9:1, on forest 4.5:1 */
+
+    /* Rules. A hairline is decoration; a border around a control is not, and
+       the two cannot be the same value — the floors differ by nearly 2x. */
+    --rule: #bfb4a0; /* hairlines on bone */
+    --rule-ink: #3a3745; /* hairlines on ink */
+    --edge: #6f6a5c; /* 3.1:1 on bone — real control borders */
+
+    --display: "Bodoni Moda", "Didot", "Times New Roman", serif;
+    --sans: "Chivo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --pad: clamp(1rem, 0.3rem + 2.6vw, 3.25rem);
+    --gap: clamp(3.5rem, 1.5rem + 6vw, 7rem);
+    --foot-h: 44px;
+    --ease: cubic-bezier(0.2, 0.6, 0.3, 1);
+
+    /* Set per section; everything below reads from these two. */
+    --field: var(--bone);
+    --on-field: var(--ink);
+    --on-field-dim: var(--ink-3);
+    --on-field-rule: var(--rule);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0 0 var(--foot-h);
+    background: var(--bone);
+    color: var(--ink);
+    font: 400 clamp(1rem, 0.95rem + 0.2vw, 1.0625rem) / 1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+img,
+svg,
+iframe {
+    display: block;
+    max-width: 100%;
+}
+a {
+    color: inherit;
+}
+::selection {
+    background: var(--ink);
+    color: var(--bone);
+}
+:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+}
+
+.skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.7rem 1rem;
+    background: var(--ink);
+    color: var(--bone);
+    font: 400 0.85rem var(--mono);
+}
+.skip:focus {
+    left: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Fields
+   -------------------------------------------------------------------------- */
+
+.field {
+    background: var(--field);
+    color: var(--on-field);
+    padding-block: var(--gap);
+}
+.f-ink {
+    --field: var(--ink);
+    --on-field: var(--bone);
+    --on-field-dim: var(--bone-dim);
+    --on-field-rule: var(--rule-ink);
+}
+.f-ox {
+    --field: var(--oxblood);
+    --on-field: var(--bone);
+    --on-field-dim: var(--bone-dim);
+    --on-field-rule: #a8503f;
+}
+.f-forest {
+    --field: var(--forest);
+    --on-field: var(--bone);
+    --on-field-dim: var(--bone-dim);
+    --on-field-rule: #46806c;
+}
+.f-gold {
+    --field: var(--gold);
+    --on-field: var(--ink);
+    --on-field-dim: #5a4a17;
+    --on-field-rule: #b8942f;
+}
+
+.bay {
+    padding-inline: var(--pad);
+    max-width: 1720px;
+    margin-inline: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Masthead furniture: rules, folios, standfirsts
+   -------------------------------------------------------------------------- */
+
+.rule {
+    height: 1px;
+    border: 0;
+    margin: 0;
+    background: var(--on-field-rule);
+}
+.rule--thick {
+    height: 5px;
+    background: var(--on-field);
+}
+.rule--double {
+    height: 5px;
+    background: none;
+    border-top: 1px solid var(--on-field);
+    border-bottom: 3px solid var(--on-field);
+}
+
+/* The thin mono line a newspaper runs above and below its masthead. */
+.colophon {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    padding: 0.55rem 0;
+    font: 400 0.68rem/1.4 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--on-field-dim);
+}
+.colophon__sp {
+    margin-left: auto;
+}
+
+/* Section head: a folio number set large in the margin, a didone title. */
+.head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem 1.5rem;
+    align-items: end;
+    padding-bottom: 0.9rem;
+    margin-bottom: clamp(1.75rem, 1rem + 2.5vw, 3.25rem);
+    border-bottom: 3px solid var(--on-field);
+}
+@media (min-width: 740px) {
+    .head {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+}
+.head__folio {
+    font: 400 clamp(2.5rem, 1.5rem + 4vw, 5rem) / 0.8 var(--display);
+    font-variation-settings: "opsz" 96;
+    color: var(--on-field-dim);
+}
+.head h2 {
+    margin: 0;
+    font: 700 clamp(1.9rem, 1rem + 4vw, 4.4rem) / 0.9 var(--display);
+    font-variation-settings: "opsz" 96;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+}
+.head__kick {
+    font: 400 0.7rem/1.5 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--on-field-dim);
+    text-align: left;
+}
+@media (min-width: 740px) {
+    .head__kick {
+        text-align: right;
+        padding-bottom: 0.4rem;
+    }
+}
+a.head__kick {
+    color: var(--on-field);
+    text-decoration: none;
+    border-bottom: 1px solid var(--on-field-rule);
+}
+a.head__kick:hover {
+    border-bottom-color: var(--on-field);
+}
+
+.standfirst {
+    font-size: clamp(1.1rem, 1rem + 0.5vw, 1.45rem);
+    line-height: 1.45;
+    max-width: 46ch;
+    margin: 0 0 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Masthead
+   -------------------------------------------------------------------------- */
+
+.mast {
+    padding-top: 1rem;
+}
+.mast__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font: 400 0.68rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.mast__brand img {
+    width: 22px;
+    height: 22px;
+}
+
+.mast h1 {
+    margin: clamp(1.25rem, 0.5rem + 2vw, 2.5rem) 0 0;
+    font: 700 clamp(3rem, 0.5rem + 11.2vw, 11.5rem) / 0.82 var(--display);
+    font-variation-settings: "opsz" 96;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+}
+.mast h1 em {
+    display: block;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+/* The deck: two columns of standfirst under the masthead, as a paper runs. */
+.deck {
+    display: grid;
+    gap: clamp(1rem, 0.5rem + 1.5vw, 2.5rem);
+    margin: clamp(1.5rem, 1rem + 2vw, 2.75rem) 0 0;
+}
+@media (min-width: 860px) {
+    .deck {
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    }
+}
+.deck p {
+    margin: 0;
+}
+.deck__lede {
+    font-size: clamp(1.15rem, 1rem + 0.7vw, 1.6rem);
+    line-height: 1.4;
+}
+.deck__lede strong {
+    font-weight: 700;
+}
+.deck__meta {
+    font-size: 0.95rem;
+    color: var(--ink-2);
+    columns: 2;
+    column-gap: 1.5rem;
+}
+@media (max-width: 600px) {
+    .deck__meta {
+        columns: 1;
+    }
+}
+
+/* Figures row — the four counts, set as a newspaper's figures table. */
+.figures {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: clamp(1.75rem, 1rem + 2vw, 3rem) 0 0;
+    border-top: 1px solid var(--on-field-rule);
+}
+@media (min-width: 900px) {
+    .figures {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+.figures > div {
+    padding: 0.9rem 1rem 1rem 0;
+    border-bottom: 1px solid var(--on-field-rule);
+}
+@media (min-width: 900px) {
+    .figures > div + div {
+        padding-left: 1.25rem;
+        border-left: 1px solid var(--on-field-rule);
+    }
+}
+.figures dt {
+    font: 700 clamp(1.7rem, 1.2rem + 1.8vw, 3rem) / 0.95 var(--display);
+    font-variation-settings: "opsz" 72;
+}
+.figures dd {
+    margin: 0.4rem 0 0;
+    font: 400 0.72rem/1.45 var(--mono);
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   01 — The machine room. The lead story, set in real columns.
+   -------------------------------------------------------------------------- */
+
+.story {
+    columns: 1;
+    column-gap: clamp(1.5rem, 1rem + 2vw, 3rem);
+    margin-bottom: clamp(2rem, 1rem + 3vw, 3.5rem);
+}
+@media (min-width: 760px) {
+    .story {
+        columns: 2;
+    }
+}
+@media (min-width: 1200px) {
+    .story {
+        columns: 2;
+    }
+}
+.story p {
+    margin: 0 0 1.1rem;
+    text-align: justify;
+    hyphens: auto;
+}
+.story p:last-child {
+    margin-bottom: 0;
+}
+
+/* A drop cap, which is the whole reason for setting this in columns. */
+.story > p:first-child::first-letter {
+    float: left;
+    font: 700 1em/0.76 var(--display);
+    font-variation-settings: "opsz" 96;
+    font-size: 4.6em;
+    padding: 0.06em 0.09em 0 0;
+    color: var(--gold);
+}
+
+.pull {
+    margin: 0 0 1.1rem;
+    padding: 0.9rem 0;
+    border-top: 3px solid var(--on-field);
+    border-bottom: 1px solid var(--on-field-rule);
+    font: 400 clamp(1.15rem, 1rem + 0.8vw, 1.6rem) / 1.25 var(--display);
+    font-variation-settings: "opsz" 72;
+    font-style: italic;
+    break-inside: avoid;
+    color: var(--gold);
+}
+
+/* The stack, as a specification table. */
+.spec {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    text-align: left;
+}
+.spec caption {
+    font: 400 0.7rem/1.5 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--on-field-dim);
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--on-field);
+    text-align: left;
+}
+.spec th,
+.spec td {
+    padding: 0.7rem 0.9rem 0.7rem 0;
+    border-bottom: 1px solid var(--on-field-rule);
+    vertical-align: top;
+}
+.spec th {
+    width: 9.5rem;
+    font: 400 0.74rem/1.7 var(--mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+}
+@media (max-width: 560px) {
+    .spec th,
+    .spec td {
+        display: block;
+        width: auto;
+        border: 0;
+        padding: 0;
+    }
+    .spec th {
+        padding-top: 0.8rem;
+    }
+    .spec td {
+        padding-bottom: 0.8rem;
+        border-bottom: 1px solid var(--on-field-rule);
+    }
+}
+
+/* Where I stop — a boxed aside, the way a paper boxes a sidebar. */
+.aside-box {
+    margin-top: clamp(1.75rem, 1rem + 2vw, 2.5rem);
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--on-field-rule);
+    border-left: 5px solid var(--gold);
+}
+.aside-box b {
+    display: block;
+    font: 400 0.7rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--on-field-dim);
+    margin-bottom: 0.55rem;
+}
+.aside-box p {
+    margin: 0;
+    font-size: 0.93rem;
+    line-height: 1.6;
+}
+
+.twocol {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 2vw, 3rem);
+}
+@media (min-width: 1000px) {
+    .twocol {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: start;
+    }
+}
+
+/* The pipeline, as a ruled run of stops. */
+.pipe {
+    display: grid;
+    margin-top: clamp(2rem, 1rem + 3vw, 3.5rem);
+    border-top: 3px solid var(--on-field);
+}
+@media (min-width: 760px) {
+    .pipe {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+.pipe > div {
+    padding: 1rem 1.25rem 1.1rem 0;
+    border-bottom: 1px solid var(--on-field-rule);
+}
+@media (min-width: 760px) {
+    .pipe > div + div {
+        padding-left: 1.25rem;
+        border-left: 1px solid var(--on-field-rule);
+    }
+}
+.pipe b {
+    display: block;
+    font: 400 0.7rem/1.6 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+}
+.pipe span {
+    font-size: 0.93rem;
+}
+
+/* --------------------------------------------------------------------------
+   02 — The strip. Dragged sideways, not scrolled down.
+   -------------------------------------------------------------------------- */
+
+.strip-wrap {
+    position: relative;
+}
+
+.strip {
+    display: flex;
+    gap: clamp(0.75rem, 0.4rem + 1.2vw, 1.5rem);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 1.25rem;
+    /* bleed to the right edge so it reads as continuing past the page */
+    margin-right: calc(var(--pad) * -1);
+    padding-right: var(--pad);
+    cursor: grab;
+    scrollbar-width: thin;
+    scrollbar-color: var(--on-field-rule) transparent;
+}
+.strip.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+}
+.strip::-webkit-scrollbar {
+    height: 6px;
+}
+.strip::-webkit-scrollbar-thumb {
+    background: var(--on-field-rule);
+}
+
+/* Every frame the same size, which is what makes a strip a strip. Giving the
+   lead film a wider frame made it taller too — a 16:9 box always does — and
+   left a dead band of field under the two shorter ones beside it. */
+.plate-v {
+    flex: 0 0 min(86vw, 620px);
+    scroll-snap-align: start;
+    margin: 0;
+}
+
+.vframe {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--ink);
+    border: 1px solid var(--on-field-rule);
+    overflow: hidden;
+}
+.vframe img,
+.vframe iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: cover;
+}
+.vplay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    background: rgba(21, 20, 26, 0.3);
+    border: 0;
+    cursor: pointer;
+    transition: background 0.25s var(--ease);
+    color: var(--bone);
+}
+.vplay:hover {
+    background: rgba(21, 20, 26, 0.05);
+}
+.vplay i {
+    width: 0;
+    height: 0;
+    border-top: 16px solid transparent;
+    border-bottom: 16px solid transparent;
+    border-left: 27px solid currentColor;
+    margin-left: 7px;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+    transition: border-left-color 0.25s var(--ease);
+}
+.vplay:hover i {
+    border-left-color: var(--gold);
+}
+
+.plate-v figcaption {
+    display: grid;
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    gap: 0 0.75rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--on-field-rule);
+    margin-top: 0.7rem;
+}
+.plate-v__n {
+    font: 400 0.72rem/1.7 var(--mono);
+    color: var(--on-field-dim);
+}
+.plate-v__t {
+    margin: 0;
+    font: 700 1.15rem/1.2 var(--display);
+    font-variation-settings: "opsz" 48;
+}
+.plate-v--first .plate-v__t {
+    font-size: clamp(1.3rem, 1.1rem + 1vw, 2rem);
+}
+.plate-v__d {
+    grid-column: 2;
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    color: var(--on-field-dim);
+}
+
+.strip-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    font: 400 0.7rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--on-field-dim);
+}
+.strip-btns {
+    display: flex;
+    gap: 0.4rem;
+    margin-left: auto;
+}
+.strip-btn {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 1px solid var(--on-field);
+    color: var(--on-field);
+    font: 400 1rem/1 var(--sans);
+    cursor: pointer;
+    transition:
+        background 0.2s var(--ease),
+        color 0.2s var(--ease);
+}
+.strip-btn:hover {
+    background: var(--on-field);
+    color: var(--field);
+}
+.strip-btn[disabled] {
+    opacity: 0.35;
+    cursor: default;
+}
+.strip-btn[disabled]:hover {
+    background: none;
+    color: var(--on-field);
+}
+
+/* --------------------------------------------------------------------------
+   03 — Plates. The pictures, with captions that are always there.
+   -------------------------------------------------------------------------- */
+
+.editions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+}
+.edition {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: 1px solid var(--edge);
+    color: var(--ink);
+    font: 400 0.72rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+        background 0.2s var(--ease),
+        color 0.2s var(--ease),
+        border-color 0.2s var(--ease);
+}
+.edition:hover {
+    border-color: var(--ink);
+}
+.edition[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bone);
+}
+.edition b {
+    font-weight: 400;
+    opacity: 0.6;
+    margin-left: 0.4rem;
+}
+
+.plates {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+    gap: clamp(1rem, 0.5rem + 1.6vw, 2rem) clamp(0.75rem, 0.4rem + 1.2vw, 1.5rem);
+}
+/* A phone fits one 210px column, which turns forty-two plates into a very
+   long scroll. Two narrower ones read as a contact sheet instead. */
+@media (max-width: 620px) {
+    .plates {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .plate__cap {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+    .plate__n {
+        margin-bottom: 0.15rem;
+    }
+}
+
+.plate {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    background: none;
+    border: 0;
+    text-align: left;
+    cursor: zoom-in;
+    color: inherit;
+    font: inherit;
+}
+/* A fixed plate, with the art centred inside it rather than filling it.
+   Natural heights left every caption on a different line and the sheet read
+   as misaligned rather than as a sheet. `contain` squares the grid up without
+   cropping a single picture — which is how a plate in a book works anyway. */
+.plate__img {
+    aspect-ratio: 5 / 4;
+    display: grid;
+    place-items: center;
+    background: var(--bone-2);
+    border: 1px solid var(--rule);
+    overflow: hidden;
+    transition: border-color 0.2s var(--ease);
+}
+.plate:hover .plate__img {
+    border-color: var(--ink);
+}
+.plate__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.25s var(--ease);
+}
+.plate:hover .plate__img img {
+    opacity: 0.86;
+}
+/* Props are cut-outs on white; on bone they need a card of their own. */
+.plate--prop .plate__img {
+    background: #fff;
+    padding: 8%;
+}
+.plate--prop .plate__img img {
+    object-fit: contain;
+}
+.plate figcaption,
+.plate__cap {
+    display: grid;
+    grid-template-columns: 2.2rem minmax(0, 1fr);
+    gap: 0 0.6rem;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--rule);
+    font: 400 0.68rem/1.5 var(--mono);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+.plate__n {
+    color: var(--ink);
+}
+.plate.is-out {
+    display: none;
+}
+
+/* Viewer. In-app, never a native dialog. */
+.viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: none;
+    place-items: center;
+    padding: clamp(1rem, 4vw, 3rem);
+    background: rgba(21, 20, 26, 0.96);
+    color: var(--bone);
+}
+.viewer.is-open {
+    display: grid;
+}
+.viewer__img {
+    max-width: min(100%, 1400px);
+    max-height: 80vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+.viewer__cap {
+    margin: 1rem 0 0;
+    text-align: center;
+    font: 400 0.75rem/1.6 var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+}
+.viewer button {
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 1px solid var(--bone-dim);
+    color: var(--bone);
+    cursor: pointer;
+    font: 400 1.1rem/1 var(--sans);
+    transition:
+        background 0.2s var(--ease),
+        color 0.2s var(--ease);
+}
+.viewer button:hover {
+    background: var(--bone);
+    color: var(--ink);
+}
+.v-x {
+    top: clamp(0.7rem, 2vw, 1.5rem);
+    right: clamp(0.7rem, 2vw, 1.5rem);
+}
+.v-p {
+    left: clamp(0.5rem, 2vw, 1.5rem);
+    top: 50%;
+    margin-top: -23px;
+}
+.v-n {
+    right: clamp(0.5rem, 2vw, 1.5rem);
+    top: 50%;
+    margin-top: -23px;
+}
+
+/* --------------------------------------------------------------------------
+   04 — Dossier. The case studies as a contents page.
+   -------------------------------------------------------------------------- */
+
+.dossier {
+    border-top: 3px solid var(--on-field);
+}
+.entry {
+    display: grid;
+    grid-template-columns: 2.6rem minmax(0, 1fr);
+    gap: 0.2rem 1rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--on-field-rule);
+    text-decoration: none;
+    transition: background 0.2s var(--ease);
+}
+@media (min-width: 900px) {
+    .entry {
+        grid-template-columns: 3rem minmax(0, 20rem) minmax(0, 1fr) 7rem;
+        align-items: baseline;
+        gap: 0 1.5rem;
+    }
+}
+.entry:hover {
+    background: rgba(234, 226, 210, 0.09);
+}
+.entry__n {
+    font: 400 0.75rem/1.9 var(--mono);
+    color: var(--on-field-dim);
+}
+.entry__t {
+    margin: 0;
+    font: 700 clamp(1.15rem, 1rem + 0.7vw, 1.6rem) / 1.15 var(--display);
+    font-variation-settings: "opsz" 48;
+}
+.entry__d {
+    grid-column: 2 / -1;
+    margin: 0.3rem 0 0;
+    font-size: 0.88rem;
+    color: var(--on-field-dim);
+    max-width: 58ch;
+}
+@media (min-width: 900px) {
+    .entry__d {
+        grid-column: 3;
+        margin: 0;
+    }
+}
+.entry__who {
+    grid-column: 2 / -1;
+    font: 400 0.7rem/1.9 var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--on-field-dim);
+}
+@media (min-width: 900px) {
+    .entry__who {
+        grid-column: 4;
+        text-align: right;
+    }
+}
+.flag {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid var(--on-field-rule);
+    font: 400 0.6rem/1.5 var(--mono);
+    letter-spacing: 0.06em;
+    vertical-align: middle;
+}
+
+/* --------------------------------------------------------------------------
+   05 — The record
+   -------------------------------------------------------------------------- */
+
+.record {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 2vw, 3rem);
+    align-items: start;
+}
+@media (min-width: 900px) {
+    .record {
+        grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    }
+}
+.record__body p {
+    margin: 0 0 1.1rem;
+    max-width: 62ch;
+}
+.record__body p:first-child {
+    font-size: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
+    line-height: 1.45;
+}
+.portrait {
+    margin: 0;
+}
+.portrait img {
+    width: 100%;
+    border: 1px solid var(--rule);
+    /* a halftone-ish plate: flattened, warmed, printed */
+    filter: grayscale(1) contrast(1.12) sepia(0.22);
+}
+.portrait figcaption {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--rule);
+    font: 400 0.68rem/1.5 var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.ledger {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: clamp(2rem, 1rem + 3vw, 3.5rem);
+    text-align: left;
+    font-size: 0.95rem;
+}
+.ledger caption {
+    font: 400 0.7rem/1.5 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: left;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--ink);
+}
+.ledger th,
+.ledger td {
+    padding: 0.8rem 1rem 0.8rem 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+}
+.ledger th {
+    width: 8.5rem;
+    font: 400 0.74rem/1.7 var(--mono);
+    color: var(--ink-3);
+    font-weight: 400;
+    white-space: nowrap;
+}
+.ledger .who {
+    width: 13rem;
+    font-weight: 700;
+}
+.ledger tr:first-child .who {
+    color: var(--oxblood);
+}
+@media (max-width: 760px) {
+    .ledger th,
+    .ledger td {
+        display: block;
+        width: auto;
+        padding: 0;
+        border: 0;
+    }
+    .ledger th {
+        padding-top: 0.9rem;
+    }
+    .ledger tr td:last-child {
+        padding-bottom: 0.9rem;
+        border-bottom: 1px solid var(--rule);
+    }
+}
+
+.quotes {
+    display: grid;
+    gap: clamp(1.25rem, 0.8rem + 1.5vw, 2.25rem);
+    margin-top: clamp(2rem, 1rem + 3vw, 3.5rem);
+    padding-top: 1.25rem;
+    border-top: 3px solid var(--ink);
+}
+@media (min-width: 900px) {
+    .quotes {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+.quote {
+    margin: 0;
+}
+.quote blockquote {
+    margin: 0;
+    font: 400 clamp(1.05rem, 0.95rem + 0.5vw, 1.3rem) / 1.4 var(--display);
+    font-variation-settings: "opsz" 48;
+    font-style: italic;
+}
+.quote figcaption {
+    margin-top: 0.9rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--rule);
+    font: 400 0.7rem/1.6 var(--mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+.quote cite {
+    display: block;
+    font-style: normal;
+    color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   06 — Correspondence
+   -------------------------------------------------------------------------- */
+
+.post {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 2vw, 3rem);
+}
+@media (min-width: 900px) {
+    .post {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    }
+}
+.post__addr {
+    display: inline-block;
+    margin-top: 1rem;
+    font: 700 clamp(1.4rem, 0.9rem + 2.4vw, 3.1rem) / 1.1 var(--display);
+    font-variation-settings: "opsz" 96;
+    color: var(--on-field);
+    text-decoration: none;
+    border-bottom: 3px solid var(--on-field);
+    word-break: break-word;
+    transition: opacity 0.2s var(--ease);
+}
+.post__addr:hover {
+    opacity: 0.68;
+}
+
+.facts {
+    border-top: 3px solid var(--on-field);
+}
+.fact {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--on-field-rule);
+    font-size: 0.95rem;
+}
+.fact b {
+    font: 400 0.7rem/1.8 var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--on-field-dim);
+    font-weight: 400;
+}
+.fact a {
+    text-decoration: none;
+    border-bottom: 1px solid var(--on-field-rule);
+}
+.fact a:hover {
+    border-bottom-color: var(--on-field);
+}
+.dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--ink);
+    margin-right: 0.45rem;
+}
+
+.endnote {
+    margin-top: clamp(2rem, 1rem + 3vw, 3.5rem);
+    padding-top: 1rem;
+    border-top: 1px solid var(--on-field-rule);
+}
+.endnote-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1rem;
+}
+.endnote-nav a {
+    font: 400 0.8rem/1.5 var(--sans);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+.endnote-nav a:hover {
+    border-bottom-color: var(--on-field);
+}
+
+/* --------------------------------------------------------------------------
+   The folio bar — chrome along the BOTTOM, which none of v1–v4 do.
+   -------------------------------------------------------------------------- */
+
+.folio {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    height: var(--foot-h);
+    display: flex;
+    align-items: stretch;
+    background: var(--ink);
+    color: var(--bone);
+    border-top: 3px solid var(--gold);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+.folio__mark {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    border-right: 1px solid var(--rule-ink);
+    font: 400 0.68rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.folio__mark img {
+    width: 18px;
+    height: 18px;
+}
+@media (min-width: 680px) {
+    .folio__mark {
+        display: flex;
+    }
+}
+.folio__nav {
+    display: flex;
+    flex: 1 1 auto;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.folio__nav::-webkit-scrollbar {
+    display: none;
+}
+.folio__nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0 0.85rem;
+    font: 400 0.68rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--bone-dim);
+    white-space: nowrap;
+    border-right: 1px solid var(--rule-ink);
+    transition:
+        background 0.2s var(--ease),
+        color 0.2s var(--ease);
+}
+.folio__nav a:hover {
+    color: var(--bone);
+}
+.folio__nav a.is-here {
+    background: var(--gold);
+    color: var(--ink);
+}
+.folio__nav a i {
+    font-style: normal;
+    opacity: 0.6;
+}
+.folio__nav a.is-here i {
+    opacity: 0.75;
+}
+
+/* Reading progress, drawn on the bar's own top edge. */
+.folio__bar {
+    position: absolute;
+    top: -3px;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: var(--oxblood);
+    transition: width 0.1s linear;
+}
+
+/* --------------------------------------------------------------------------
+   Reveal
+   -------------------------------------------------------------------------- */
+
+.js [data-rise] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+        opacity 0.55s var(--ease),
+        transform 0.55s var(--ease);
+}
+.js [data-rise].is-in {
+    opacity: 1;
+    transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    .strip {
+        scroll-behavior: auto;
+    }
+    .js [data-rise] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
