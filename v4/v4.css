@@ -1174,6 +1174,31 @@ a.head__note:hover {
     margin-right: 0.45rem;
 }
 
+/* The rest of the site. This page links the case studies and the résumé in
+   its own sections, but About, Contact and Hum Tunes live nowhere else —
+   without this row they are reachable only by typing the URL. */
+.foot-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    padding: 1.75rem var(--pad) 0;
+    max-width: 1680px;
+    margin-inline: auto;
+}
+.foot-nav a {
+    font: 400 0.85rem/1.4 var(--sans);
+    color: var(--paper-2);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition:
+        color 0.2s var(--ease),
+        border-color 0.2s var(--ease);
+}
+.foot-nav a:hover {
+    color: var(--paper);
+    border-bottom-color: var(--lane);
+}
+
 .foot {
     border-top: 1px solid var(--edge);
     padding: 1.5rem var(--pad) 2.5rem;
