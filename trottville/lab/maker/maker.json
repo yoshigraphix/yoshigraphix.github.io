@@ -1,0 +1,66 @@
+{
+ "height": 1.6,
+ "skinRefL": 0.43,
+ "hairRefL": 0.2,
+ "face": {
+  "center": [
+   0,
+   1.47,
+   0.05
+  ],
+  "size": [
+   0.2,
+   0.2
+  ],
+  "eyeX": 0.18,
+  "eyeY": 0.5,
+  "eyeW": 0.2,
+  "eyeH": 0.23,
+  "noseY": 0.66,
+  "mouthY": 0.78,
+  "mouthW": 0.1,
+  "hc": [
+   0,
+   -0.035
+  ],
+  "hs": 0.215
+ },
+ "body": {
+  "chest": [
+   0.88,
+   1.27,
+   0.076,
+   1.0
+  ],
+  "hips": [
+   0.72,
+   0.96,
+   0.07,
+   0
+  ]
+ },
+ "parts": [
+  {
+   "file": "swap_hair_body.glb",
+   "kind": "body"
+  },
+  {
+   "file": "swap_hair_hair.glb",
+   "kind": "hair"
+  }
+ ],
+ "head": {
+  "center": [
+   0,
+   1.436,
+   0.03
+  ],
+  "r": [
+   0.116,
+   0.132,
+   0.118
+  ],
+  "cut": 1.285,
+  "hairline": 0.06
+ }
+}

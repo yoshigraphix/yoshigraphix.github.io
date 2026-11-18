@@ -1,0 +1,77 @@
+/* Home stall decorating (stall-ui.js + home-horse.js): decorate bar, slot markers, slot picker + Decor store sheets. Phone first. */
+.home-horse .hh-decobar{position:absolute;left:8px;right:8px;top:8px;z-index:5;display:flex;align-items:center;gap:6px;padding:6px 6px 6px 14px;border-radius:999px;background:#fffaf0f2;color:#3a2a1a;box-shadow:0 6px 18px #0003;font:700 14px/1.2 system-ui,sans-serif}
+.home-horse .hh-decobar[hidden]{display:none}
+.hh-decobar span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.home-horse .hh-decobar button{flex:none;min-height:44px;min-width:44px;margin:0;padding:0 14px;border:0;border-radius:999px;font:700 14px/1 system-ui,sans-serif;cursor:pointer}
+.home-horse .hh-decobar .hh-store{background:#fff1cf;color:#5a4118;box-shadow:inset 0 0 0 1px #ecd290}
+.home-horse .hh-decobar .hh-done{background:#2f6b3a;color:#fffdf4}
+.home-horse .hh-slots{position:absolute;inset:0;z-index:4;pointer-events:none}
+.home-horse .hh-slots[hidden]{display:none}
+.home-horse .hh-slot{position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;padding:0;border:3px dashed #fffaf0;border-radius:50%;background:#2f6b3acc;color:#fffdf4;font:800 22px/1 system-ui,sans-serif;display:grid;place-items:center;pointer-events:auto;cursor:pointer;box-shadow:0 3px 10px #0004;-webkit-tap-highlight-color:transparent;transition:background-color .15s}
+.home-horse .hh-slot.filled{border-style:solid;background:#fffaf0e6;font-size:20px}
+.home-horse .hh-slot:hover,.home-horse .hh-slot:focus-visible{background:#3f9a4a;outline:none}
+.home-horse .hh-slot.filled:hover,.home-horse .hh-slot.filled:focus-visible{background:#fff1cf}
+.home-horse .hh-slot.off{display:none}
+.home-horse.hh-decorating .hh-table,.home-horse.hh-decorating .hh-basket,.home-horse.hh-decorating .hh-rake,.home-horse.hh-decorating .hh-deco,.home-horse.hh-decorating .hh-hint{visibility:hidden}
+
+.st-sheet{position:fixed;inset:0;z-index:2147483000;display:grid;grid-template-columns:minmax(0,1fr);align-items:end;justify-items:center;background:#1d2a2266;opacity:0;transition:opacity .2s}
+.st-sheet.in{opacity:1}
+.st-card{width:min(560px,100%);min-width:0;max-width:100%;max-height:86dvh;display:flex;flex-direction:column;background:#fffaf0;color:#263c33;border-radius:24px 24px 0 0;box-shadow:0 -10px 40px #0003;transform:translateY(30px);transition:transform .3s cubic-bezier(.3,1.3,.5,1);font:14px/1.45 system-ui,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+.st-wide .st-card{width:min(760px,100%)}
+.st-sheet.in .st-card{transform:none}
+@media(min-width:760px){.st-sheet{align-items:center}.st-card{border-radius:24px}}
+.st-head{display:flex;align-items:center;gap:8px;padding:14px 12px 10px 18px;border-bottom:1px solid #efe6d2}
+.st-head h2{flex:1;margin:0;font:400 21px/1.2 Georgia,serif;min-width:0}
+.st-head .st-coins{cursor:default}
+.st-x{flex:none;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:50%;background:#f1ead9;color:#3a2a1a;font:400 26px/1 system-ui;cursor:pointer}
+.st-body{overflow:auto;padding:14px 16px 18px;overscroll-behavior:contain}
+.st-lead{margin:0 0 10px;color:#5f6b62;font-size:13px}
+.st-current{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:12px;border-radius:14px;background:#f3ecdc}
+.st-current div{flex:1;min-width:0}.st-current small{display:block;color:#7a6a4e;font-size:11px;text-transform:uppercase;letter-spacing:.06em}.st-current b{font-size:15px}
+.st-ghost{flex:none;min-height:44px;margin:0;padding:0 14px;border:0;border-radius:12px;background:#fff;color:#9a4a2a;font-weight:700;box-shadow:inset 0 0 0 1px #e6d5bd;cursor:pointer}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.st-shop{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.st-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;min-height:44px;margin:0;padding:10px 8px;border:0;border-radius:14px;background:#fff;color:#263c33;box-shadow:inset 0 0 0 1px #ece3cf;font:inherit;cursor:pointer;transition:background-color .15s}
+button.st-item:hover{background:#fff6df}
+.st-item.on{box-shadow:inset 0 0 0 2px #2f6b3a;background:#eef6e8}
+.st-item .st-ico{font-size:30px;line-height:1.1}
+.st-item b{font-size:13px;line-height:1.25}
+.st-item small{color:#6b776f;font-size:11.5px;line-height:1.3}
+.st-buy{cursor:default}
+.st-buy small{flex:1}
+.st-price,.st-owned{margin-top:6px;min-height:44px;min-width:96px;padding:0 14px;border-radius:12px;font:800 14px/44px system-ui,sans-serif}
+.st-price{border:0;background:#2f6b3a;color:#fffdf4;cursor:pointer;transition:background-color .15s}
+.st-price:hover{background:#245430}
+.st-price.short{background:#d9d2c2;color:#5c5546}
+.st-owned{color:#2f6b3a;background:#eef6e8}
+.st-tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;margin:0 -4px;scrollbar-width:none}
+.st-tabs button{flex:none;min-height:44px;margin:0;padding:0 14px;border:0;border-radius:999px;background:#f1ead9;color:#3a2a1a;font:700 13px/1 system-ui,sans-serif;cursor:pointer}
+.st-tabs button.on{background:#3a2a1a;color:#fffaf0}
+.st-empty{margin:4px 0 12px;color:#6b776f}
+.st-primary{display:block;width:100%;min-height:48px;margin:14px 0 0;border:0;border-radius:14px;background:#2f6b3a;color:#fffdf4;font:800 15px/1 system-ui,sans-serif;cursor:pointer;transition:background-color .15s}
+.st-primary:hover{background:#245430}
+@media(prefers-reduced-motion:reduce){.st-card{transition:none}}
+.home-horse .hh-slot.edge{border-style:dotted;opacity:.9}
+/* Decorating fills the screen (home-horse.js goFull): real fullscreen where allowed, else a fixed full-viewport layer. */
+.home-horse.hh-full{position:fixed;inset:0;width:100%;height:100%;height:100dvh;z-index:2147482000;background:#5a3a22;border-radius:0}
+.home-horse.hh-full .hh-decobar{top:calc(8px + env(safe-area-inset-top));left:calc(8px + env(safe-area-inset-left));right:calc(8px + env(safe-area-inset-right))}
+.home-horse:fullscreen{width:100%;height:100%}
+body.hh-full-open{overflow:hidden}
+/* Full-screen picture viewer (stall-photo.js): tap a framed picture in the stall. */
+.hh-photo{position:fixed;inset:0;z-index:2147483000;background:#120c08f2;display:flex;flex-direction:column;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom))}
+.hh-photo-frame{flex:1;min-height:0;display:grid;place-items:center}
+.hh-photo-frame img,.hh-photo-frame canvas{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border:10px solid #c9a24a;border-radius:4px;box-shadow:0 10px 40px #000a;image-rendering:auto}
+.hh-photo-frame canvas{width:min(100%,calc((100dvh - 150px)*4/3))}
+.hh-photo-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-top:12px}
+.hh-photo-title{flex:1 1 100%;color:#fffaf0;font:700 16px/1.3 system-ui,sans-serif}
+@media(min-width:600px){.hh-photo-title{flex:1 1 auto}}
+.hh-photo-btn{min-height:44px;min-width:44px;padding:0 16px;border:0;border-radius:999px;background:#fffaf0;color:#3a2a1a;font:700 14px/1 system-ui,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:background-color .15s}
+.hh-photo-btn:hover,.hh-photo-btn:focus-within,.hh-photo-btn:focus-visible{background:#fff1cf}
+.hh-photo-pick{background:#2f6b3a;color:#fffdf4}.hh-photo-pick:hover,.hh-photo-pick:focus-within{background:#3f8a4a}
+.hh-photo-close{margin-left:auto}
+.hh-photo-note{margin:8px 0 0;color:#e9dcc2;font:500 13px/1.4 system-ui,sans-serif;min-height:18px}.hh-photo-note.err{color:#ffb4a0}
+/* Lightning: a blink of pale light over the whole stall (stall-window.js flash). */
+.home-horse::after{content:"";position:absolute;inset:0;background:#e9f0ff;opacity:var(--flash,0);pointer-events:none;z-index:2;mix-blend-mode:screen}
+/* 2026-11-09: the Decor store keeps one height on every tab, so a tab with only a few items doesn't shrink it. */
+.st-wide .st-card{height:min(86dvh,720px)}
+.st-wide .st-body{flex:1 1 auto;min-height:0}

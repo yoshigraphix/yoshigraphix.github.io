@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f3efe6">
+<title>Rider Lab · Trottville</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+<style>
+:root{--bg:#f3efe6;--card:#fffaf0;--ink:#2d3a2e;--soft:#6d7a6c;--line:#e2dccd;--go:#2f5d43;--bad:#d2553f;--ok:#e9b43a;--good:#4f9d69}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Fredoka,system-ui,sans-serif}
+header{padding:calc(10px + env(safe-area-inset-top)) 16px 0}
+h1{margin:0;font-size:22px}header p{margin:2px 0 0;color:var(--soft);font-size:14px}
+.tabs,.chips{display:flex;gap:8px;padding:8px 16px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar,.chips::-webkit-scrollbar{display:none}
+button{font:600 15px Fredoka,system-ui;min-height:44px;padding:0 16px;border-radius:22px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;white-space:nowrap}
+button:hover{border-color:#b9b29f}button[aria-pressed=true]{background:var(--go);border-color:var(--go);color:#fff}
+#view{position:relative;height:min(66svh,600px,120vw);margin:4px 16px;border-radius:20px;overflow:hidden;background:linear-gradient(#e9f1f4,#dfe6df)}
+#view canvas{display:block;width:100%;height:100%;touch-action:none}
+.names{position:absolute;left:0;right:0;bottom:8px;display:flex;pointer-events:none}
+.names div{flex:1;text-align:center;font-size:13px;line-height:1.25}
+.names b{display:block;font-size:15px}
+.pose{position:absolute;left:12px;top:10px;font-weight:700;font-size:15px;background:#fffd;border-radius:12px;padding:4px 10px}
+.legend{position:absolute;right:12px;top:10px;font-size:12px;background:#fffd;border-radius:12px;padding:4px 10px;display:none}
+.legend i{display:inline-block;width:60px;height:8px;border-radius:4px;background:linear-gradient(90deg,#c9d3cf,#e9b43a,#d2553f);vertical-align:middle;margin:0 4px}
+.stretch-on .legend{display:block}
+section{margin:12px 16px 24px;background:var(--card);border-radius:20px;padding:14px 16px}
+section h2{margin:0 0 8px;font-size:18px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:7px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--soft);font-weight:600;font-size:12px}td.n{text-align:right;font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:4px;background:#eee;overflow:hidden;min-width:60px}.bar i{display:block;height:100%}
+.note{color:var(--soft);font-size:13px;margin:8px 0 0}
+.loading{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;background:#f3efe6cc}
+.loading[hidden]{display:none}
+@media (orientation:landscape) and (max-height:600px){header p{display:none}.tabs,.chips{padding:4px 16px}#view{height:calc(100svh - 20px)}}
+</style>
+</head>
+<body>
+<header><h1>Rider Lab</h1><p id="sub">Three image-to-3D models, the same skeleton, the same moves.</p></header>
+<div class="tabs" id="modes"></div>
+<div class="tabs" id="outfits"></div>
+<div class="chips" id="moves"></div>
+<div class="chips" id="focus"></div>
+<div id="view"><div class="pose" id="poseName">Auto</div><div class="legend">stretch <i></i> worst</div><div class="names" id="names"></div><div class="loading" id="loading">Loading models…</div></div>
+<div class="chips"><button id="stretch" aria-pressed="false">Show stretch</button><span id="angles" style="display:flex;gap:8px"></span></div>
+<section id="scoreCard"><h2>Motion scores</h2><div id="scores">Measuring…</div>
+<p class="note">Stretch = how far the mesh's edges stretch or squash in the hardest frame of each move (elbows, knees, shoulders, hips). Lower is better. Every model uses the same auto-made skeleton and automatic weights, so the difference is the mesh itself.</p></section>
+
+<script type="module">
+import * as T from './vendor/three-0.180.0/three.module.js';
+import {GLTFLoader} from './vendor/three-0.180.0/addons/loaders/GLTFLoader.js';
+const $=id=>document.getElementById(id);
+const MAN=await fetch('lab/lab.json',{cache:'no-store'}).then(r=>r.json());
+const MODELS=MAN.models, OUTFITS=MAN.outfits;   // models: [{id,name}], outfits: [{id,name}]; files: lab/<model>_<outfit>.glb
+const SWAP=MAN.swap||null;                       // {model, base:'file', sets:{riding:[files],casual:[files]}}
+
+// ---------- scene ----------
+const view=$('view'),renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setClearColor(0,0);
+renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));renderer.outputColorSpace=T.SRGBColorSpace;view.prepend(renderer.domElement);
+const scene=new T.Scene();const camera=new T.PerspectiveCamera(30,1,.05,50);
+scene.add(new T.HemisphereLight('#ffffff','#b9b0a0',1.6));const key=new T.DirectionalLight('#fff4e0',2.2);key.position.set(2,4,5);scene.add(key);
+const rim=new T.DirectionalLight('#cfe6ff',1);rim.position.set(-3,3,-4);scene.add(rim);
+const floor=new T.Mesh(new T.CircleGeometry(4,48),new T.MeshStandardMaterial({color:'#d8d2c2',roughness:1}));floor.rotation.x=-Math.PI/2;scene.add(floor);
+function resize(){const w=view.clientWidth,h=view.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();frameCamera();}
+let slots=3;function frameCamera(){if(typeof focus!=='undefined'&&focus>=0&&mode==='compare'){const x=(focus-(MODELS.length-1)/2)*1.15,d=1.25/Math.tan(T.MathUtils.degToRad(camera.fov/2))*Math.max(1,.62/camera.aspect);camera.position.set(x,1.0,d);camera.lookAt(x,.85,0);return;}
+  const span=slots*1.15+.4,fitW=span/2/Math.tan(T.MathUtils.degToRad(camera.fov/2))/camera.aspect,fitH=1.25/Math.tan(T.MathUtils.degToRad(camera.fov/2));
+  const d=Math.max(fitW,fitH)*1.0;camera.position.set(0,.95,d);camera.lookAt(0,.72,0);}
+addEventListener('resize',resize);
+
+// ---------- rig helpers: rotations are given about the CHARACTER's axes (x = pitch, y = twist, z = roll) ----------
+const loader=new GLTFLoader();
+const D=T.MathUtils.degToRad;
+function prepare(gltf){const root=gltf.scene;let skinned=null;root.traverse(o=>{if(o.isSkinnedMesh){skinned=skinned||o;o.frustumCulled=false;}});
+  const bones={};skinned.skeleton.bones.forEach(b=>bones[b.name.replace(/[._]?(L|R)$/,'.$1')]=b);
+  root.updateMatrixWorld(true);const rest={};
+  for(const [n,b] of Object.entries(bones)){const pw=new T.Quaternion();b.parent.getWorldQuaternion(pw);rest[n]={q:b.quaternion.clone(),C:pw,Ci:pw.clone().invert(),p:b.position.clone()};}
+  // material: textured models keep their look; shape-only models get clay
+  skinned.material=Array.isArray(skinned.material)?skinned.material[0]:skinned.material;
+  if(!skinned.material.map){skinned.material=new T.MeshStandardMaterial({color:'#d9cbb8',roughness:.8});}
+  skinned.material.side=T.FrontSide;
+  const g=skinned.geometry;const base=skinned.material;
+  return {root,skinned,bones,rest,base,geo:g};}
+const tmpQ=new T.Quaternion(),tmpE=new T.Euler();
+function applyPose(m,pose,lift=0){for(const [n,r] of Object.entries(m.rest)){const b=m.bones[n];const a=pose[n];
+    if(a){tmpE.set(D(a[0]||0),D(a[1]||0),D(a[2]||0),'ZXY');tmpQ.setFromEuler(tmpE);b.quaternion.copy(r.Ci).multiply(tmpQ).multiply(r.C).multiply(r.q);}else b.quaternion.copy(r.q);}
+  m.root.position.y=lift;m.root.updateMatrixWorld(true);}
+
+// ---------- moves (degrees; x<0 swings a HANGING limb forward, x>0 leans an UPRIGHT bone (spine/chest/head) forward; z>0 moves the LEFT limb outward) ----------
+const s=Math.sin,c=Math.cos,P2=Math.PI*2;
+const DOWN=22; // the A-pose arms hang ~30° out; bring them in to rest at the sides
+const arms=(l,r)=>({'upper_arm.L':l,'upper_arm.R':r});
+const MOVES={
+  idle:{name:'Idle',len:3,f:t=>({chest:[s(t*P2/3)*2],'upper_arm.L':[0,0,-DOWN+s(t*2)*1.5],'upper_arm.R':[0,0,DOWN-s(t*2)*1.5],head:[0,s(t*1.3)*6,0]})},
+  walk:{name:'Walk',len:2,f:t=>{const a=s(t*Math.PI*2*1);return {'thigh.L':[-a*25],'thigh.R':[a*25],'shin.L':[Math.max(0,-c(t*P2))*35],'shin.R':[Math.max(0,c(t*P2))*35],
+    'upper_arm.L':[a*20,0,-DOWN],'upper_arm.R':[-a*20,0,DOWN],'forearm.L':[-15],'forearm.R':[-15],chest:[0,a*6,0],hips:[0,-a*5,0]}},bob:t=>Math.abs(s(t*P2))*.02},
+  run:{name:'Run',len:1.2,f:t=>{const a=s(t*P2/1.2*1.5);return {'thigh.L':[-a*48],'thigh.R':[a*48],'shin.L':[40+Math.max(0,a)*55],'shin.R':[40+Math.max(0,-a)*55],
+    'upper_arm.L':[a*42,0,-DOWN+5],'upper_arm.R':[-a*42,0,DOWN-5],'forearm.L':[-85],'forearm.R':[-85],spine:[10],chest:[0,a*10,0]}},bob:t=>Math.abs(s(t*P2/1.2*1.5))*.06},
+  jump:{name:'Jump',len:1.6,f:t=>{const k=t/1.6;const crouch=k<.3?Math.sin(k/.3*Math.PI/2):k<.4?1-(k-.3)/.1:k>.85?Math.sin((k-.85)/.15*Math.PI):0,air=k>.38&&k<.88;
+    return {'thigh.L':[-70*crouch-(air?25:0)],'thigh.R':[-70*crouch-(air?25:0)],'shin.L':[95*crouch+(air?45:0)],'shin.R':[95*crouch+(air?45:0)],'foot.L':[-25*crouch],'foot.R':[-25*crouch],
+      spine:[20*crouch],'upper_arm.L':[air?-150:30*crouch,0,air?20:-DOWN],'upper_arm.R':[air?-150:30*crouch,0,air?-20:DOWN]}},
+    bob:t=>{const k=t/1.6;const crouch=k<.3?Math.sin(k/.3*Math.PI/2):k<.4?1-(k-.3)/.1:k>.85?Math.sin((k-.85)/.15*Math.PI):0;return k>.38&&k<.88?Math.sin((k-.38)/.5*Math.PI)*.55:-crouch*.18;}},
+  wave:{name:'Wave',len:2,f:t=>({'upper_arm.R':[0,0,-125],'forearm.R':[0,0,-25+s(t*P2*1.5)*28],'upper_arm.L':[0,0,-DOWN],head:[0,-10,8],chest:[0,0,4]})},
+  crouch:{name:'Crouch',len:2.4,f:t=>{const k=(1-c(t/2.4*P2))/2;return {'thigh.L':[-115*k,0,8*k],'thigh.R':[-115*k,0,-8*k],'shin.L':[130*k],'shin.R':[130*k],'foot.L':[-20*k],'foot.R':[-20*k],
+    spine:[25*k],chest:[10*k],'upper_arm.L':[-60*k,0,-DOWN*(1-k)],'upper_arm.R':[-60*k,0,DOWN*(1-k)],'forearm.L':[-40*k],'forearm.R':[-40*k]}},bob:t=>-(1-c(t/2.4*P2))/2*.42},
+  climb:{name:'Climb',len:2,f:t=>{const a=s(t*P2/2);return {'upper_arm.L':[-150+a*20,0,15],'upper_arm.R':[-150-a*20,0,-15],'forearm.L':[-20-Math.max(0,a)*60],'forearm.R':[-20-Math.max(0,-a)*60],
+    'thigh.L':[-60*Math.max(0,a)],'thigh.R':[-60*Math.max(0,-a)],'shin.L':[90*Math.max(0,a)],'shin.R':[90*Math.max(0,-a)],head:[-15]}},bob:t=>Math.abs(s(t*P2/2))*.06},
+  ride:{name:'Sit / ride',len:2,f:t=>{const a=s(t*P2/2);return {'thigh.L':[-82,0,24],'thigh.R':[-82,0,-24],'shin.L':[78],'shin.R':[78],'foot.L':[-10],'foot.R':[-10],
+    spine:[8+a*4],'upper_arm.L':[-35,0,-10],'upper_arm.R':[-35,0,10],'forearm.L':[-55],'forearm.R':[-55]}},bob:t=>-.30+s(t*P2/2)*.02},
+};
+const ORDER=Object.keys(MOVES);
+// hardest frame of each move (used for the score)
+const KEYS={idle:[0],walk:[.25,.75],run:[.15,.45],jump:[.2,.65],wave:[.5],crouch:[1.2],climb:[.5,1.5],ride:[.5]};
+
+// ---------- stretch: CPU-skin the vertices, compare every edge with its rest length ----------
+function edgesOf(geo){const idx=geo.index?geo.index.array:null,n=geo.attributes.position.count,seen=new Set(),E=[];
+  const add=(a,b)=>{const k=a<b?a*n+b:b*n+a;if(!seen.has(k)){seen.add(k);E.push(a,b);}};
+  const cnt=idx?idx.length:n;for(let i=0;i<cnt;i+=3){const a=idx?idx[i]:i,b=idx?idx[i+1]:i+1,c2=idx?idx[i+2]:i+2;add(a,b);add(b,c2);add(c2,a);}
+  return new Uint32Array(E);}
+// welded index so seam duplicates do not count as edges (positions within 1e-5)
+function positionsOf(m,out){const n=m.geo.attributes.position.count,v=new T.Vector3();for(let i=0;i<n;i++){m.skinned.getVertexPosition(i,v);out[i*3]=v.x;out[i*3+1]=v.y;out[i*3+2]=v.z;}return out;}
+function measure(m){const n=m.geo.attributes.position.count;m.cur=m.cur||new Float32Array(n*3);positionsOf(m,m.cur);
+  const E=m.edges,R=m.restLen,strain=m.strain||(m.strain=new Float32Array(n));strain.fill(0);let bad=0,sum=0;
+  for(let e=0,k=0;e<E.length;e+=2,k++){const a=E[e]*3,b=E[e+1]*3;const L=Math.hypot(m.cur[a]-m.cur[b],m.cur[a+1]-m.cur[b+1],m.cur[a+2]-m.cur[b+2]);
+    const st=R[k]>1e-6?Math.abs(L/R[k]-1):0;sum+=st;if(st>.35)bad++;if(st>strain[E[e]])strain[E[e]]=st;if(st>strain[E[e+1]])strain[E[e+1]]=st;}
+  return {bad:bad/(E.length/2)*100,mean:sum/(E.length/2)*100};}
+function paintStretch(m){const n=m.strain.length;let col=m.geo.attributes.color;if(!col){col=new T.BufferAttribute(new Float32Array(n*3),3);m.geo.setAttribute('color',col);}
+  const A=new T.Color('#c9d3cf'),B=new T.Color('#e9b43a'),Cc=new T.Color('#d2553f'),t=new T.Color();
+  for(let i=0;i<n;i++){const k=Math.min(1,m.strain[i]/.6);if(k<.5)t.copy(A).lerp(B,k*2);else t.copy(B).lerp(Cc,(k-.5)*2);col.setXYZ(i,t.r,t.g,t.b);}col.needsUpdate=true;}
+
+// ---------- load ----------
+let mode='compare',outfit=OUTFITS[0].id,move='auto',showStretch=false,spin=false;
+const loaded=new Map();
+async function load(file){if(loaded.has(file))return loaded.get(file);const p=new Promise((res,rej)=>loader.load(file,g=>res(prepare(g)),undefined,rej));loaded.set(file,p);return p;}
+let actors=[];const holder=new T.Group();scene.add(holder);
+async function showCompare(){slots=MODELS.length;frameCamera();$('loading').hidden=false;
+  const list=await Promise.all(MODELS.map(md=>load(`lab/${md.id}_${outfit}.glb`).catch(()=>null)));
+  holder.clear();actors=[];list.forEach((m,i)=>{if(!m)return;const x=(i-(MODELS.length-1)/2)*1.15;m.root.position.set(x,0,0);m.x=x;holder.add(m.root);actors.push({m,md:MODELS[i]});
+    if(!m.edges){m.edges=edgesOf(m.geo);applyPose(m,{});const p=positionsOf(m,new Float32Array(m.geo.attributes.position.count*3));m.restLen=new Float32Array(m.edges.length/2);
+      for(let e=0,k=0;e<m.edges.length;e+=2,k++){const a=m.edges[e]*3,b=m.edges[e+1]*3;m.restLen[k]=Math.hypot(p[a]-p[b],p[a+1]-p[b+1],p[a+2]-p[b+2]);}}});
+  $('names').innerHTML=MODELS.map(md=>{const f=MAN.facts?.[`${md.id}_${outfit}`];return `<div><b>${md.name}</b>${f?(f.tris/1000).toFixed(1)+'k tris'+(f.textured?'':' · no colour'):'missing'}</div>`;}).join('');
+  $('loading').hidden=true;setStretch(showStretch);}
+async function showSwap(set){slots=1;frameCamera();$('loading').hidden=false;
+  const files=[(SWAP.bodies&&SWAP.bodies[set])||SWAP.base,...(SWAP.sets[set]||[])];const parts=await Promise.all(files.map(f=>load('lab/'+f)));
+  holder.clear();actors=[];const g=new T.Group();parts.forEach(m=>{m.root.position.set(0,0,0);m.x=0;g.add(m.root);actors.push({m,md:{id:'swap'}});});holder.add(g);
+  $('names').innerHTML=`<div><b>${SWAP.name}</b>${set==='base'?'Skin-tight base layer':set==='riding'?'Riding outfit':'Casual outfit'} · same skeleton</div>`;$('loading').hidden=true;setStretch(false);}
+function setStretch(on){showStretch=on;$('stretch').setAttribute('aria-pressed',on);view.classList.toggle('stretch-on',on);
+  for(const {m} of actors){if(on){if(!m.vmat)m.vmat=new T.MeshStandardMaterial({vertexColors:true,roughness:.85});m.skinned.material=m.vmat;}else m.skinned.material=m.base;}}
+
+// ---------- UI ----------
+function chips(el,items,cur,on){el.innerHTML='';for(const it of items){const b=document.createElement('button');b.textContent=it.name;b.setAttribute('aria-pressed',it.id===cur);b.onclick=()=>{[...el.children].forEach(x=>x.setAttribute('aria-pressed',x===b));on(it.id);};el.append(b);}}
+chips($('modes'),[{id:'compare',name:'Compare models'},...(SWAP?[{id:'swap',name:'Try outfits'}]:[])],mode,v=>{mode=v;$('outfits').hidden=false;
+  if(v==='compare'){chips($('outfits'),OUTFITS,outfit,o=>{outfit=o;showCompare();});showCompare();$('scoreCard').hidden=false;}
+  else{chips($('outfits'),[{id:'riding',name:'Riding'},{id:'casual',name:'Casual'},{id:'base',name:'Base layer'}],'riding',o=>showSwap(o));showSwap('riding');$('scoreCard').hidden=true;}});
+chips($('outfits'),OUTFITS,outfit,o=>{outfit=o;showCompare();});
+chips($('moves'),[{id:'auto',name:'Auto'},...ORDER.map(k=>({id:k,name:MOVES[k].name}))],'auto',v=>{move=v;hold=null;t0=performance.now();});
+function setFocus(i){focus=i;frameCamera();}
+chips($('focus'),[{id:-1,name:'All side by side'},...MODELS.map((m,i)=>({id:i,name:m.name}))],-1,setFocus);
+$('stretch').onclick=()=>setStretch(!showStretch);let angle=0;chips($('angles'),[{id:0,name:'Front'},{id:-.75,name:'¾'},{id:-1.5708,name:'Side'},{id:'spin',name:'Spin'}],0,v=>{spin=v==='spin';if(!spin)angle=v;});
+
+// ---------- loop ----------
+let t0=performance.now(),last=0,lastPaint=0,hold=null,focus=-1;
+function current(now){if(hold!=null)return [move,hold];if(move!=='auto')return [move,((now-t0)/1000)%MOVES[move].len];
+  let t=(now-t0)/1000;const total=ORDER.reduce((a,k)=>a+MOVES[k].len*2,0);t%=total;for(const k of ORDER){const L=MOVES[k].len*2;if(t<L)return [k,t%MOVES[k].len];t-=L;}return ['idle',0];}
+function frame(now){requestAnimationFrame(frame);const [k,t]=current(now);$('poseName').textContent=MOVES[k].name;const pose=MOVES[k].f(t),lift=MOVES[k].bob?MOVES[k].bob(t):0;
+  for(const {m} of actors){applyPose(m,pose,lift);m.root.rotation.y=spin?now/1000*.8:angle;}
+  if(showStretch&&now-lastPaint>200){lastPaint=now;for(const {m} of actors)if(m.edges){measure(m);paintStretch(m);}}
+  renderer.render(scene,camera);}
+
+// ---------- scoring: hardest frames of every move ----------
+async function score(){const rows=[];
+  for(const md of MODELS){const per={};let total=0,count=0;
+    for(const of_ of OUTFITS){const m=await load(`lab/${md.id}_${of_.id}.glb`).catch(()=>null);if(!m)continue;
+      if(!m.edges){m.edges=edgesOf(m.geo);applyPose(m,{});const p=positionsOf(m,new Float32Array(m.geo.attributes.position.count*3));m.restLen=new Float32Array(m.edges.length/2);for(let e=0,q=0;e<m.edges.length;e+=2,q++){const a=m.edges[e]*3,b=m.edges[e+1]*3;m.restLen[q]=Math.hypot(p[a]-p[b],p[a+1]-p[b+1],p[a+2]-p[b+2]);}}
+      for(const k of ORDER){for(const t of KEYS[k]){applyPose(m,MOVES[k].f(t),0);const r=measure(m);per[k]=Math.max(per[k]||0,r.bad);total+=r.bad;count++;}}
+      applyPose(m,{});}
+    rows.push({md,per,avg:count?total/count:Infinity});}
+  rows.sort((a,b)=>a.avg-b.avg);window.__labScores=rows.map(r=>({id:r.md.id,avg:+r.avg.toFixed(2),per:Object.fromEntries(Object.entries(r.per).map(([k,v])=>[k,+v.toFixed(2)]))}));
+  const worst=Math.max(...rows.flatMap(r=>Object.values(r.per)),1);
+  $('scores').innerHTML=`<table><tr><th>#</th><th>Model</th><th>Avg</th>${ORDER.map(k=>`<th>${MOVES[k].name}</th>`).join('')}</tr>${rows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.md.name}</b></td><td class="n">${r.avg.toFixed(1)}%</td>${ORDER.map(k=>{const v=r.per[k]??0,col=v<1?'var(--good)':v<3?'var(--ok)':'var(--bad)';return `<td class="n">${v.toFixed(1)}<div class="bar"><i style="width:${Math.min(100,v/worst*100)}%;background:${col}"></i></div></td>`;}).join('')}</tr>`).join('')}</table>`;}
+
+resize();await showCompare();requestAnimationFrame(frame);
+score().then(()=>{window.__labReady=true;});
+window.__lab={loaded,applyPose,actors:()=>actors,T,MOVES,setMove:v=>{move=v;t0=performance.now();},setStretch,showCompare:o=>{outfit=o;return showCompare();},showSwap,freeze:(k,t)=>{move=k;hold=t;},unfreeze:()=>{hold=null;},angle:a=>{spin=false;angle=a;},focus:i=>setFocus(i)};
+</script>
+</body>
+</html>

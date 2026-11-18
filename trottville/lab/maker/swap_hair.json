@@ -1,0 +1,10 @@
+{
+ "hair": {
+  "tris": 2788,
+  "pushed_out": 228
+ },
+ "body_mask": {
+  "hidden_faces": 480,
+  "covered_verts": 527
+ }
+}

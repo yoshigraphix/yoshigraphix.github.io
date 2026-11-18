@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en" data-no-chip>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2f6b3a">
+<title>Haystakes · Trottville</title>
+<link rel="stylesheet" href="coin-collect.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+
+<style>
+:root{--cream:#fffdf4;--cream2:#fbf3dc;--green:#2f6b3a;--green2:#4f9a4f;--leaf:#8cc46f;--ink:#2d2a24;--muted:#7a6f5d;--hay:#f3c969;--hay2:#e6a93a;--coral:#e4572e;--line:#eadfc8;--sky:#2f8fce;--plum:#8e5bb5;--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:linear-gradient(#eaf5dc,#fffdf4 40%);color:var(--ink);font:15px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+.app{display:flex;flex-direction:column;height:100dvh;max-width:560px;margin:0 auto;background:var(--cream);box-shadow:0 0 40px #2f6b3a1a}
+/* top bar */
+.top{display:flex;align-items:center;gap:6px;padding:6px 8px;padding-top:max(6px,env(safe-area-inset-top));background:var(--green);color:#fffdf4;min-height:52px}
+.top h1{flex:1;margin:0;font-size:19px;font-weight:900;letter-spacing:.3px;text-align:center;white-space:nowrap}
+.top h1 small{font-size:11px;font-weight:600;opacity:.75;display:block;letter-spacing:.6px;text-transform:uppercase}
+.ibtn{min-width:44px;height:44px;border:0;border-radius:12px;background:#ffffff1f;color:#fffdf4;font-weight:800;font-size:17px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:0 10px;gap:4px;white-space:nowrap}
+.ibtn:active{background:#ffffff38}
+.ibtn.back{font-size:13px;padding:0 8px}
+.top h1{min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:420px){.top h1{font-size:17px}.top h1 small{display:none}.coins{padding:6px 8px;font-size:13px}.ibtn{min-width:40px;padding:0 6px}}
+.coins{display:inline-flex;align-items:center;gap:4px;background:#00000026;border-radius:999px;padding:6px 10px;font-weight:800;font-size:14px}
+/* standings */
+.standings{display:grid;grid-template-columns:repeat(var(--n,4),1fr);gap:4px;padding:6px 8px;background:var(--cream2);border-bottom:1px solid var(--line)}
+.chip{border-radius:12px;background:#fff;border:2px solid transparent;padding:4px 6px;min-width:0;display:grid;grid-template-columns:auto 1fr;column-gap:5px;align-items:center;font-size:12px;transition:border-color .2s,background .2s}
+.chip.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,#fff)}
+.chip .pl{grid-row:span 2;width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;font-weight:900;display:grid;place-items:center;font-size:12px;box-shadow:0 2px 0 #0002}
+.chip .nm{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .meta{display:flex;align-items:center;gap:4px;color:var(--muted);font-size:11px;white-space:nowrap}
+.mini{flex:1;height:5px;border-radius:3px;background:#eadfc8;overflow:hidden;min-width:18px}
+.mini i{display:block;height:100%;background:var(--green2);border-radius:3px;transition:width .3s}
+.mini.low i{background:var(--coral)}
+.chip.done{opacity:.85}
+/* stage */
+.trackWrap{flex:1;min-height:0;container-type:size;display:flex;align-items:center;justify-content:center;padding:4px 0}
+.stage{position:relative;width:min(100cqw - 12px,100cqh * .68);aspect-ratio:340/500}
+.stage svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.infield{position:absolute;left:29.5%;width:41%;top:23%;height:54%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;pointer-events:none}
+.lapTag{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#2f6b3a;background:#fffdf4cc;border-radius:999px;padding:3px 9px}
+.dice{display:flex;gap:6px;min-height:58px;align-items:center}
+.die{width:54px;height:54px;border-radius:13px;background:#fffdf4;box-shadow:0 4px 0 #c9b48c,0 6px 12px #0003;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:8px;gap:2px}
+.die.small{width:44px;height:44px;padding:6px}
+.die.faded{opacity:.45}
+.die i{width:9px;height:9px;border-radius:50%;background:#3b2b1a;place-self:center}
+.die.small i{width:7px;height:7px}
+.die.shoe{display:block;padding:5px}
+.die.shoe svg{display:block;width:100%;height:100%}
+.die.idle{background:#fffdf499;box-shadow:none;border:2px dashed #2f6b3a55}
+.total{font-size:30px;font-weight:900;color:#2d2a24;line-height:1;text-shadow:0 2px 0 #fffdf4}
+.total small{display:block;font-size:11px;font-weight:700;color:#2f6b3a;letter-spacing:.5px;text-transform:uppercase;text-shadow:none}
+.msg{font-size:12.5px;font-weight:700;color:#1f3d24;background:#fffdf4e6;border-radius:10px;padding:5px 8px;max-width:100%;min-height:2.6em;display:block}
+.fx{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.floaty{position:absolute;transform:translate(-50%,-50%);font-weight:900;font-size:14px;white-space:nowrap;color:#fff;background:var(--c,#2f6b3a);padding:3px 8px;border-radius:999px;box-shadow:0 3px 8px #0003}
+.confetti{position:absolute;width:8px;height:12px;border-radius:2px;top:-10px}
+/* track svg bits */
+.tok{transition:opacity .4s}
+.tok .pulse{transform-origin:0 0;animation:pulse 1.2s ease-in-out infinite;transform-box:fill-box}
+@keyframes pulse{50%{transform:scale(1.35);opacity:.2}}
+.dest{cursor:pointer}
+.dest .ring{animation:pulse 1s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+/* panel */
+.panel{background:#fff;border-top:1px solid var(--line);padding:8px 10px;padding-bottom:max(10px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;box-shadow:0 -6px 20px #2f6b3a12}
+.who{display:flex;align-items:center;gap:8px;min-height:30px}
+.who .dot{width:14px;height:14px;border-radius:50%;background:var(--c);flex:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 25%,transparent)}
+.who b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who .sta{display:flex;gap:2px;margin-left:auto;align-items:center}
+.who .sta span{font-size:11px;color:var(--muted);font-weight:700;margin-right:4px}
+.who .sta i{width:8px;height:14px;border-radius:3px;background:#eadfc8}
+.who .sta i.f{background:var(--green2)}
+.who .sta.low i.f{background:var(--coral)}
+.leave{border:0;background:none;color:var(--muted);font-weight:800;min-width:44px;min-height:44px;margin:-8px -6px -8px 0;font-size:18px}
+.hand.wait{position:relative;margin-top:8px}
+.hand.wait::before{content:'Your cards';position:absolute;top:-9px;left:10px;z-index:1;font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;background:#fff;color:var(--muted);padding:0 5px}
+.hand{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;min-height:70px}
+.card{border:2px solid #eadfc8;border-radius:14px;background:linear-gradient(#fffdf4,#fbf0d4);padding:6px 6px 5px;text-align:left;display:flex;flex-direction:column;gap:1px;min-height:70px;box-shadow:0 3px 0 #e2d2ae;transition:background .15s,border-color .15s}
+.card .ic{font-size:20px;line-height:1}
+.card b{font-size:12.5px;line-height:1.1}
+.card small{font-size:10.5px;color:var(--muted);line-height:1.2}
+.card.ready{border-color:var(--hay2);background:linear-gradient(#fff7da,#f9e2a6)}
+.card.ready:active{transform:translateY(2px);box-shadow:0 1px 0 #e2d2ae}
+.card:disabled{opacity:.6}
+.card.empty{border-style:dashed;background:none;box-shadow:none;align-items:center;justify-content:center;color:#c9b996;font-size:12px}
+.card.hidden{background:repeating-linear-gradient(45deg,#2f6b3a,#2f6b3a 6px,#3b7a46 6px,#3b7a46 12px);border-color:#2f6b3a}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.acts.one{grid-template-columns:1fr}
+.btn{min-height:52px;border:0;border-radius:14px;font-weight:900;font-size:16px;padding:6px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;transition:background .15s,box-shadow .1s,transform .1s}
+.btn small{font-size:11px;font-weight:700;opacity:.85;margin-top:2px}
+.btn.go{background:var(--green);color:#fffdf4;box-shadow:0 4px 0 #1d4625}
+.btn.go:hover{background:#367a43}
+.btn.hay{background:linear-gradient(#f8d25a,#e9ae2a);color:#4a320a;box-shadow:0 4px 0 #b9821a}
+.btn.soft{background:#f1ead6;color:#3d3426;box-shadow:0 4px 0 #d9ccaa}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #0003}
+.btn:disabled{opacity:.45;box-shadow:none}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.lane{min-height:52px;border-radius:14px;border:2px solid #eadfc8;background:#fffdf4;text-align:left;padding:5px 9px;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.lane b{font-size:14px}
+.lane small{font-size:11px;color:var(--muted);font-weight:600}
+.lane.ok{border-color:var(--c);background:color-mix(in srgb,var(--c) 9%,#fff)}
+.lane.ok.best{box-shadow:0 0 0 2px color-mix(in srgb,var(--c) 40%,transparent)}
+.lane:disabled{opacity:.5}
+.think{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;color:var(--muted);font-weight:700}
+.think .dots{display:inline-flex;gap:4px}
+.think .dots i{width:7px;height:7px;border-radius:50%;background:var(--c,#2f6b3a)}
+/* sheets */
+.sheet{position:fixed;inset:0;z-index:40;background:#2d2a2466;display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
+.sheet.full{background:var(--cream);align-items:stretch;top:calc(52px + env(safe-area-inset-top));z-index:30}
+.sheet .card2{background:var(--cream);width:100%;max-width:560px;max-height:100dvh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px max(18px,env(safe-area-inset-bottom));box-shadow:0 -10px 30px #0003}
+.sheet.full .card2{border-radius:0;box-shadow:none;margin:0 auto}
+.sheet h2{margin:0 0 6px;font-size:24px;font-weight:900;color:var(--green)}
+.sheet h3{margin:16px 0 6px;font-size:15px;font-weight:900;color:var(--green)}
+.sheet p{margin:6px 0;color:#4a4236}
+.hero{display:block;width:100%;height:auto;border-radius:18px;margin-bottom:10px}
+.seat{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:6px 10px;min-height:56px;width:100%;text-align:left;margin-bottom:6px}
+.seat .sw{width:26px;height:26px;border-radius:50%;background:var(--c);flex:none;box-shadow:inset 0 -3px 0 #0002}
+.seat .tx{flex:1;min-width:0}
+.seat .tx b{display:block}
+.seat .tx small{display:block;color:var(--muted);font-size:12px;line-height:1.25}
+.seat .cyc{font-size:12px;font-weight:800;color:var(--green);background:#eaf5dc;border-radius:999px;padding:4px 9px;white-space:nowrap}
+.seat.off{opacity:.6;border-style:dashed}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{min-height:52px;border-radius:14px;border:2px solid var(--line);background:#fff;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.seg button small{font-weight:600;color:var(--muted);font-size:11px}
+.seg button[aria-pressed=true]{border-color:var(--green);background:#eaf5dc}
+.stack{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.statline{font-size:13px;color:var(--muted);text-align:center;margin-top:10px}
+.howgrid{display:grid;gap:10px}
+.how{display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 10px}
+.how svg{width:72px;height:60px}
+.how p{margin:0;font-size:13.5px}
+.how b{color:var(--ink)}
+.cardlist{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cardlist div{background:linear-gradient(#fffdf4,#fbf0d4);border:2px solid #eadfc8;border-radius:12px;padding:6px 8px;font-size:12px}
+.cardlist div b{display:block;font-size:13px}
+.res{list-style:none;padding:0;margin:10px 0;display:flex;flex-direction:column;gap:6px}
+.res li{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:8px 10px}
+.res li.me{border-color:var(--coral)}
+.res .medal{font-size:22px;width:30px;text-align:center}
+.res .sw{width:16px;height:16px;border-radius:50%;background:var(--c)}
+.res .tx{flex:1;min-width:0}
+.res .sw{flex:none}
+.res small{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2d2a24;color:#fffdf4;padding:10px 16px;border-radius:999px;font-weight:700;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.in{opacity:1}
+@media (prefers-reduced-motion:reduce){.tok .pulse,.dest .ring{animation:none}}
+@media (min-width:600px){.top h1{font-size:22px}}
+/* ===== Trottville game family chrome: the same top bar, icons and buttons on every game page ===== */
+:root{--gf-display:'Fredoka','Trebuchet MS',system-ui,sans-serif;--gf-bar:#2f6b3a;
+  --gf-chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --gf-snd:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h4l5-4v14l-5-4H4z' fill='%23000'/%3E%3Cpath d='M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12'/%3E%3C/svg%3E");
+  --gf-mute:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h4l5-4v14l-5-4H4z' fill='%23000'/%3E%3Cpath d='M17 9.5l5 5M22 9.5l-5 5'/%3E%3C/svg%3E");
+  --gf-menu:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.8' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E")}
+.gf-bar{display:flex;align-items:center;gap:6px;min-height:52px;box-sizing:border-box;padding:max(4px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) 4px max(6px,env(safe-area-inset-left));background:var(--gf-bar);color:#fffdf4;box-shadow:0 2px 0 #1e4a27}
+.gf-bar h1,.gf-bar .gf-title{flex:1;min-width:0;margin:0;text-align:center;font:700 clamp(17px,4.7vw,21px)/1.05 var(--gf-display);letter-spacing:.2px;color:#fffdf4;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;text-wrap:balance;white-space:normal}
+.gf-bar h1 small,.gf-bar .gf-title small{display:none}
+.gf-btn{all:unset;box-sizing:border-box;flex:none;cursor:pointer;width:44px;height:44px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:#ffffff1f;color:#fffdf4;font:700 21px/1 var(--gf-display);text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:background-color .15s}
+.gf-btn:hover{background:#ffffff33}.gf-btn:active{background:#ffffff40}
+.gf-btn:focus-visible{outline:3px solid #f2b632;outline-offset:2px}
+.gf-btn[hidden]{display:none!important}
+.gf-btn.gf-ico{font-size:0}
+.gf-btn>svg{width:24px;height:24px;flex:none}
+.gf-btn.gf-ico::before,.gf-btn.gf-back::before{content:'';flex:none;width:24px;height:24px;background:currentColor;-webkit-mask:var(--gf-i) center/24px no-repeat;mask:var(--gf-i) center/24px no-repeat}
+/* Back: a chevron on phones, chevron + "Trottville" from 480px up. The text stays in the button for screen readers. */
+.gf-btn.gf-back{--gf-i:var(--gf-chev);font-size:0;padding:0}
+.gf-btn.gf-back svg{display:none}
+@media (min-width:480px){.gf-btn.gf-back{width:auto;padding:0 14px 0 8px;font:800 14px/1 system-ui,-apple-system,'Segoe UI',sans-serif}.gf-btn.gf-back *{font:inherit}}
+.gf-snd{--gf-i:var(--gf-snd)}.gf-snd[aria-label^="Sound off"]{--gf-i:var(--gf-mute)}
+.gf-menu{--gf-i:var(--gf-menu)}
+.gf-coins{flex:none;display:inline-flex;align-items:center;gap:5px;height:36px;box-sizing:border-box;padding:0 12px 0 9px;border-radius:999px;background:#00000029;color:#fffdf4;font:700 15px/1 var(--gf-display);font-variant-numeric:tabular-nums;box-shadow:none;min-width:0;pointer-events:none}
+.gf-coins b{font-weight:700}
+/* Line icons inside text buttons (Undo, Hint, Clear, Levels, Turn...) — one size, centred. */
+.gi{width:20px;height:20px;flex:none;display:block}
+.sheet h2,.sheet h3{font-family:var(--gf-display);font-weight:700}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top gf-bar">
+    <a class="ibtn back gf-btn gf-back" id="homeLink" href="#home" aria-label="Back to Trottville home">Trottville</a>
+    <button class="ibtn back gf-btn gf-back" id="worldBack" type="button" aria-label="Back to Trottville" hidden>Trottville</button>
+    <h1>Haystakes<small>a horse race of nerve</small></h1>
+    <span class="coins gf-coins" data-trottcoins aria-label="Your Trotties">🪙 <b>0</b></span>
+    <button class="ibtn gf-btn gf-ico gf-snd" id="soundBtn" type="button" aria-label="Sound on">🔊</button>
+    <button class="ibtn gf-btn" id="helpBtn" type="button" aria-label="How to play">?</button>
+  </header>
+  <div class="standings" id="standings" aria-label="Standings"></div>
+  <div class="trackWrap"><div class="stage" id="stage">
+    <svg id="track" viewBox="0 0 340 500" aria-label="Race track"></svg>
+    <div class="infield" aria-live="polite">
+      <div class="lapTag" id="lapTag">Lap 1 of 3</div>
+      <div class="dice" id="dice"></div>
+      <div class="total" id="total"></div>
+      <div class="msg" id="msg">Gates are open!</div>
+    </div>
+    <div class="fx" id="fx"></div>
+  </div></div>
+  <section class="panel" id="panel"></section>
+</div>
+
+<section class="sheet full" id="setup" aria-label="Set up a race">
+  <div class="card2">
+    <svg class="hero" viewBox="0 0 340 120" aria-hidden="true">
+      <defs><linearGradient id="hsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3f5"/><stop offset="1" stop-color="#eaf5dc"/></linearGradient></defs>
+      <rect width="340" height="120" rx="18" fill="url(#hsky)"/>
+      <circle cx="292" cy="28" r="14" fill="#f8d25a"/>
+      <path d="M0 78 Q60 62 120 74 T240 70 T340 72 V120 H0Z" fill="#8cc46f"/>
+      <path d="M0 96 Q90 84 170 92 T340 90 V120 H0Z" fill="#e6bd86"/>
+      <g stroke="#fff" stroke-width="3"><line x1="0" y1="88" x2="340" y2="86"/></g>
+      <rect x="24" y="64" width="34" height="22" rx="5" fill="#f3c969" stroke="#c99a3a" stroke-width="2"/><path d="M28 70h26M28 76h26M28 82h26" stroke="#c99a3a" stroke-width="1.5"/>
+      <rect x="282" y="66" width="30" height="20" rx="5" fill="#f3c969" stroke="#c99a3a" stroke-width="2"/>
+      <g transform="translate(120 96)"><ellipse rx="14" ry="3" cy="12" fill="#0002"/><circle r="13" fill="#e4572e" stroke="#fff" stroke-width="3"/><path d="M-4,7 L-4,1 C-4,-4 -1,-7 3,-8 L4,-10.5 L5.5,-7 C7.5,-5 8.5,-2 7.5,0 L5,1.5 L2,0.5 L1.5,7 Z" fill="#fff"/></g>
+      <g transform="translate(168 100)"><ellipse rx="14" ry="3" cy="12" fill="#0002"/><circle r="13" fill="#2f8fce" stroke="#fff" stroke-width="3"/><path d="M-4,7 L-4,1 C-4,-4 -1,-7 3,-8 L4,-10.5 L5.5,-7 C7.5,-5 8.5,-2 7.5,0 L5,1.5 L2,0.5 L1.5,7 Z" fill="#fff"/></g>
+      <g transform="translate(206 94)"><ellipse rx="14" ry="3" cy="12" fill="#0002"/><circle r="13" fill="#f0a020" stroke="#fff" stroke-width="3"/><path d="M-4,7 L-4,1 C-4,-4 -1,-7 3,-8 L4,-10.5 L5.5,-7 C7.5,-5 8.5,-2 7.5,0 L5,1.5 L2,0.5 L1.5,7 Z" fill="#fff"/></g>
+      <text x="170" y="42" text-anchor="middle" font-size="30" font-weight="900" fill="#2f6b3a" font-family="system-ui,sans-serif">Haystakes</text>
+      <text x="170" y="60" text-anchor="middle" font-size="11" font-weight="700" fill="#4f6b3a" font-family="system-ui,sans-serif" letter-spacing="1.5">ROLL · PUSH · DON’T STUMBLE</text>
+    </svg>
+    <p>Race round the Clover oval against computer riders — or pass the phone to friends. Push your luck on the hoof die, mind your stamina, and steal the rail.</p>
+    <h3>Riders</h3>
+    <div id="seats"></div>
+    <h3>Race length</h3>
+    <div class="seg" id="laps">
+      <button type="button" data-laps="2">2 laps<small>Sprint · ~5 min</small></button>
+      <button type="button" data-laps="3">3 laps<small>Classic · ~8 min</small></button>
+      <button type="button" data-laps="4">4 laps<small>Long · ~11 min</small></button>
+    </div>
+    <div class="stack">
+      <button class="btn go" id="startBtn" type="button">Off to the gate!<small>Trotties for finishing, bonus for placing</small></button>
+      <button class="btn soft" id="howBtn" type="button">How to play</button>
+    </div>
+    <div class="statline" id="statline"></div>
+  </div>
+</section>
+
+<section class="sheet" id="howto" hidden aria-label="How to play">
+  <div class="card2">
+    <h2>How to play</h2>
+    <p>First horse past the post after the last lap wins. Every turn you take a chance — the trick is knowing when to stop.</p>
+    <div class="howgrid">
+      <div class="how"><svg viewBox="0 0 72 60" aria-hidden="true"><rect x="4" y="12" width="30" height="30" rx="7" fill="#fffdf4" stroke="#c9b48c" stroke-width="2"/><circle cx="12" cy="20" r="3" fill="#3b2b1a"/><circle cx="19" cy="27" r="3" fill="#3b2b1a"/><circle cx="26" cy="34" r="3" fill="#3b2b1a"/><rect x="38" y="18" width="30" height="30" rx="7" fill="#fff1ec" stroke="#e4572e" stroke-width="2"/><path d="M45 26 v8 a8 8 0 0 0 16 0 v-8" fill="none" stroke="#e4572e" stroke-width="4" stroke-linecap="round" transform="rotate(180 53 33)"/></svg>
+        <p><b>Roll the hoof die.</b> Faces 1–5 move you; the <b>horseshoe</b> is a stumble.</p></div>
+      <div class="how"><svg viewBox="0 0 72 60" aria-hidden="true"><g font-family="system-ui" font-weight="900" font-size="11"><rect x="4" y="38" width="18" height="16" rx="4" fill="#8cc46f"/><text x="13" y="50" text-anchor="middle" fill="#fff">1</text><rect x="26" y="26" width="18" height="28" rx="4" fill="#f3c969"/><text x="35" y="44" text-anchor="middle" fill="#4a320a">2</text><rect x="48" y="12" width="18" height="42" rx="4" fill="#e4572e"/><text x="57" y="36" text-anchor="middle" fill="#fff">3</text></g></svg>
+        <p><b>Push your luck.</b> After a roll, stop — or <b>push</b> and roll again, adding it up. Pushes cost <b>1, then 2, then 3…</b> stamina. Stumble and you keep only <b>half</b>.</p></div>
+      <div class="how"><svg viewBox="0 0 72 60" aria-hidden="true"><circle cx="36" cy="30" r="22" fill="#a5d482"/><path d="M14 52 V30 A22 22 0 0 1 58 30 V52" fill="none" stroke="#e6bd86" stroke-width="16"/><path d="M14 52 V30 A22 22 0 0 1 58 30 V52" fill="none" stroke="#2f6b3a" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="20" cy="22" r="4" fill="#e4572e" stroke="#fff"/><circle cx="8" cy="30" r="4" fill="#2f8fce" stroke="#fff"/></svg>
+        <p><b>Ease up</b> instead of rolling: move 1, get <b>+3 stamina</b> and draw a card. At 0 stamina you can’t push.</p></div>
+      <div class="how"><svg viewBox="0 0 72 60" aria-hidden="true"><path d="M6 56 V32 A30 30 0 0 1 66 32 V56" fill="none" stroke="#e6bd86" stroke-width="22"/><path d="M14 56 V32 A22 22 0 0 1 58 32 V56" fill="none" stroke="#fff" stroke-width="1.5"/><text x="36" y="38" text-anchor="middle" font-size="9" font-weight="900" fill="#2f6b3a" font-family="system-ui">8</text><text x="36" y="8" text-anchor="middle" font-size="9" font-weight="900" fill="#e4572e" font-family="system-ui">11</text></svg>
+        <p><b>Pick a lane</b> after you roll. Bends have <b>8 spaces on the rail, 11 on the outside</b>. One lane over is free; two lanes costs 1 stamina.</p></div>
+      <div class="how"><svg viewBox="0 0 72 60" aria-hidden="true"><rect x="2" y="22" width="68" height="18" rx="4" fill="#e6bd86"/><circle cx="20" cy="31" r="7" fill="#e4572e" stroke="#fff" stroke-width="2"/><circle cx="36" cy="31" r="7" fill="#8e5bb5" stroke="#fff" stroke-width="2"/><path d="M52 31 h12" stroke="#e4572e" stroke-width="2" stroke-dasharray="2 2"/><text x="20" y="16" text-anchor="middle" font-size="9" font-weight="900" fill="#2f6b3a" font-family="system-ui">+1 🍃</text></svg>
+        <p><b>No passing through.</b> A rider in your lane boxes you in — you stop behind them. But tucking in right behind someone is a <b>slipstream: +1 stamina</b>.</p></div>
+      <div class="how"><svg viewBox="0 0 72 60" aria-hidden="true"><g font-family="system-ui" font-weight="900"><text x="10" y="22" font-size="18">🐢</text><text x="38" y="22" font-size="11" fill="#2f6b3a">1st</text><text x="10" y="48" font-size="18">🏇</text><text x="38" y="48" font-size="11" fill="#e4572e">last</text></g></svg>
+        <p><b>Comebacks:</b> each round the rider at the <b>back goes first</b>, and whoever is last draws a card at the start of their turn. Crossing the line each lap draws one too.</p></div>
+    </div>
+    <h3>Hand cards (hold up to 3, play one per turn)</h3>
+    <div class="cardlist" id="cardlist"></div>
+    <h3>Computer riders</h3>
+    <p><b>Nell (Cautious)</b> banks small rolls and loves a slipstream. <b>Rory (Bold)</b> pushes the die hard. <b>Vix (Sly)</b> spooks the leader and parks in your lane to box you in.</p>
+    <div class="stack"><button class="btn go" id="howClose" type="button">Got it</button></div>
+  </div>
+</section>
+
+<section class="sheet" id="handoff" style="background:#2f6b3a;align-items:center;padding:16px" hidden aria-label="Pass the phone">
+  <div class="card2" style="text-align:center;border-radius:22px">
+    <div id="handoffDot" style="width:64px;height:64px;border-radius:50%;margin:6px auto 10px;box-shadow:inset 0 -6px 0 #0002"></div>
+    <h2 id="handoffTitle">Pass the phone</h2>
+    <p>Your cards stay hidden until you’re holding the phone.</p>
+    <div class="stack"><button class="btn go" id="handoffGo" type="button">I’m ready — let’s ride</button></div>
+  </div>
+</section>
+
+<section class="sheet" id="leaveSheet" hidden aria-label="Leave the race">
+  <div class="card2">
+    <h2>Leave this race?</h2>
+    <p>Unfinished races don’t earn Trotties. Your horses won’t mind a rest, though.</p>
+    <div class="stack"><button class="btn go" id="keepBtn" type="button">Keep racing</button><button class="btn soft" id="quitBtn" type="button">Leave race</button></div>
+  </div>
+</section>
+
+<section class="sheet full" id="results" hidden aria-label="Race results">
+  <div class="card2" id="resultsCard"></div>
+</section>
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module">
+import * as H from './board-haystakes.mjs';
+import {queueCoins,showCollect,paintCounters} from './coin-collect.js';
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const still=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
+const STATS_KEY='trottville-board-haystakes-v1',SOUND_KEY='trottville-board-haystakes-sound',SETUP_KEY='trottville-board-haystakes-setup';
+const COLORS=['#e4572e','#2f8fce','#f0a020','#8e5bb5'];
+const LANE_NAMES=['Rail','Lane 2','Lane 3','Outside'];
+const ORD=['1st','2nd','3rd','4th'];
+const MEDAL=['🥇','🥈','🥉','🎀'];
+const HEAD='M-4,7 L-4,1 C-4,-4 -1,-7 3,-8 L4,-10.5 L5.5,-7 C7.5,-5 8.5,-2 7.5,0 L5,1.5 L2,0.5 L1.5,7 Z';
+
+// ---------- Back to Trottville ----------
+const inWorld=new URLSearchParams(location.search).get('in')==='world'&&parent!==window;
+if(inWorld){$('homeLink').hidden=true;$('worldBack').hidden=false;$('worldBack').onclick=()=>parent.postMessage('trottville:close-board',location.origin);}
+paintCounters();
+
+// ---------- Sound (gentle WebAudio, optional) ----------
+let soundOn=store.get(SOUND_KEY)!=='off',ac=null;
+function paintSound(){$('soundBtn').textContent=soundOn?'🔊':'🔈';$('soundBtn').setAttribute('aria-label',soundOn?'Sound on (tap to mute)':'Sound off (tap to unmute)');}
+paintSound();
+$('soundBtn').onclick=()=>{soundOn=!soundOn;store.set(SOUND_KEY,soundOn?'on':'off');paintSound();if(soundOn)sfx.turn();};
+function audio(){if(!soundOn)return null;try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();}catch{return null}return ac;}
+function tone(f,dur,{type='sine',vol=.1,at=0,to=null}={}){const a=audio();if(!a)return;const t=a.currentTime+at,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0008,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.02);}
+function noise(dur,{vol=.08,at=0,freq=1800,q=1}={}){const a=audio();if(!a)return;const t=a.currentTime+at,n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type='bandpass';f.frequency.value=freq;f.Q.value=q;g.gain.value=vol;s.connect(f).connect(g).connect(a.destination);s.start(t);}
+let clop=0;
+const sfx={
+  clop(){clop++;tone(clop%2?310:250,.07,{type:'triangle',vol:.07});noise(.03,{vol:.05,freq:2600});},
+  dice(){for(let i=0;i<5;i++)noise(.035,{vol:.07,at:i*.07,freq:1400+i*300,q:3});},
+  land(){tone(520,.09,{type:'triangle',vol:.08});},
+  push(){tone(330,.16,{type:'triangle',vol:.07,to:660});},
+  stumble(){tone(320,.35,{type:'sawtooth',vol:.04,to:110});noise(.15,{vol:.05,freq:500});},
+  card(){noise(.18,{vol:.06,freq:3000,q:.7});tone(880,.12,{vol:.04,at:.05});},
+  draft(){tone(988,.16,{vol:.05});tone(1319,.22,{vol:.04,at:.08});},
+  turn(){tone(660,.08,{vol:.04});},
+  finish(){[523,659,784,1047].forEach((f,i)=>tone(f,.25,{type:'triangle',vol:.07,at:i*.11}));},
+  sad(){[392,330,262].forEach((f,i)=>tone(f,.25,{type:'triangle',vol:.05,at:i*.14}));}
+};
+
+// ---------- Track geometry + drawing ----------
+const CX=170,YT=170,YB=330,LEN=160,RAD=[84,106,128,150],LW=22,NS='http://www.w3.org/2000/svg';
+function pos(l,u){const B=H.BEND[l],S=H.STRAIGHT,n=H.laneLen(l),r=RAD[l];u=((u%n)+n)%n;
+  if(u<S)return [CX+r,YB-u/S*LEN,1,0];
+  if(u<S+B){const a=(u-S)/B*Math.PI;return [CX+r*Math.cos(a),YT-r*Math.sin(a),Math.cos(a),-Math.sin(a)];}
+  if(u<2*S+B)return [CX-r,YT+(u-S-B)/S*LEN,-1,0];
+  const a=Math.PI+(u-2*S-B)/B*Math.PI;return [CX+r*Math.cos(a),YB-r*Math.sin(a),Math.cos(a),-Math.sin(a)];}
+const stad=r=>`M${CX+r} ${YB}L${CX+r} ${YT}A${r} ${r} 0 0 0 ${CX-r} ${YT}L${CX-r} ${YB}A${r} ${r} 0 0 0 ${CX+r} ${YB}Z`;
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent?.append(e);return e;}
+const svg=$('track');
+function drawTrack(){
+  svg.innerHTML='';
+  const defs=el('defs',{},svg);
+  defs.innerHTML=`<pattern id="grass" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#8cc46f"/><circle cx="3" cy="4" r="1" fill="#7db562"/><circle cx="10" cy="10" r="1.2" fill="#9bd07c"/></pattern>
+    <pattern id="check" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#fff"/><rect width="3" height="3" fill="#2d2a24"/><rect x="3" y="3" width="3" height="3" fill="#2d2a24"/></pattern>
+    <radialGradient id="pond"><stop offset="0" stop-color="#9fd8f0"/><stop offset="1" stop-color="#5fb3d9"/></radialGradient>`;
+  el('rect',{width:340,height:500,rx:18,fill:'url(#grass)'},svg);
+  // trees + hay bales round the outside
+  for(const [x,y,s] of [[16,30,1],[322,40,.9],[18,470,.9],[322,468,1],[10,250,.7],[330,250,.7]]){const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`},svg);el('ellipse',{cx:2,cy:12,rx:11,ry:4,fill:'#0002'},g);el('rect',{x:-2,y:2,width:5,height:10,rx:2,fill:'#8a5a33'},g);el('circle',{r:11,fill:'#4f9a4f'},g);el('circle',{cx:-4,cy:-4,r:5,fill:'#6cb35e'},g);}
+  // track surface
+  el('path',{d:stad(117),fill:'none',stroke:'#c99d68','stroke-width':LW*4+8},svg);
+  el('path',{d:stad(117),fill:'none',stroke:'#e6bd86','stroke-width':LW*4+2},svg);
+  // infield
+  el('path',{d:stad(72),fill:'#a5d482'},svg);
+  for(const [x,y,c] of [[110,110,'#f6a5c0'],[230,112,'#fff'],[106,392,'#f8d25a'],[232,390,'#f6a5c0'],[120,120,'#f8d25a'],[220,382,'#fff']]){el('circle',{cx:x,cy:y,r:2.6,fill:c},svg);el('circle',{cx:x,cy:y,r:1,fill:'#e6a93a'},svg);}
+  // bend shading: outer lanes are longer
+  // lane lines
+  for(const r of [95,117,139])el('path',{d:stad(r),fill:'none',stroke:'#fffdf4','stroke-width':1.1,'stroke-dasharray':'4 4',opacity:.75},svg);
+  // spaces
+  const sp=el('g',{},svg);
+  for(let l=0;l<4;l++){const n=H.laneLen(l);for(let k=0;k<n;k++){const [x,y,nx,ny]=pos(l,k);el('line',{x1:x-nx*(LW/2-2),y1:y-ny*(LW/2-2),x2:x+nx*(LW/2-2),y2:y+ny*(LW/2-2),stroke:'#b88b55','stroke-width':.8,opacity:.45},sp);const [cx,cy]=pos(l,k+.5);el('circle',{cx,cy,r:2,fill:H.isBend(l,k)?'#fff6e2':'#fffdf4',opacity:.55},sp);}}
+  // rails
+  el('path',{d:stad(72),fill:'none',stroke:'#fff','stroke-width':3},svg);
+  el('path',{d:stad(162),fill:'none',stroke:'#fff','stroke-width':3},svg);
+  el('path',{d:stad(162),fill:'none',stroke:'#d8cdb4','stroke-width':3,'stroke-dasharray':'1.5 14'},svg);
+  // finish line + post
+  el('rect',{x:CX+73,y:YB-3,width:88,height:6,fill:'url(#check)'},svg);
+  const post=el('g',{transform:`translate(${CX+166} ${YB})`},svg);el('rect',{x:-1.5,y:-20,width:3,height:22,fill:'#fff'},post);el('path',{d:'M1.5 -20 l12 4 l-12 4z',fill:'#e4572e'},post);
+  el('text',{x:CX+117,y:YB+16,'text-anchor':'middle','font-size':8.5,'font-weight':900,fill:'#7a5a33','font-family':'system-ui,sans-serif','letter-spacing':1},svg).textContent='START · FINISH';
+  // direction arrows on the infield edge
+  for(const [x,y,rot] of [[CX+62,250,-90],[CX-62,250,90]]){el('path',{d:'M-5 3 L0 -4 L5 3',fill:'none',stroke:'#fffdf4','stroke-width':2.5,'stroke-linecap':'round','stroke-linejoin':'round',transform:`translate(${x} ${y}) rotate(${rot+90})`,opacity:.8},svg);}
+  el('g',{id:'hl'},svg);el('g',{id:'toks'},svg);
+}
+
+// ---------- Game state + UI ----------
+let S=null,setup=loadSetup(),busy=false,waiting=null,startedAt=0,tokEls=[],humans=0,handed=-1;
+function loadSetup(){try{const s=JSON.parse(store.get(SETUP_KEY));if(s&&Array.isArray(s.seats)&&s.seats.length===3&&[2,3,4].includes(s.laps))return s;}catch{}return {seats:['cautious','bold','sly'],laps:3};}
+const OPTS=['cautious','bold','sly','friend','off'];
+function seatList(){
+  const out=[{name:'You',horse:'',kind:'human',color:COLORS[0]}],used={};
+  setup.seats.forEach((o,i)=>{if(o==='off')return;const color=COLORS[i+1];
+    if(o==='friend')out.push({name:`Friend ${i+2}`,kind:'human',color});
+    else{const k=used[o]=(used[o]||0),[n,h]=H.PERSONAS[o].names[k%3];used[o]++;out.push({name:n,horse:h,kind:'bot',persona:o,color});}});
+  return out;}
+function stats(){try{return JSON.parse(store.get(STATS_KEY))||{}}catch{return {}}}
+function paintSetup(){
+  const names={};const preview=seatList();let pi=1;
+  $('seats').innerHTML=`<div class="seat" style="--c:${COLORS[0]}"><span class="sw"></span><span class="tx"><b>You</b><small>Rider 1 · always in the race</small></span></div>`+
+    setup.seats.map((o,i)=>{let title,sub;if(o==='off'){title='Empty stall';sub='Tap to add a rider';}else if(o==='friend'){title=`Friend ${i+2}`;sub='Pass-and-play on this phone';}else{const p=preview[pi];title=`${p.name} on ${p.horse}`;sub=`${H.PERSONAS[o].label} computer · ${H.PERSONAS[o].blurb}`;}
+      if(o!=='off')pi++;
+      return `<button class="seat${o==='off'?' off':''}" type="button" data-seat="${i}" style="--c:${COLORS[i+1]}"><span class="sw"></span><span class="tx"><b>${esc(title)}</b><small>${esc(sub)}</small></span><span class="cyc">Change</span></button>`;}).join('');
+  for(const b of $('laps').querySelectorAll('button'))b.setAttribute('aria-pressed',String(+b.dataset.laps===setup.laps));
+  const st=stats();$('statline').textContent=st.races?`Races ${st.races} · Wins ${st.wins||0} · Best finish ${ORD[(st.best||1)-1]} · Podiums ${st.podiums||0}`:'Your first race — good luck!';
+}
+$('seats').addEventListener('click',e=>{const b=e.target.closest('[data-seat]');if(!b)return;const i=+b.dataset.seat;let k=OPTS.indexOf(setup.seats[i]);do k=(k+1)%OPTS.length;while(i===0&&OPTS[k]==='off');setup.seats[i]=OPTS[k];store.set(SETUP_KEY,JSON.stringify(setup));paintSetup();sfx.turn();});
+$('laps').addEventListener('click',e=>{const b=e.target.closest('[data-laps]');if(!b)return;setup.laps=+b.dataset.laps;store.set(SETUP_KEY,JSON.stringify(setup));paintSetup();});
+$('cardlist').innerHTML=Object.values(H.CARDS).map(c=>`<div><b>${c.icon} ${esc(c.name)}</b>${esc(c.text)}</div>`).join('');
+const openSheet=id=>{$(id).hidden=false;};const closeSheet=id=>{$(id).hidden=true;};
+$('helpBtn').onclick=()=>openSheet('howto');$('howBtn').onclick=()=>openSheet('howto');$('howClose').onclick=()=>closeSheet('howto');
+$('howto').addEventListener('click',e=>{if(e.target.id==='howto')closeSheet('howto');});
+
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('in');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('in'),2200);}
+
+// ---------- Tokens ----------
+function makeTokens(){
+  const g=$('toks');g.innerHTML='';tokEls=S.riders.map(r=>{const t=el('g',{class:'tok'},g);
+    el('circle',{class:'pulse',r:12,fill:'none',stroke:r.color,'stroke-width':3,opacity:0},t);
+    el('ellipse',{cx:1,cy:9,rx:9,ry:3,fill:'#0003'},t);el('circle',{r:9.5,fill:r.color,stroke:'#fff','stroke-width':2.4},t);
+    el('path',{d:HEAD,fill:'#fff',transform:'scale(.82)'},t);return t;});
+  placeAll();}
+function setTok(i,x,y,hop=0){tokEls[i].setAttribute('transform',`translate(${x.toFixed(2)} ${(y-hop).toFixed(2)})`);}
+function placeAll(){S.riders.forEach((r,i)=>{const [x,y]=pos(r.lane,r.cell+.5);setTok(i,x,y);tokEls[i].style.opacity=r.finished?0:1;});markActive();}
+function markActive(){const a=S.turn?S.turn.rider:-1;tokEls.forEach((t,i)=>{t.querySelector('.pulse').setAttribute('opacity',i===a?'.8':'0');if(i===a)t.parentNode.append(t);});}
+// Next frame — with a fallback so a hidden/throttled pane never freezes the race.
+const frame=()=>new Promise(r=>{let d=false;const f=()=>{if(!d){d=true;r();}};requestAnimationFrame(f);setTimeout(f,60);});
+// Wait for an animation to finish (or its duration, if frames are not being drawn).
+const settle=(anim,ms)=>new Promise(r=>{let d=false;const f=()=>{if(!d){d=true;r();}};anim.finished.then(f,f);setTimeout(f,ms+120);});
+async function tween(ms,fn){if(still()){fn(1);return;}const t0=performance.now();for(;;){const f=Math.min(1,(performance.now()-t0)/ms);fn(f);if(f>=1)break;await frame();}}
+async function animateMove(ri,path){
+  const r=S.riders[ri];let prev=null;
+  const from=pathStart.get(ri);if(from)prev=from;
+  if(still()){const last=path.at(-1),[x,y]=pos(last.lane,last.cell+.5);setTok(ri,x,y);return;}
+  for(const p of path){
+    if(prev&&(prev.lane!==p.lane||prev.cell!==p.cell)){
+      if(prev.lane!==p.lane){const [x0,y0]=pos(prev.lane,prev.cell+.5),[x1,y1]=pos(p.lane,p.cell+.5);await tween(190,f=>setTok(ri,x0+(x1-x0)*f,y0+(y1-y0)*f,Math.sin(f*Math.PI)*3));}
+      else{const u0=prev.cell+.5,u1=u0+1;await tween(165,f=>{const [x,y]=pos(p.lane,u0+(u1-u0)*f);setTok(ri,x,y,Math.sin(f*Math.PI)*4);});}
+      sfx.clop();
+    }
+    prev=p;
+  }
+}
+const pathStart=new Map();
+
+// ---------- FX ----------
+function svgToStage(x,y){return [x/340*100,y/500*100];}
+function floaty(ri,text,color){const r=S.riders[ri];const [x,y]=pos(r.lane,r.cell+.5),[px,py]=svgToStage(x,y);const f=document.createElement('div');f.className='floaty';f.textContent=text;f.style.left=Math.max(14,Math.min(86,px))+'%';f.style.top=py+'%';f.style.setProperty('--c',color||r.color);$('fx').append(f);
+  const a=f.animate([{transform:'translate(-50%,-50%) scale(.6)',opacity:0},{transform:'translate(-50%,-120%) scale(1)',opacity:1,offset:.2},{transform:'translate(-50%,-260%) scale(1)',opacity:0}],{duration:still()?900:1400,easing:'ease-out'});settle(a,still()?900:1400).then(()=>f.remove());}
+function confetti(){if(still())return;const fx=$('fx');for(let i=0;i<40;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.background=COLORS[i%4];fx.append(c);
+  const a=c.animate([{transform:`translateY(0) rotate(0)`},{transform:`translateY(${fx.clientHeight+30}px) rotate(${Math.random()*720-360}deg) translateX(${Math.random()*60-30}px)`}],{duration:1400+Math.random()*900,delay:Math.random()*300,easing:'cubic-bezier(.3,.6,.6,1)'});settle(a,2600).then(()=>c.remove());}}
+function say(t){$('msg').innerHTML=t;}
+
+// ---------- Dice ----------
+const PIPS={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9]};
+const SHOE='<svg viewBox="0 0 40 40"><path d="M10 10 v12 a10 10 0 0 0 20 0 v-12" fill="none" stroke="#e4572e" stroke-width="6" stroke-linecap="round" transform="rotate(180 20 20)"/><g fill="#fff"><circle cx="11" cy="22" r="1.4"/><circle cx="29" cy="22" r="1.4"/><circle cx="12.5" cy="15" r="1.4"/><circle cx="27.5" cy="15" r="1.4"/></g></svg>';
+function dieHTML(face,cls=''){if(face===0)return `<div class="die shoe ${cls}" style="background:#fff1ec">${SHOE}</div>`;if(face==null)return `<div class="die idle ${cls}"></div>`;
+  let h='';for(let i=1;i<=9;i++)h+=PIPS[face].includes(i)?`<i style="grid-area:${Math.ceil(i/3)}/${(i-1)%3+1}"></i>`:'';return `<div class="die ${cls}">${h}</div>`;}
+async function rollDice(dice,face){
+  const box=$('dice');sfx.dice();
+  if(!still()){const t0=performance.now();let last=-1;const spin=box.animate([{transform:'rotate(0) scale(1)'},{transform:'rotate(-18deg) scale(1.15)'},{transform:'rotate(14deg) scale(.95)'},{transform:'rotate(0) scale(1)'}],{duration:480,easing:'ease-out'});
+    while(performance.now()-t0<480){const k=Math.floor((performance.now()-t0)/70);if(k!==last){last=k;box.innerHTML=dice.map(()=>dieHTML([1,2,3,4,5,0][Math.floor(Math.random()*6)],dice.length>1?'small':'')).join('');}await frame();}}
+  box.innerHTML=dice.length>1?dice.map(d=>dieHTML(d,'small'+(d===face?'':' faded'))).join(''):dieHTML(face);
+  if(face===0){sfx.stumble();if(!still())await settle(box.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:260}),260);}else sfx.land();
+}
+
+// ---------- Rendering ----------
+function staBar(r){const low=r.sta<=3;return `<span class="sta${low?' low':''}" aria-label="Stamina ${r.sta} of 10"><span>Stamina</span>${Array.from({length:H.MAX_STA},(_,i)=>`<i class="${i<r.sta?'f':''}"></i>`).join('')}</span>`;}
+function paintStandings(){
+  const st=H.standings(S);const el2=$('standings');el2.style.setProperty('--n',S.riders.length);
+  el2.innerHTML=st.map((r,i)=>{const on=S.turn&&S.turn.rider===r.id;const lap=Math.min(S.laps,r.lap+1);
+    return `<div class="chip${on?' on':''}${r.finished?' done':''}" style="--c:${r.color}"><span class="pl">${r.finished?MEDAL[r.place-1]:i+1}</span><span class="nm">${esc(r.name)}</span>
+    <span class="meta">${r.finished?'Finished':`<span class="mini${r.sta<=3?' low':''}"><i style="width:${r.sta*10}%"></i></span>🃏${r.hand.length}`}</span></div>`;}).join('');
+}
+function paintInfield(){
+  const r=H.active(S);if(!r){$('lapTag').textContent='Race over';return;}
+  $('lapTag').textContent=`${r.name} · lap ${Math.min(S.laps,r.lap+1)} of ${S.laps}`;
+  const t=S.turn;$('total').innerHTML=t.total?`${t.total}<small>${S.phase==='lane'?'spaces to run':'spaces so far'}</small>`:'';
+}
+function viewer(){ // whose hand is shown
+  if(humans<=1)return S.riders.find(r=>r.kind==='human');
+  const a=H.active(S);return a&&a.kind==='human'?a:null;}
+function cardBtn(c,legal,mine){const C=H.CARDS[c];if(!mine)return `<div class="card hidden" aria-label="Hidden card"></div>`;
+  const ready=legal.some(a=>a.type==='card'&&a.card===c);
+  const hint=c==='sugar'?'Offered when you stumble':(ready?'Tap to play':C.text);
+  return `<button class="card${ready?' ready':''}" type="button" data-card="${c}" ${ready&&!busy?'':'disabled'} aria-label="${esc(C.name)}: ${esc(C.text)}"><span class="ic">${C.icon}</span><b>${esc(C.name)}</b><small>${esc(c==='sugar'?hint:C.short)}</small></button>`;}
+function paintPanel(){
+  const p=$('panel'),r=H.active(S);if(!r){p.innerHTML='';return;}
+  const v=viewer(),isHuman=r.kind==='human'&&!busy,legal=isHuman?H.legalActions(S):[],t=S.turn;
+  const who=`<div class="who" style="--c:${r.color}"><span class="dot"></span><b>${r.kind==='human'?(humans>1?esc(r.name)+'’s turn':'Your turn'):esc(r.name)+' · '+H.PERSONAS[r.persona].label}</b>${staBar(r)}<button class="leave" id="leaveBtn" type="button" aria-label="Leave race">⋯</button></div>`;
+  let body='';
+  if(r.kind!=='human'||busy){
+    const hv=v||null;
+    body=`<div class="think" style="--c:${r.color}"><span id="thinkTxt">${r.kind==='human'?'Off you go…':esc(r.name)+' is thinking'}</span><span class="dots"><i></i><i></i><i></i></span></div>`+
+      (hv?`<div class="hand wait">${[0,1,2].map(i=>hv.hand[i]?cardBtn(hv.hand[i],[],true):`<div class="card empty">empty</div>`).join('')}</div>`:'');
+  }else if(S.phase==='lane'){
+    const opts=[0,1,2,3].map(l=>({l,p:H.previewLane(S,r.id,l)}));
+    const best=opts.filter(o=>o.p.ok).sort((a,b)=>(b.p.finished?99:b.p.gain)-(a.p.finished?99:a.p.gain))[0];
+    body=`<div class="who" style="min-height:0;font-size:13px;color:var(--muted);font-weight:700">Pick a lane for your ${t.budget} space${t.budget===1?'':'s'} — or tap a glowing ring.</div><div class="lanes" style="--c:${r.color}">`+opts.map(({l,p})=>{
+      if(!p.ok)return `<button class="lane" type="button" disabled><b>${LANE_NAMES[l]}</b><small>${p.why==='blocked'?'Space taken':p.why==='tired'?'Too tired to swing out':'Too far to switch'}</small></button>`;
+      const bits=[p.finished?'🏁 Finish line!':`+${p.moved} space${p.moved===1?'':'s'}`];if(p.blocked)bits.push('boxed in');if(p.draft)bits.push('🍃 slipstream');if(p.cost)bits.push('−1 stamina');if(l===r.lane)bits.push('stay');
+      return `<button class="lane ok${best&&best.l===l?' best':''}" type="button" data-lane="${l}"><b>${LANE_NAMES[l]}</b><small>${bits.join(' · ')}</small></button>`;}).join('')+`</div>`;
+    drawDest(opts.filter(o=>o.p.ok),r);
+  }else{
+    const hand=`<div class="hand">${[0,1,2].map(i=>r.hand[i]?cardBtn(r.hand[i],legal,true):`<div class="card empty">empty</div>`).join('')}</div>`;
+    if(S.phase==='start')body=hand+`<div class="acts"><button class="btn soft" data-act="ease" type="button">Ease up<small>+3 stamina · move 1 · draw</small></button><button class="btn go" data-act="roll" type="button">🎲 Roll<small>${t.card==='sugar'?'shrugged it off — go again':'the hoof die'}</small></button></div>`;
+    else if(S.phase==='rolled'){const cost=H.pushCost(S),can=legal.some(a=>a.type==='push');
+      body=hand+`<div class="acts"><button class="btn go" data-act="stop" type="button">Stop here<small>run ${t.total} space${t.total===1?'':'s'}</small></button><button class="btn hay" data-act="push" type="button" ${can?'':'disabled'}>Push!<small>${can?`roll again · −${cost} stamina`:'too tired to push'}</small></button></div>`;}
+    else if(S.phase==='stumble'){const keep=t.pushes===0&&t.total===0?1:Math.max(1,Math.floor(t.total/2));
+      body=hand+`<div class="acts"><button class="btn hay" data-act="sugar" type="button">🍬 Sugar Cube<small>${t.total?`keep all ${t.total}`:'shrug it off'}</small></button><button class="btn soft" data-act="accept" type="button">Take it<small>keep ${keep}</small></button></div>`;}
+  }
+  p.innerHTML=who+body;
+  if(r.kind!=='human'||busy){const dots=p.querySelectorAll('.dots i');dots.forEach((d,i)=>d.animate([{opacity:.25},{opacity:1},{opacity:.25}],{duration:900,delay:i*150,iterations:Infinity}));}
+}
+function drawDest(opts,r){const g=$('hl');g.innerHTML='';for(const {l,p} of opts){
+  const pts=p.path.map(c=>pos(c.lane,c.cell+.5));for(let i=1;i<pts.length-1;i++)el('circle',{cx:pts[i][0],cy:pts[i][1],r:2.6,fill:r.color,opacity:.75},g);
+  const [x,y]=pts.at(-1),d=el('g',{class:'dest','data-lane':l},g);el('circle',{class:'ring',cx:x,cy:y,r:10,fill:'none',stroke:r.color,'stroke-width':3},d);el('circle',{cx:x,cy:y,r:14,fill:'#fff',opacity:.01},d);
+  if(p.finished)el('text',{x,y:y+4,'text-anchor':'middle','font-size':11},d).textContent='🏁';}}
+function clearDest(){$('hl').innerHTML='';}
+function render(){paintStandings();paintInfield();paintPanel();markActive();if(S.phase!=='lane'||busy||H.active(S)?.kind!=='human')clearDest();}
+
+// ---------- Input ----------
+$('panel').addEventListener('click',e=>{
+  if(e.target.closest('#leaveBtn')){openSheet('leaveSheet');return;}
+  if(!waiting||busy)return;
+  const b=e.target.closest('[data-act],[data-card],[data-lane]');if(!b||b.disabled)return;
+  const a=b.dataset.act?{type:b.dataset.act}:b.dataset.card?{type:'card',card:b.dataset.card}:{type:'lane',lane:+b.dataset.lane};
+  if(H.isLegal(S,a)){const w=waiting;waiting=null;w(a);}});
+svg.addEventListener('click',e=>{const d=e.target.closest('.dest');if(!d||!waiting||busy)return;const a={type:'lane',lane:+d.dataset.lane};if(H.isLegal(S,a)){const w=waiting;waiting=null;w(a);}});
+$('keepBtn').onclick=()=>closeSheet('leaveSheet');
+$('quitBtn').onclick=()=>{closeSheet('leaveSheet');if(S&&!S.over){H.abandon(S);raceId++;waiting=null;busy=false;}backToSetup();toast('Race left — no Trotties this time.');};
+function humanInput(){return new Promise(res=>{waiting=res;});}
+
+// ---------- Turn loop ----------
+let raceId=0;
+let thoughtAt=-1;
+async function think(r){const first=thoughtAt!==S.turnCount;thoughtAt=S.turnCount;const dots=document.querySelector('.think .dots');
+  const ms=first?(r.persona==='bold'?420:560):(S.phase==='lane'?220:300);const d=still()?Math.min(ms,300):ms;await settle((dots||document.body).animate([{opacity:1},{opacity:1}],{duration:d}),d);}
+async function handoff(r){$('handoffDot').style.background=r.color;$('handoffTitle').textContent=`Pass the phone to ${r.name}`;$('handoffGo').textContent=`I’m ${r.name} — let’s ride`;openSheet('handoff');
+  await new Promise(res=>{$('handoffGo').onclick=()=>{closeSheet('handoff');res();};});}
+async function perform(a){
+  busy=true;render();
+  const r=H.active(S);if(a.type==='lane')pathStart.set(r.id,{lane:r.lane,cell:r.cell});
+  const ev=H.applyAction(S,a);
+  await playEvents(ev);
+  busy=false;
+}
+async function playEvents(ev){
+  for(const e of ev){
+    const r=e.rider!=null?S.riders[e.rider]:null,nm=r?`<b style="color:${r.color}">${esc(r.name)}</b>`:'';
+    const mine=r&&viewer()&&viewer().id===r.id,you=r&&r.name==='You',v=(a,b)=>you?b:a;
+    switch(e.t){
+      case 'turn':$('dice').innerHTML=dieHTML(null);$('total').innerHTML='';say(`${nm} — ${r.kind==='human'?'your move':'thinking…'}`);sfx.turn();render();break;
+      case 'draw':if(e.why==='crowd')say(you?'📣 The crowd cheers you on — a card!':`📣 The crowd cheers ${nm} on — a card!`);else if(e.why==='lap')say(`${nm} ${v('crosses','cross')} the line — new lap, new card.`);
+        if(mine)floaty(r.id,`+ ${H.CARDS[e.card].icon} ${H.CARDS[e.card].name}`);else floaty(r.id,'+1 card');sfx.card();paintStandings();break;
+      case 'card':{const C=H.CARDS[e.card];sfx.card();say(`${nm} ${v('plays','play')} ${C.icon} <b>${C.name}</b>${e.card==='spook'&&e.target!=null?` — ${esc(S.riders[e.target].name)} shies, −${e.loss} stamina!`:''}`);
+        floaty(r.id,`${C.icon} ${C.name}`);if(e.card==='spook'&&e.target!=null)floaty(e.target,`👻 −${e.loss}`,'#5b4a7a');render();break;}
+      case 'ease':say(`${nm} ${v('eases up and catches','ease up and catch')} a breath.`);floaty(r.id,`+${e.gain} stamina`,'#4f9a4f');paintStandings();break;
+      case 'push':sfx.push();floaty(r.id,`Push! −${e.pushes}`,'#c9861a');paintStandings();break;
+      case 'roll':await rollDice(e.dice,e.face);if(e.face)say(`${nm} ${v('rolls','roll')} a ${e.face}${S.turn&&S.turn.total?` — ${S.turn.total} so far`:''}.`);paintInfield();break;
+      case 'stumble':say(`🐴💫 Stumble! ${nm} could eat a Sugar Cube…`);break;
+      case 'stumbled':say(`🐴💫 Stumble! ${nm} ${v('keeps','keep')} only ${e.total}.`);floaty(r.id,'Stumble!','#e4572e');paintInfield();break;
+      case 'stop':break;
+      case 'move':{clearDest();await animateMove(r.id,e.path);
+        if(e.draft){sfx.draft();floaty(r.id,'🍃 Slipstream +1','#4f9a4f');say(`${nm} ${v('tucks','tuck')} into a slipstream.`);}
+        else if(e.blocked){floaty(r.id,'Boxed in!','#7a6f5d');say(`${nm} ${v('is','are')} boxed in!`);}
+        paintStandings();break;}
+      case 'finish':tokEls[r.id].style.opacity=0;say(`🏁 ${nm} ${v('finishes','finish')} ${ORD[e.place-1]}!`);if(r.kind==='human'&&e.place===1){sfx.finish();confetti();}else if(r.kind==='human')sfx.finish();else sfx.land();paintStandings();break;
+      case 'over':break;
+    }
+  }
+}
+async function runRace(){
+  const id=++raceId;
+  await playEvents(S.startEvents);
+  while(!S.over&&id===raceId){
+    const r=H.active(S);
+    if(r.kind==='bot'){render();await think(r);if(id!==raceId)return;await perform(H.botAction(S));}
+    else{if(humans>1&&handed!==S.turnCount){handed=S.turnCount;await handoff(r);if(id!==raceId)return;}render();const a=await humanInput();if(id!==raceId||!a)return;await perform(a);}
+  }
+  if(id===raceId&&S.over&&!S.abandoned){render();await finishLine();}
+}
+function startRace(){
+  const seats=seatList();humans=seats.filter(s=>s.kind==='human').length;
+  S=H.createGame({seats,laps:setup.laps,seed:(Math.random()*2**31)|0});
+  pathStart.clear();handed=-1;closeSheet('setup');closeSheet('results');drawTrack();makeTokens();startedAt=Date.now();busy=false;
+  say('🔔 The gates fly open!');runRace();
+}
+function backToSetup(){closeSheet('results');paintSetup();openSheet('setup');}
+$('startBtn').onclick=()=>{audio();startRace();};
+
+// ---------- Results + rewards ----------
+async function finishLine(){
+  const me=S.riders[0],minutes=(Date.now()-startedAt)/60000,field=S.riders.length;
+  const rw=H.rewardFor({place:me.place,field,minutes});
+  const collectId=rw.coins?queueCoins({from:'Haystakes',coins:rw.coins,lines:rw.lines}):null;
+  const st=stats();st.races=(st.races||0)+1;if(me.place===1)st.wins=(st.wins||0)+1;if(!st.best||me.place<st.best)st.best=me.place;if(me.place<=3&&field>2||me.place===1)st.podiums=(st.podiums||0)+1;store.set(STATS_KEY,JSON.stringify(st));
+  // A beat so the last token reaches the post before the card slides in (animation, not a guessed start).
+  if(!still())await settle($('stage').animate([{opacity:1},{opacity:.92},{opacity:1}],{duration:700}),700);
+  const order=[...S.riders].sort((a,b)=>a.place-b.place);
+  const head=me.place===1?'You won! 🏆':humans>1&&order[0].kind==='human'?`${esc(order[0].name)} wins!`:`You finished ${ORD[me.place-1]}`;
+  if(me.place!==1&&humans<=1)sfx.sad();
+  $('resultsCard').innerHTML=`<h2>${head}</h2><p>${S.laps} laps round the Clover oval · ${Math.max(1,Math.round(minutes))} min · ${S.round} rounds</p>
+    <ol class="res">${order.map(r=>`<li class="${r.id===0?'me':''}" style="--c:${r.color}"><span class="medal">${MEDAL[r.place-1]}</span><span class="sw"></span><span class="tx"><b>${esc(r.name)}</b>${r.horse?` <small>on ${esc(r.horse)}</small>`:''}<br><small>${r.unfinished?'still running':'finished'} · ${r.drafts} slipstream${r.drafts===1?'':'s'} · ${r.stumbles} stumble${r.stumbles===1?'':'s'}</small></span></li>`).join('')}</ol>
+    ${collectId?`<button class="tc-collect" id="collect" type="button" style="margin:6px 0 10px">Collect ${rw.coins} Trotties</button>`:''}
+    <div class="stack"><button class="btn go" id="again" type="button">Race again</button><button class="btn soft" id="change" type="button">Change riders or laps</button>${inWorld?'':'<a class="btn soft" href="#home" style="text-decoration:none">Back to Trottville</a>'}</div>
+    <div class="statline">${(()=>{const s=stats();return `Races ${s.races} · Wins ${s.wins||0} · Best finish ${ORD[(s.best||1)-1]}`;})()}</div>`;
+  openSheet('results');
+  $('collect')?.addEventListener('click',e=>{e.currentTarget.remove();showCollect({title:'Race rewards',ids:[collectId]});});
+  $('again').onclick=startRace;$('change').onclick=backToSetup;
+}
+
+// ---------- Boot ----------
+drawTrack();paintSetup();
+</script>
+<script type="module" src="pixel-icons.js"></script>
+</body>
+</html>

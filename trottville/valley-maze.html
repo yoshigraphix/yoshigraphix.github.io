@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en" data-no-chip>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2f6b3a">
+<title>Maize Runner · Trottville</title>
+<link rel="stylesheet" href="coin-collect.css">
+<style>
+:root{--cream:#fffdf4;--cream2:#fbf3dc;--green:#2f6b3a;--green2:#4f9a4f;--leaf:#8cc46f;--ink:#2d2a24;--muted:#7a6f5d;--hay:#f3c969;--hay2:#e6a93a;--coral:#e4572e;--line:#eadfc8;--sky:#2f8fce;--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:linear-gradient(#eaf5dc,#fffdf4 40%);color:var(--ink);font:15px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+.app{display:flex;flex-direction:column;height:100dvh;max-width:560px;margin:0 auto;background:var(--cream);box-shadow:0 0 40px #2f6b3a1a;overflow:hidden}
+/* top bar (same as the board pages) */
+.top{display:flex;align-items:center;gap:6px;padding:6px 8px;padding-top:max(6px,env(safe-area-inset-top));background:var(--green);color:#fffdf4;min-height:52px}
+.top h1{flex:1;margin:0;font-size:19px;font-weight:900;letter-spacing:.3px;text-align:center;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.top h1 small{font-size:11px;font-weight:600;opacity:.75;display:block;letter-spacing:.6px;text-transform:uppercase}
+.ibtn{min-width:44px;height:44px;border:0;border-radius:12px;background:#ffffff1f;color:#fffdf4;font-weight:800;font-size:17px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:0 10px;gap:4px;white-space:nowrap}
+.ibtn:active{background:#ffffff38}
+.ibtn.back{font-size:13px;padding:0 8px}
+.coins{display:inline-flex;align-items:center;gap:4px;background:#00000026;border-radius:999px;padding:6px 10px;font-weight:800;font-size:14px}
+@media (max-width:420px){.top h1{font-size:17px}.top h1 small{display:none}.coins{padding:6px 8px;font-size:13px}.ibtn{min-width:44px;padding:0 6px}}
+@media (min-width:600px){.top h1{font-size:22px}}
+/* HUD: the sky is the timer */
+.hud{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--cream2);border-bottom:1px solid var(--line)}
+.sunbar{position:relative;flex:1;min-width:0;height:40px;border-radius:12px;overflow:hidden;background:linear-gradient(#8fd0f2,#fff1c9);box-shadow:inset 0 0 0 1px #0000000f}
+.sunbar .sun{position:absolute;left:6%;top:30%;width:18px;height:18px;border-radius:50%;background:#ffd84a;box-shadow:0 0 12px 5px #ffd84a88;transform:translate(-50%,-50%)}
+.sunbar svg{position:absolute;left:0;bottom:0;width:100%;height:15px;display:block}
+.sunbar .left{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-weight:900;font-size:13px;color:#2d2a24;background:#fffdf4d9;border-radius:999px;padding:2px 8px;white-space:nowrap}
+.sunbar.late .left{background:#2d2a24d9;color:#ffe6a8}
+.tally{display:flex;gap:4px;flex:none}
+.tchip{display:inline-flex;align-items:center;gap:3px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:0 7px;font-weight:800;font-size:13px;height:32px;white-space:nowrap}
+.tchip svg{width:15px;height:15px;flex:none}
+.tchip.foal{opacity:.55}
+.tchip.foal.got{opacity:1;border-color:var(--green2);background:#eaf5dc}
+@media (max-width:360px){.tchip{padding:0 5px;font-size:12px}}
+/* stage */
+.stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#2a4a20;touch-action:none;user-select:none;-webkit-user-select:none}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+.pauseBtn{position:absolute;top:8px;right:8px;width:44px;height:44px;border-radius:12px;border:0;background:#fffdf4e6;color:var(--green);font-size:16px;font-weight:900;box-shadow:0 2px 8px #0003;display:grid;place-items:center}
+.pauseBtn:active{background:#fff}
+.hint{position:absolute;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);background:#2d2a24d9;color:#fffdf4;font-weight:700;font-size:13px;border-radius:999px;padding:8px 14px;white-space:nowrap;pointer-events:none;transition:opacity .4s}
+.hint.out{opacity:0}
+.stick{position:absolute;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;border:2px solid #ffffffbf;background:#ffffff29;box-shadow:0 2px 10px #0003;pointer-events:none}
+.stick i{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:#ffffffe0;box-shadow:0 2px 6px #0004}
+/* sheets */
+.sheet{position:fixed;inset:0;z-index:40;background:#2d2a2466;display:flex;align-items:flex-end;justify-content:center}
+.sheet.full{background:var(--cream);align-items:stretch;top:calc(52px + env(safe-area-inset-top));z-index:30}
+.sheet.mid{align-items:center;padding:16px}
+.card2{background:var(--cream);width:100%;max-width:560px;max-height:100%;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px max(18px,env(safe-area-inset-bottom));box-shadow:0 -10px 30px #0003}
+.sheet.full .card2{border-radius:0;box-shadow:none;margin:0 auto}
+.sheet.mid .card2{border-radius:22px;max-width:380px;padding-bottom:18px}
+.sheet h2{margin:0 0 6px;font-size:24px;font-weight:900;color:var(--green)}
+.sheet h3{margin:16px 0 6px;font-size:15px;font-weight:900;color:var(--green);display:flex;align-items:baseline;gap:8px}
+.sheet h3 small{font-size:12px;font-weight:700;color:var(--muted)}
+.sheet p{margin:6px 0;color:#4a4236}
+.hero{display:block;width:100%;height:auto;border-radius:18px;margin-bottom:10px}
+.btn{min-height:52px;border:0;border-radius:14px;font-weight:900;font-size:16px;padding:6px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;transition:background .15s,box-shadow .1s,transform .1s;text-decoration:none;color:inherit;width:100%}
+.btn small{font-size:11px;font-weight:700;opacity:.85;margin-top:2px}
+.btn.go{background:var(--green);color:#fffdf4;box-shadow:0 4px 0 #1d4625}
+.btn.go:hover{background:#367a43}
+.btn.hay{background:linear-gradient(#f8d25a,#e9ae2a);color:#4a320a;box-shadow:0 4px 0 #b9821a}
+.btn.hay.done{background:linear-gradient(#f6ecd0,#eadcb4);box-shadow:0 4px 0 #cdbb8e}
+.btn.soft{background:#f1ead6;color:#3d3426;box-shadow:0 4px 0 #d9ccaa}
+.btn.soft:hover{background:#ece2c8}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #0003}
+.stack{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.lvl{min-height:60px;border-radius:14px;border:2px solid var(--line);background:#fff;font-weight:900;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:4px 2px;transition:background .15s,border-color .15s}
+.lvl small{font-size:11px;color:var(--hay2);letter-spacing:1px;font-weight:900}
+.lvl small.t{color:var(--muted);letter-spacing:0;font-weight:700}
+.lvl:hover:not(:disabled){border-color:var(--green2)}
+.lvl.next{border-color:var(--green);background:#eaf5dc}
+.lvl:disabled{opacity:.5;background:#f6f1e3}
+.statline{font-size:13px;color:var(--muted);text-align:center;margin-top:12px}
+.howgrid{display:grid;gap:10px}
+.how{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 10px}
+.how svg{width:76px;height:64px}
+.how p{margin:0;font-size:14px}
+.stars{font-size:34px;letter-spacing:4px;color:var(--hay2);text-align:center;margin:4px 0}
+.stars i{font-style:normal;color:#e3d8bd}
+.finds{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.finds span{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:800}
+.finds svg{width:18px;height:18px}
+.resart{display:block;width:100%;max-width:300px;height:auto;margin:0 auto 6px}
+.toast{position:fixed;left:50%;top:calc(110px + env(safe-area-inset-top));transform:translateX(-50%);background:#2d2a24e6;color:#fffdf4;padding:10px 16px;border-radius:999px;font-weight:700;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.in{opacity:1}
+@media (prefers-reduced-motion:reduce){.hint{transition:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <a class="ibtn back" id="homeLink" href="#home" aria-label="Back to Trottville home">‹ Trottville</a>
+    <button class="ibtn back" id="worldBack" type="button" hidden>‹ Back to Trottville</button>
+    <h1>Maize Runner<small>find the foal before sunset</small></h1>
+    <span class="coins" data-trottcoins aria-label="Your Trotties">🪙 <b>0</b></span>
+    <button class="ibtn" id="soundBtn" type="button" aria-label="Sound on">🔊</button>
+    <button class="ibtn" id="helpBtn" type="button" aria-label="How to play">?</button>
+  </header>
+  <div class="hud" id="hud">
+    <div class="sunbar" id="sunbar" role="timer" aria-label="Daylight left">
+      <div class="sun" id="sun"></div>
+      <svg viewBox="0 0 200 15" preserveAspectRatio="none" aria-hidden="true"><path id="hzn" d="M0 15 V8 L4 4 L7 8 L11 3 L14 8 L18 5 L21 8 L25 2 L28 8 L32 4 L35 8 L39 3 L42 8 L46 5 L49 8 L53 2 L56 8 L60 4 L63 8 L67 3 L70 8 L74 5 L77 8 L81 2 L84 8 L88 4 L91 8 L95 3 L98 8 L102 5 L105 8 L109 2 L112 8 L116 4 L119 8 L123 3 L126 8 L130 5 L133 8 L137 2 L140 8 L144 4 L147 8 L151 3 L154 8 L158 5 L161 8 L165 2 L168 8 L172 4 L175 8 L179 3 L182 8 L186 5 L189 8 L193 2 L196 8 L200 4 V15Z" fill="#4f8a34"/></svg>
+      <span class="left" id="timeLeft">0:00</span>
+    </div>
+    <div class="tally">
+      <span class="tchip" aria-label="Horseshoes found"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 17 V9 a5 5 0 0 1 10 0 V17" fill="none" stroke="#8d97a3" stroke-width="3.4" stroke-linecap="round"/></svg><b id="tShoe">0/0</b></span>
+      <span class="tchip" aria-label="Apples found">🍎<b id="tApple">0/0</b></span>
+      <span class="tchip foal" id="tFoal" aria-label="Foal not found yet">🐴<b id="tFoalTx">?</b></span>
+    </div>
+  </div>
+  <div class="stage" id="stage">
+    <canvas id="cv" tabindex="0" aria-label="The corn maze. Tap a path to walk there, or press and drag to steer."></canvas>
+    <div class="stick" id="stick" hidden><i></i></div>
+    <button class="pauseBtn" id="pauseBtn" type="button" aria-label="Pause">❚❚</button>
+    <div class="hint" id="hint" hidden>Tap a path to walk, or drag to steer</div>
+  </div>
+</div>
+
+<section class="sheet full" id="setup" aria-label="Choose a maze">
+  <div class="card2">
+    <svg class="hero" viewBox="0 0 340 130" aria-hidden="true">
+      <defs>
+        <linearGradient id="hsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6b95e"/><stop offset=".7" stop-color="#ffd9a0"/><stop offset="1" stop-color="#fff1c9"/></linearGradient>
+        <g id="stalk"><path d="M0 0 V-46" stroke="#4f8a34" stroke-width="3"/><path d="M0 -14 q10 -6 16 -2 M0 -24 q-10 -6 -16 -2 M0 -34 q9 -6 14 -2" stroke="#66a443" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M0 -46 l-3 -7 M0 -46 l3 -7 M0 -46 v-8" stroke="#e8c35f" stroke-width="2" stroke-linecap="round"/></g>
+      </defs>
+      <rect width="340" height="130" rx="18" fill="url(#hsky)"/>
+      <circle cx="270" cy="62" r="18" fill="#ffd84a" opacity=".95"/>
+      <path d="M0 84 Q80 74 170 82 T340 80 V130 H0Z" fill="#7ab35a"/>
+      <g>
+        <use href="#stalk" x="14" y="118"/><use href="#stalk" x="34" y="122"/><use href="#stalk" x="54" y="116"/><use href="#stalk" x="74" y="121"/><use href="#stalk" x="94" y="117"/>
+        <use href="#stalk" x="232" y="120"/><use href="#stalk" x="252" y="116"/><use href="#stalk" x="272" y="122"/><use href="#stalk" x="292" y="117"/><use href="#stalk" x="312" y="121"/><use href="#stalk" x="332" y="118"/>
+      </g>
+      <g transform="translate(150 118)">
+        <ellipse cx="6" cy="2" rx="22" ry="4" fill="#0002"/>
+        <path d="M-12 0 v-14 M-6 0 v-14 M12 0 v-14 M18 0 v-14" stroke="#8a4d22" stroke-width="3.2" stroke-linecap="round"/>
+        <ellipse cx="3" cy="-18" rx="19" ry="9" fill="#c87a3e"/>
+        <path d="M-15 -22 q-8 2 -7 10" stroke="#6b3a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M14 -22 L22 -36 L30 -32 L22 -16Z" fill="#c87a3e"/>
+        <ellipse cx="28" cy="-38" rx="9" ry="7" transform="rotate(25 28 -38)" fill="#c87a3e"/>
+        <ellipse cx="34" cy="-35" rx="4.5" ry="3.6" fill="#f1d2a8"/>
+        <path d="M22 -44 l1 -7 l4 6Z M26 -45 l3 -6 l2 7Z" fill="#a85f2c"/>
+        <circle cx="27" cy="-39" r="2.2" fill="#2d2a24"/><circle cx="27.8" cy="-39.8" r=".8" fill="#fff"/>
+        <path d="M17 -38 q4 -6 8 -7 M15 -32 q4 -5 7 -6" stroke="#6b3a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </g>
+      <text x="170" y="36" text-anchor="middle" font-size="30" font-weight="900" fill="#2f6b3a" font-family="system-ui,sans-serif">Maize Runner</text>
+      <text x="170" y="54" text-anchor="middle" font-size="11" font-weight="700" fill="#5a4a2a" font-family="system-ui,sans-serif" letter-spacing="1.5">LISTEN · FIND · LEAD THEM HOME</text>
+    </svg>
+    <p>A foal has wandered into the corn maze. Follow the whinny, find the little one and lead them back out the gate before the sun goes down.</p>
+    <div class="stack">
+      <button class="btn go" id="playBtn" type="button">Play maze 1<small>Up to 30 Trotties</small></button>
+      <button class="btn hay" id="dailyBtn" type="button">Daily maze<small>40 Trotties once a day</small></button>
+    </div>
+    <div id="levels"></div>
+    <div class="stack"><button class="btn soft" id="howBtn" type="button">How to play</button></div>
+    <div class="statline" id="statline"></div>
+  </div>
+</section>
+
+<section class="sheet" id="howto" hidden aria-label="How to play">
+  <div class="card2">
+    <h2>How to play</h2>
+    <div class="howgrid">
+      <div class="how"><svg viewBox="0 0 76 64" aria-hidden="true"><rect width="76" height="64" rx="10" fill="#3d6b2a"/><path d="M8 32 h22" stroke="#d8b27a" stroke-width="10" stroke-linecap="round"/><circle cx="16" cy="32" r="5" fill="#f2cf6b" stroke="#c99a3a" stroke-width="1.5"/><path d="M50 18 a20 20 0 0 1 0 28 M58 12 a28 28 0 0 1 0 40 M66 6 a36 36 0 0 1 0 52" fill="none" stroke="#fffdf4" stroke-width="3" stroke-linecap="round" opacity=".9"/><text x="36" y="20" font-size="9" font-weight="900" fill="#fffdf4" font-family="system-ui">Neigh!</text></svg>
+        <p><b>Listen for the whinny.</b> It gets louder as you get close, and comes from the left or right. Ripples at the edge of the screen point the way too.</p></div>
+      <div class="how"><svg viewBox="0 0 76 64" aria-hidden="true"><rect width="76" height="64" rx="10" fill="#3d6b2a"/><path d="M12 54 V16 H58 V40" fill="none" stroke="#d8b27a" stroke-width="11" stroke-linejoin="round"/><path d="M12 50 V16 H58 V36" fill="none" stroke="#fffdf4" stroke-width="2" stroke-dasharray="3 4"/><circle cx="58" cy="40" r="6" fill="none" stroke="#fffdf4" stroke-width="2"/><path d="M60 44 l0 12 l3 -3 l3 6 l2 -1 l-3 -6 l4 -1Z" fill="#fff" stroke="#2d2a24" stroke-width="1"/><path d="M24 30 v6 a4 4 0 0 0 8 0 v-6" fill="none" stroke="#c7ced6" stroke-width="2.6" stroke-linecap="round" transform="rotate(180 28 33)"/><circle cx="44" cy="30" r="4" fill="#e23b3b"/></svg>
+        <p><b>Tap a path to walk there</b>, or press and drag to steer. Pick up horseshoes and apples for bonus Trotties.</p></div>
+      <div class="how"><svg viewBox="0 0 76 64" aria-hidden="true"><rect width="76" height="64" rx="10" fill="#f6b95e"/><circle cx="60" cy="16" r="8" fill="#ffd84a"/><rect y="38" width="76" height="26" fill="#7ab35a"/><path d="M30 38 v14 M46 38 v14" stroke="#8a5a33" stroke-width="4"/><path d="M30 42 h16 M30 48 h16" stroke="#a86f3f" stroke-width="2.5"/><circle cx="20" cy="44" r="5" fill="#f2cf6b" stroke="#c99a3a" stroke-width="1.5"/><ellipse cx="10" cy="48" rx="6" ry="3.5" fill="#c87a3e"/><circle cx="5" cy="44" r="3" fill="#c87a3e"/><path d="M56 30 v8 M52 30 h8" stroke="#6b4a2a" stroke-width="2"/><circle cx="60" cy="33" r="3" fill="#ffcf5a"/></svg>
+        <p><b>Lead the foal out the gate</b> before the sun sets. At dusk the scarecrow lights a lantern by the gate to show the way.</p></div>
+    </div>
+    <div class="stack"><button class="btn go" id="howClose" type="button">Got it</button></div>
+  </div>
+</section>
+
+<section class="sheet mid" id="pauseSheet" hidden aria-label="Paused">
+  <div class="card2">
+    <h2>Paused</h2>
+    <p id="pauseText">The sun waits for you.</p>
+    <div class="stack"><button class="btn go" id="resumeBtn" type="button">Resume</button><div class="row2"><button class="btn soft" id="restartBtn" type="button">Restart</button><button class="btn soft" id="leaveBtn" type="button">Leave</button></div></div>
+  </div>
+</section>
+
+<section class="sheet full" id="results" hidden aria-label="Maze results">
+  <div class="card2" id="resultsCard"></div>
+</section>
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module">
+import * as M from './valley-maze.mjs';
+import {queueCoins,showCollect,paintCounters} from './coin-collect.js';
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const still=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
+const PROG_KEY='trottville-valley-maze-v1',HELP_KEY='trottville-valley-maze-help',SOUND_KEY='trottville-sound-v1';
+const fmtT=s=>{s=Math.max(0,Math.ceil(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
+const rgb=(a,al)=>al==null?`rgb(${a[0]|0},${a[1]|0},${a[2]|0})`:`rgba(${a[0]|0},${a[1]|0},${a[2]|0},${al})`;
+const SHOE_SVG='<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 17 V9 a5 5 0 0 1 10 0 V17" fill="none" stroke="#8d97a3" stroke-width="3.4" stroke-linecap="round"/></svg>';
+
+// ---------- Back to Trottville ----------
+const inWorld=new URLSearchParams(location.search).get('in')==='world'&&parent!==window;
+if(inWorld){$('homeLink').hidden=true;$('worldBack').hidden=false;$('worldBack').onclick=()=>parent.postMessage('trottville:close-board',location.origin);}
+paintCounters();
+
+// ---------- Progress ----------
+let prog=M.normProgress((()=>{try{return JSON.parse(store.get(PROG_KEY)||'null')}catch{return null}})());
+const saveProg=()=>store.set(PROG_KEY,JSON.stringify(prog));
+
+// ---------- Toast ----------
+let toastT=0;
+function toast(msg,ms=2200){const t=$('toast');t.textContent=msg;t.classList.add('in');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('in'),ms);}
+
+// ---------- Sound: synthesized whinny + small effects (shared Trottville sound switch) ----------
+let soundOn=(()=>{const v=String(store.get(SOUND_KEY)??'').toLowerCase();return !(v==='0'||v==='off'||v==='false'||v==='muted');})();
+let ac=null,master=null;
+function paintSound(){$('soundBtn').textContent=soundOn?'🔊':'🔈';$('soundBtn').setAttribute('aria-label',soundOn?'Sound on (tap to mute)':'Sound off (tap to unmute)');}
+paintSound();
+$('soundBtn').onclick=()=>{soundOn=!soundOn;store.set(SOUND_KEY,soundOn?'on':'off');paintSound();if(soundOn){audio();sfx.pick();}else if(ac){try{ac.suspend()}catch{}}};
+function audio(){if(!soundOn)return null;try{if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();master=ac.createGain();master.gain.value=.9;master.connect(ac.destination);}if(ac.state==='suspended')ac.resume();}catch{return null}return ac;}
+function out(a,pan){if(pan&&a.createStereoPanner){const p=a.createStereoPanner();p.pan.value=Math.max(-1,Math.min(1,pan));p.connect(master);return p;}return master;}
+function tone(f,dur,{type='sine',vol=.1,at=0,to=null,pan=0}={}){const a=audio();if(!a)return;const t=a.currentTime+at,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0008,t+dur);o.connect(g).connect(out(a,pan));o.start(t);o.stop(t+dur+.02);}
+function noise(dur,{vol=.05,at=0,freq=1800,q=1,type='bandpass',pan=0}={}){const a=audio();if(!a)return;const t=a.currentTime+at,n=Math.max(1,Math.floor(a.sampleRate*dur)),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type=type;f.frequency.value=freq;f.Q.value=q;g.gain.value=vol;s.connect(f).connect(g).connect(out(a,pan));s.start(t);}
+// A whinny: a sawtooth that leaps up then whinnies down with a widening vibrato, through two "voice" formants,
+// muffled by distance (lowpass) and panned left/right. Ends with a soft snort.
+function whinny({pan=0,vol=1,cutoff=3200,pitch=1.25,dur=1.05}={}){const a=audio();if(!a)return;const t=a.currentTime+.02,f0=620*pitch;
+  const o=a.createOscillator();o.type='sawtooth';
+  o.frequency.setValueAtTime(f0*.9,t);o.frequency.linearRampToValueAtTime(f0*1.9,t+.11);o.frequency.linearRampToValueAtTime(f0*1.6,t+.3);o.frequency.linearRampToValueAtTime(f0*1.3,t+dur*.65);o.frequency.exponentialRampToValueAtTime(f0*.75,t+dur);
+  const lfo=a.createOscillator(),lg=a.createGain();lfo.frequency.setValueAtTime(12,t);lfo.frequency.linearRampToValueAtTime(21,t+dur);lg.gain.setValueAtTime(f0*.04,t);lg.gain.linearRampToValueAtTime(f0*.16,t+dur);lfo.connect(lg).connect(o.frequency);
+  const b1=a.createBiquadFilter(),b2=a.createBiquadFilter(),lp=a.createBiquadFilter(),g=a.createGain(),trem=a.createOscillator(),tg=a.createGain();
+  b1.type='bandpass';b1.frequency.value=1100*pitch;b1.Q.value=2.5;b2.type='bandpass';b2.frequency.value=2500*pitch;b2.Q.value=4;lp.type='lowpass';lp.frequency.value=cutoff;
+  const v=.26*vol;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.05);g.gain.linearRampToValueAtTime(v*.8,t+dur*.5);g.gain.exponentialRampToValueAtTime(.0008,t+dur);
+  trem.frequency.value=9;tg.gain.value=v*.25;trem.connect(tg).connect(g.gain);
+  o.connect(b1).connect(g);o.connect(b2).connect(g);g.connect(lp).connect(out(a,pan));
+  for(const n of [o,lfo,trem]){n.start(t);n.stop(t+dur+.05);}
+  noise(.2,{vol:.07*vol,at:dur+.04,freq:600,q:.7,type:'lowpass',pan});}
+function nicker(pan=0){for(let i=0;i<4;i++)tone(260-i*12,.09,{type:'sawtooth',vol:.05,at:i*.085,pan});noise(.12,{vol:.04,at:.36,freq:500,type:'lowpass',pan});}
+let rustleN=0;
+const sfx={
+  rustle(){rustleN++;noise(.09,{vol:.025,freq:3200+(rustleN%3)*500,q:.8});},
+  pick(){tone(880,.1,{type:'triangle',vol:.07});tone(1320,.16,{type:'triangle',vol:.06,at:.07});},
+  shoe(){tone(1568,.18,{type:'triangle',vol:.06});tone(2093,.3,{type:'sine',vol:.05,at:.06});},
+  apple(){tone(520,.08,{type:'triangle',vol:.07,to:700});noise(.06,{vol:.05,freq:2400,at:.02});},
+  found(){[523,659,784].forEach((f,i)=>tone(f,.22,{type:'triangle',vol:.06,at:i*.1}));},
+  win(){[523,659,784,1047,784,1047].forEach((f,i)=>tone(f,.26,{type:'triangle',vol:.07,at:i*.11}));},
+  dusk(){tone(392,.5,{vol:.04});tone(494,.6,{vol:.03,at:.18});},
+  bump(){noise(.07,{vol:.03,freq:1500,q:.6});},
+  sad(){[392,349,330].forEach((f,i)=>tone(f,.32,{type:'triangle',vol:.05,at:i*.18}));}
+};
+
+// ---------- Canvas + sprites ----------
+const stage=$('stage'),cv=$('cv'),ctx=cv.getContext('2d');
+const fog=document.createElement('canvas'),fx=fog.getContext('2d');
+const FS=.5;// fog is soft, so it's drawn at half resolution
+let VW=1,VH=1,DPR=1,T=36,SP=null,fogPat=null;
+const mk=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(w));c.height=Math.max(1,Math.ceil(h));return c;};
+function buildSprites(){
+  const px=Math.max(8,Math.round(T*DPR));SP={px,path:[],corn:[]};
+  for(let mask=0;mask<16;mask++){const c=mk(px,px),g=c.getContext('2d'),r=M.mulberry32(77+mask*13);
+    g.fillStyle='#d8b27a';g.fillRect(0,0,px,px);
+    for(let i=0;i<16;i++){g.fillStyle=r()<.5?'#c99f66':'#e6c792';g.beginPath();g.arc(r()*px,r()*px,px*(.02+r()*.03),0,7);g.fill();}
+    g.strokeStyle='#f0d68c';g.lineWidth=px*.025;g.lineCap='round';for(let i=0;i<3;i++){const x=r()*px,y=r()*px,a=r()*6.28,l=px*.15;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l);g.stroke();}
+    const sh=(x0,y0,x1,y1,al)=>{const gr=g.createLinearGradient(x0,y0,x1,y1);gr.addColorStop(0,`rgba(35,55,12,${al})`);gr.addColorStop(1,'rgba(35,55,12,0)');g.fillStyle=gr;g.fillRect(0,0,px,px);};
+    if(mask&1)sh(0,0,0,px*.45,.5);if(mask&8)sh(0,0,px*.3,0,.3);if(mask&2)sh(px,0,px*.72,0,.2);if(mask&4)sh(0,px,0,px*.82,.14);
+    SP.path.push(c);}
+  {const c=mk(px,px),g=c.getContext('2d'),r=M.mulberry32(5);g.fillStyle='#8cc46f';g.fillRect(0,0,px,px);g.strokeStyle='#76ad5a';g.lineWidth=px*.03;g.lineCap='round';
+    for(let i=0;i<7;i++){const x=r()*px,y=r()*px;g.beginPath();g.moveTo(x,y);g.lineTo(x-px*.03,y-px*.08);g.moveTo(x,y);g.lineTo(x+px*.03,y-px*.08);g.stroke();}
+    if(r()<2){const x=px*.7,y=px*.3;g.fillStyle='#fff';for(let k=0;k<5;k++){g.beginPath();g.arc(x+Math.cos(k*1.26)*px*.035,y+Math.sin(k*1.26)*px*.035,px*.028,0,7);g.fill();}g.fillStyle='#f3c969';g.beginPath();g.arc(x,y,px*.025,0,7);g.fill();}
+    SP.grass=c;}
+  const cs=Math.round(px*1.45);SP.cs=cs;
+  for(let v=0;v<4;v++){const c=mk(cs,cs),g=c.getContext('2d'),r=M.mulberry32(900+v*31);g.translate(cs/2,cs/2);
+    g.fillStyle='#3a6627';g.beginPath();g.roundRect?g.roundRect(-px*.5,-px*.5,px,px,px*.18):g.rect(-px*.5,-px*.5,px,px);g.fill();
+    for(let p=0;p<4;p++){const ox=(p%2-.5)*px*.46+(r()-.5)*px*.16,oy=((p>>1)-.5)*px*.46+(r()-.5)*px*.16,n=6+(r()*3|0),rot=r()*6.28;
+      for(let k=0;k<n;k++){const a=rot+k/n*6.28+(r()-.5)*.35,L=px*(.3+r()*.17);g.save();g.translate(ox,oy);g.rotate(a);
+        g.fillStyle=k%3===0?'#4a8331':k%3===1?'#5f9d3e':'#71b04a';g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(L*.5,-px*.085,L,0);g.quadraticCurveTo(L*.5,px*.06,0,0);g.fill();
+        g.strokeStyle='rgba(215,240,160,.35)';g.lineWidth=px*.012;g.beginPath();g.moveTo(px*.03,0);g.lineTo(L*.8,0);g.stroke();g.restore();}
+      g.fillStyle='#e8c35f';for(let k=0;k<5;k++){const a=r()*6.28;g.beginPath();g.ellipse(ox+Math.cos(a)*px*.045,oy+Math.sin(a)*px*.045,px*.05,px*.017,a,0,7);g.fill();}
+      g.fillStyle='#b8862f';g.beginPath();g.arc(ox,oy,px*.028,0,7);g.fill();}
+    SP.corn.push(c);}
+  // The fog is a dark corn canopy (so unseen corn still reads as corn), scrolled with the camera.
+  const ft=Math.max(4,Math.round(T*FS)),tile=mk(ft*2,ft*2),tg=tile.getContext('2d');
+  tg.fillStyle='#24401b';tg.fillRect(0,0,ft*2,ft*2);
+  for(let i=0;i<4;i++)tg.drawImage(SP.corn[i],(i%2)*ft-ft*.225,(i>>1)*ft-ft*.225,ft*1.45,ft*1.45);
+  tg.fillStyle='rgba(8,20,6,.5)';tg.fillRect(0,0,ft*2,ft*2);
+  fogPat=fx.createPattern(tile,'repeat');SP.ft=ft;}
+function resize(){const r=stage.getBoundingClientRect();VW=Math.max(1,Math.round(r.width));VH=Math.max(1,Math.round(r.height));
+  const d=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(VW*d);cv.height=Math.round(VH*d);fog.width=Math.ceil(VW*FS);fog.height=Math.ceil(VH*FS);
+  const nT=Math.round(Math.max(30,Math.min(56,Math.min(VW/9.5,VH/12.5))));
+  if(nT!==T||d!==DPR||!SP){T=nT;DPR=d;buildSprites();}
+  if(G)draw();}
+new ResizeObserver(resize).observe(stage);
+
+// ---------- Game state ----------
+let G=null,raf=0,lastTs=0;
+const keys=new Set();
+let ptr=null,stickV=null;
+function startMaze(cfg){
+  audio();
+  const m=M.mazeFor(cfg),limit=M.timeLimit(m,cfg.tier),n=m.cols*m.rows;
+  const corn=(x,y)=>y<m.rows&&!M.isOpen(m,x,y);
+  const pmask=new Uint8Array(n);for(let y=0;y<m.rows;y++)for(let x=0;x<m.cols;x++)pmask[y*m.cols+x]=(corn(x,y-1)?1:0)|(corn(x+1,y)?2:0)|(corn(x,y+1)?4:0)|(corn(x-1,y)?8:0);
+  const mw=m.cols+2,mh=m.rows+2,vis=mk(mw,mh),expl=mk(mw,mh);
+  G={cfg,m,limit,t:0,clock:0,state:'play',pmask,
+    p:{x:m.start.x,y:m.start.y,face:1,moving:false},foal:{x:m.foal.x+.5,y:m.foal.y+.5,face:-1,found:false,moving:false,alpha:1},
+    items:m.items.map(it=>({...it,got:false})),shoes:0,apples:0,nShoes:m.items.filter(i=>i.kind==='shoe').length,nApples:m.items.filter(i=>i.kind==='apple').length,
+    path:[],tapMark:null,trail:[],explored:new Uint8Array(n),visA:new Float32Array(n),
+    vis,vctx:vis.getContext('2d'),vimg:new ImageData(mw,mh),expl,ectx:expl.getContext('2d'),eimg:new ImageData(mw,mh),eDirty:true,
+    cam:{x:m.start.x,y:m.start.y-1.2},nextWhinny:1.4,nextNicker:0,cues:[],bubble:null,floaties:[],confetti:[],rustleAt:0,
+    duskSaid:false,lanternSaid:false,moved:false,endT:0,maxD:Math.hypot(m.cols,m.rows)*.6};
+  for(const id of ['setup','results','pauseSheet','howto'])$(id).hidden=true;
+  $('hint').hidden=!!prog.played&&prog.played>2;$('hint').classList.remove('out');
+  paintTally();updateVis();lastTs=0;kick();
+  toast(`Find ${m.name}! Listen for the whinny.`,2600);
+  cv.focus({preventScroll:true});
+}
+function kick(){if(!raf){lastTs=0;raf=requestAnimationFrame(loop);}}
+function loop(ts){raf=0;if(!G)return;const dt=lastTs?Math.min(.1,(ts-lastTs)/1000):0;lastTs=ts;
+  if(G.state==='play')update(dt);else if(G.state==='win'||G.state==='lose')updateEnd(dt);
+  if(!G)return;draw();
+  if(G.state==='play'||G.state==='win'||G.state==='lose')raf=requestAnimationFrame(loop);}
+
+function paintTally(){if(!G)return;$('tShoe').textContent=`${G.shoes}/${G.nShoes}`;$('tApple').textContent=`${G.apples}/${G.nApples}`;
+  const f=$('tFoal');f.classList.toggle('got',G.foal.found);$('tFoalTx').textContent=G.foal.found?'✓':'?';f.setAttribute('aria-label',G.foal.found?`${G.m.name} is with you`:`${G.m.name} not found yet`);}
+
+// Visibility: what you can see now (line of sight through the corn) + the scarecrow's lantern at dusk.
+function updateVis(){const g=G,m=g.m,sky=M.skyAt(g.t/g.limit);g.visA.fill(0);
+  for(const [i,a] of M.visibleTiles(m,g.p.x,g.p.y,sky.radius))g.visA[i]=a;
+  if(sky.lantern>0)for(const [i,a] of M.visibleTiles(m,m.gate.x+.5,m.gate.y+.3,1.2+1.8*sky.lantern))g.visA[i]=Math.max(g.visA[i],a*sky.lantern);
+  const vd=g.vimg.data;vd.fill(0);const mw=m.cols+2;
+  for(let i=0;i<g.visA.length;i++){const a=g.visA[i];if(!a)continue;const x=i%m.cols,y=(i-x)/m.cols,o=((y+1)*mw+x+1)*4;vd[o+3]=a*255;
+    if(a>.35&&!g.explored[i]){g.explored[i]=1;g.eimg.data[o+3]=255;g.eDirty=true;}}
+  g.vctx.putImageData(g.vimg,0,0);if(g.eDirty){g.ectx.putImageData(g.eimg,0,0);g.eDirty=false;}}
+
+const tileOf=(m,x,y)=>Math.floor(y)*m.cols+Math.floor(x);
+function update(dt){const g=G,m=g.m;g.t+=dt;g.clock+=dt;
+  const speed=M.SPEED;let vx=0,vy=0,manual=false;
+  if(stickV){const l=Math.hypot(stickV.x,stickV.y);if(l>.18){const k=Math.min(1,l);vx=stickV.x/l*k;vy=stickV.y/l*k;manual=true;}}
+  if(!manual&&keys.size){const kx=(keys.has('arrowright')||keys.has('d')?1:0)-(keys.has('arrowleft')||keys.has('a')?1:0),ky=(keys.has('arrowdown')||keys.has('s')?1:0)-(keys.has('arrowup')||keys.has('w')?1:0);if(kx||ky){const l=Math.hypot(kx,ky);vx=kx/l;vy=ky/l;manual=true;}}
+  const ox=g.p.x,oy=g.p.y;
+  if(manual){g.path=[];g.tapMark=null;const r=M.moveWithCollision(m,g.p.x,g.p.y,vx*speed*dt,vy*speed*dt,.3);g.p.x=r.x;g.p.y=r.y;}
+  else if(g.path.length){let step=speed*dt*(g.path.length>2?1:.85);
+    while(step>0&&g.path.length){const i=g.path[0],tx=i%m.cols+.5,ty=Math.floor(i/m.cols)+.5,dx=tx-g.p.x,dy=ty-g.p.y,d=Math.hypot(dx,dy);
+      if(d<=step){g.p.x=tx;g.p.y=ty;step-=d;g.path.shift();}else{g.p.x+=dx/d*step;g.p.y+=dy/d*step;step=0;}}
+    if(!g.path.length)g.tapMark=null;}
+  const mvx=g.p.x-ox,mvy=g.p.y-oy,mv=Math.hypot(mvx,mvy);g.p.moving=mv>1e-4;
+  if(Math.abs(mvx)>1e-4)g.p.face=mvx>0?1:-1;
+  if(g.p.moving){if(!g.moved){g.moved=true;$('hint').classList.add('out');}
+    g.rustleAt-=dt;if(g.rustleAt<=0){sfx.rustle();g.rustleAt=.3;}
+    const last=g.trail.at(-1);if(!last||Math.hypot(last.x-g.p.x,last.y-g.p.y)>.08){g.trail.push({x:g.p.x,y:g.p.y});if(g.trail.length>80)g.trail.shift();}}
+  else if(manual&&mv<1e-4&&(vx||vy)){/* pushing into corn */}
+  // camera eases after you
+  const k=1-Math.exp(-dt*6);g.cam.x+=(g.p.x-g.cam.x)*k;g.cam.y+=(g.p.y-g.cam.y)*k;
+  updateVis();
+  // pick-ups
+  for(const it of g.items){if(it.got)continue;if(Math.hypot(it.x+.5-g.p.x,it.y+.5-g.p.y)<.55){it.got=true;
+    if(it.kind==='shoe'){g.shoes++;sfx.shoe();g.floaties.push({x:it.x+.5,y:it.y+.2,text:'Lucky horseshoe!',t:0});}
+    else{g.apples++;sfx.apple();g.floaties.push({x:it.x+.5,y:it.y+.2,text:'Crunchy apple!',t:0});}paintTally();}}
+  // the foal
+  const f=g.foal,fd=Math.hypot(f.x-g.p.x,f.y-g.p.y),fv=g.visA[tileOf(m,f.x,f.y)]||0;
+  if(!f.found){
+    if(fd<.95&&fv>.3){f.found=true;g.trail=[{x:f.x,y:f.y},{x:g.p.x,y:g.p.y}];sfx.found();nicker(M.whinnyPan(g.p.x,g.p.y,f.x,f.y));g.bubble={text:'Hi!',t:0};g.nextNicker=g.t+7;
+      toast(`You found ${m.name}! Lead them out the gate.`,2800);paintTally();}
+    else if(g.t>=g.nextWhinny){g.nextWhinny=g.t+4.2+Math.random()*2;
+      const pan=M.whinnyPan(g.p.x,g.p.y,f.x,f.y),vol=M.whinnyVolume(fd,g.maxD);
+      whinny({pan,vol,cutoff:M.whinnyMuffle(fd,g.maxD)});
+      if(fv>.2)g.bubble={text:'Neigh!',t:0};
+      else g.cues.push({ang:M.cueAngle(Math.atan2(f.y-g.p.y,f.x-g.p.x),Math.random,.42),vol,t:0});}}
+  else{
+    // follow along the trail, about one tile behind
+    let need=.95,tx=g.trail[0]?.x??f.x,ty=g.trail[0]?.y??f.y,px=g.p.x,py=g.p.y;
+    for(let i=g.trail.length-1;i>=0;i--){const q=g.trail[i],d=Math.hypot(q.x-px,q.y-py);if(d>=need){const s=need/d;tx=px+(q.x-px)*s;ty=py+(q.y-py)*s;need=0;break;}need-=d;px=q.x;py=q.y;}
+    if(need>0&&g.trail.length){tx=g.trail[0].x;ty=g.trail[0].y;}
+    const dx=tx-f.x,dy=ty-f.y,d=Math.hypot(dx,dy),st=Math.min(d,speed*1.25*dt);
+    f.moving=d>.03;if(d>1e-4){f.x+=dx/d*st;f.y+=dy/d*st;if(Math.abs(dx)>.01)f.face=dx>0?1:-1;}
+    if(g.t>=g.nextNicker){g.nextNicker=g.t+8+Math.random()*4;nicker(M.whinnyPan(g.p.x,g.p.y,f.x,f.y)*.5);}
+    // out the gate = win
+    if(tileOf(m,g.p.x,g.p.y)===M.idx(m,m.gate.x,m.gate.y)&&fd<2.6){g.state='win';g.endT=0;sfx.win();g.bubble={text:'Home!',t:0};g.path=[];stickEnd();}}
+  // sky moments
+  const sky=M.skyAt(g.t/g.limit);
+  if(!g.duskSaid&&sky.phase==='golden'){g.duskSaid=true;toast('The sun is getting low…',2000);}
+  if(!g.lanternSaid&&sky.lantern>.5){g.lanternSaid=true;sfx.dusk();toast('Dusk! The scarecrow lit the lantern by the gate.',2600);}
+  for(const c of g.cues)c.t+=dt;g.cues=g.cues.filter(c=>c.t<1.6);
+  for(const q of g.floaties)q.t+=dt;g.floaties=g.floaties.filter(q=>q.t<1.2);
+  if(g.bubble){g.bubble.t+=dt;if(g.bubble.t>1.3)g.bubble=null;}
+  if(g.state==='play'&&g.t>=g.limit){g.t=g.limit;g.state='lose';g.endT=0;g.path=[];stickEnd();
+    whinny({pan:0,vol:.9,cutoff:1800,pitch:.85,dur:1.4});if(g.foal.found||fv>.1)g.bubble={text:'Coming, Mum!',t:0};}
+  paintHud();}
+function updateEnd(dt){const g=G;g.endT+=dt;g.clock+=dt;
+  if(g.state==='win'){// you and the foal stroll out into the meadow, hearts pop
+    g.p.y+=dt*2;g.p.moving=true;const f=g.foal;const dx=g.p.x-f.x,dy=g.p.y-1-f.y,d=Math.hypot(dx,dy);if(d>.02){f.x+=dx/d*Math.min(d,dt*2.6);f.y+=dy/d*Math.min(d,dt*2.6);}f.moving=true;
+    g.cam.y+=(g.p.y-g.cam.y)*(1-Math.exp(-dt*4));
+    if(!still()&&g.confetti.length<60&&Math.random()<.6)g.confetti.push({x:Math.random()*VW,y:-10,vy:60+Math.random()*80,vx:(Math.random()-.5)*40,r:Math.random()*6,c:['#e4572e','#f3c969','#8cc46f','#f6a5c0','#2f8fce'][Math.random()*5|0],heart:Math.random()<.4});
+    if(g.endT>1.8)finish(true);}
+  else{const f=g.foal;if(f.found){f.alpha=Math.max(0,1-g.endT/1.6);f.y-=dt*1.5;f.moving=true;}
+    if(g.endT>2.2)finish(false);}
+  for(const c of g.confetti){c.y+=c.vy*dt;c.x+=c.vx*dt;c.r+=dt*4;}
+  if(g.bubble){g.bubble.t+=dt;if(g.bubble.t>1.6)g.bubble=null;}
+  paintHud();}
+
+let hudN=0;
+function paintHud(){if(!G||(hudN++%3))return;const g=G,p=Math.min(1,g.t/g.limit),s=M.skyAt(p);
+  $('sunbar').style.background=`linear-gradient(${rgb(s.top)},${rgb(s.low)})`;
+  const sun=$('sun');sun.style.left=(6+p*76)+'%';sun.style.top=(28+p*p*62)+'%';
+  sun.style.background=p<.6?'#ffd84a':p<.85?'#ff9d3c':'#ff6f5a';sun.style.opacity=p>.97?.4:1;
+  $('hzn').setAttribute('fill',p<.75?'#4f8a34':p<.9?'#5a6a2a':'#2c3a2a');
+  $('timeLeft').textContent=fmtT(g.limit-g.t);$('sunbar').classList.toggle('late',p>.8);}
+
+// ---------- Drawing ----------
+const sxOf=x=>(x-G.cam.x)*T+VW/2,syOf=y=>(y-G.cam.y)*T+VH/2;
+function draw(){if(!G||!SP)return;const g=G,m=g.m,t=g.clock,sky=M.skyAt(g.t/g.limit);
+  ctx.setTransform(DPR,0,0,DPR,0,0);ctx.imageSmoothingEnabled=true;
+  ctx.fillStyle='#3a6627';ctx.fillRect(0,0,VW,VH);
+  const x0=Math.floor(g.cam.x-VW/2/T)-1,x1=Math.ceil(g.cam.x+VW/2/T)+1,y0=Math.floor(g.cam.y-VH/2/T)-1,y1=Math.ceil(g.cam.y+VH/2/T)+1;
+  // ground
+  for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){const sx=sxOf(tx),sy=syOf(ty);
+    if(ty>=m.rows){ctx.drawImage(SP.grass,sx,sy,T+.5,T+.5);continue;}
+    if(M.isOpen(m,tx,ty))ctx.drawImage(SP.path[g.pmask[ty*m.cols+tx]],sx,sy,T+.5,T+.5);}
+  // fence along the meadow + the gate
+  drawFence(x0,x1);
+  // items + foal (+ you) under the corn tops' overhang? No: on top, so they never hide in leaves.
+  // corn (oversized sprites overhang the paths a little, swaying in the breeze)
+  const cs=T*1.45,sway=still()?0:1;
+  for(let ty=y0;ty<=y1;ty++){if(ty>=m.rows)break;for(let tx=x0;tx<=x1;tx++){if(M.isOpen(m,tx,ty))continue;
+    const v=((tx*73856093)^(ty*19349663))>>>0,o=sway*Math.sin(t*1.3+tx*.8+ty*.45)*T*.03;
+    ctx.drawImage(SP.corn[v&3],sxOf(tx)+T/2-cs/2+o,syOf(ty)+T/2-cs/2,cs,cs);}}
+  drawScarecrow(sky);
+  // tap target ring
+  if(g.tapMark){const i=g.tapMark,x=sxOf(i%m.cols+.5),y=syOf(Math.floor(i/m.cols)+.5),pu=.5+.5*Math.sin(t*6);ctx.strokeStyle=`rgba(255,253,244,${.6+.3*pu})`;ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(x,y+T*.12,T*(.22+.05*pu),T*(.11+.025*pu),0,0,7);ctx.stroke();}
+  for(const [k,it] of g.items.entries()){if(it.got||!g.explored[M.idx(m,it.x,it.y)])continue;const x=sxOf(it.x+.5),y=syOf(it.y+.5)+Math.sin(t*3+k)*T*.04;it.kind==='shoe'?drawShoe(x,y,T,t+k):drawApple(x,y,T);}
+  const f=g.foal,fseen=f.found||g.explored[tileOf(m,f.x,f.y)];
+  const order=[[g.p.y,'p'],[f.y,'f']].sort((a,b)=>a[0]-b[0]);
+  for(const [,w] of order){if(w==='p')drawKid(sxOf(g.p.x),syOf(g.p.y)+T*.22,T,g.p.face,t,g.p.moving);else if(fseen&&f.alpha>0){ctx.globalAlpha=f.alpha;drawFoal(sxOf(f.x),syOf(f.y)+T*.25,T*1.05,f.face,t,f.moving,f.found);ctx.globalAlpha=1;}}
+  // sky tint
+  if(sky.tint[3]>.005){ctx.fillStyle=rgb(sky.tint,sky.tint[3]);ctx.fillRect(0,0,VW,VH);}
+  drawFog(sky);
+  // lantern glow over the fog
+  if(sky.lantern>0)drawLanternGlow(sky);
+  // whinny bubble, floaties, cues
+  if(g.bubble&&fseen&&f.alpha>0){const b=g.bubble,x=sxOf(f.x),y=syOf(f.y)-T*.75-Math.min(1,b.t*4)*T*.15;bubble(x,y,b.text,Math.min(1,(1.3-b.t)*3));}
+  for(const q of g.floaties){const x=sxOf(q.x),y=syOf(q.y)-q.t*T*.9;ctx.globalAlpha=Math.max(0,1-q.t/1.2);label(x,y,q.text,'#2f6b3a');ctx.globalAlpha=1;}
+  for(const c of g.cues)drawCue(c);
+  if(sky.lantern>.5&&g.state==='play')gateMarker(sky);
+  if(g.state==='lose'){ctx.fillStyle=`rgba(14,18,40,${Math.min(.45,g.endT*.3)})`;ctx.fillRect(0,0,VW,VH);}
+  for(const c of g.confetti){ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.r);ctx.fillStyle=c.c;if(c.heart){heart(0,0,7);}else ctx.fillRect(-3,-5,6,10);ctx.restore();}}
+
+function drawFog(sky){const g=G,m=g.m,fw=fog.width,fh=fog.height;
+  fx.setTransform(1,0,0,1,0,0);fx.globalCompositeOperation='source-over';fx.globalAlpha=1;
+  // canopy pattern scrolled with the camera, tinted by the sky
+  const ft=SP.ft,ox=((-g.cam.x*T*FS+fw/2)%(ft*2)+ft*2)%(ft*2),oy=((-g.cam.y*T*FS+fh/2)%(ft*2)+ft*2)%(ft*2);
+  fx.save();fx.translate(ox-ft*2,oy-ft*2);fx.fillStyle=fogPat;fx.fillRect(0,0,fw+ft*4,fh+ft*4);fx.restore();
+  fx.fillStyle=rgb(sky.fog,.55);fx.fillRect(0,0,fw,fh);
+  fx.globalCompositeOperation='destination-out';
+  // the meadow outside the maze is always clear
+  const my=((m.rows-.05)-g.cam.y)*T*FS+fh/2;if(my<fh)fx.fillRect(0,Math.max(0,my),fw,fh);
+  fx.imageSmoothingEnabled=true;
+  const dx=(-1-g.cam.x)*T*FS+fw/2,dy=(-1-g.cam.y)*T*FS+fh/2,dw=(m.cols+2)*T*FS,dh=(m.rows+2)*T*FS;
+  fx.globalAlpha=.6;fx.drawImage(g.expl,dx,dy,dw,dh);// paths you've seen stay dimly remembered
+  fx.globalAlpha=1;fx.drawImage(g.vis,dx,dy,dw,dh);fx.drawImage(g.vis,dx,dy,dw,dh);
+  fx.globalCompositeOperation='source-over';
+  ctx.drawImage(fog,0,0,VW,VH);}
+
+function drawFence(x0,x1){const m=G.m,y=syOf(m.rows),gx=m.gate.x;
+  ctx.fillStyle='#a86f3f';
+  for(let tx=x0;tx<=x1;tx++){if(tx===gx)continue;const sx=sxOf(tx);ctx.fillRect(sx,y+T*.12,T+.5,T*.07);ctx.fillRect(sx,y+T*.3,T+.5,T*.07);ctx.fillStyle='#8a5a33';ctx.fillRect(sx+T*.42,y,T*.14,T*.48);ctx.fillStyle='#a86f3f';}
+  // open gate swung out into the meadow, with a sign
+  const lx=sxOf(gx),rx=sxOf(gx+1);
+  ctx.fillStyle='#6b4423';ctx.fillRect(lx-T*.1,y-T*.12,T*.2,T*.62);ctx.fillRect(rx-T*.1,y-T*.12,T*.2,T*.62);
+  ctx.save();ctx.translate(rx,y+T*.1);ctx.rotate(.95);ctx.fillStyle='#c48a52';ctx.fillRect(0,0,T*.9,T*.08);ctx.fillRect(0,T*.2,T*.9,T*.08);ctx.fillRect(T*.8,0,T*.08,T*.28);ctx.fillRect(0,0,T*.08,T*.28);ctx.restore();
+  const sx=lx+T*.5,sy=y+T*1.05;ctx.fillStyle='#6b4423';ctx.fillRect(sx-T*.04,sy,T*.08,T*.45);ctx.fillStyle='#e9c48a';ctx.strokeStyle='#8a5a33';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(sx-T*.42,sy-T*.18,T*.84,T*.32,4):ctx.rect(sx-T*.42,sy-T*.18,T*.84,T*.32);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#5a3a1a';ctx.font=`900 ${Math.round(T*.2)}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(G.foal.found?'HOME':'GATE',sx,sy-T*.02);
+  if(G.foal.found&&G.state==='play'){const pu=.5+.5*Math.sin(G.clock*4);ctx.strokeStyle=`rgba(255,240,170,${.5+.4*pu})`;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(lx+T/2,syOf(m.gate.y+.5),T*.42,T*.42,0,0,7);ctx.stroke();}}
+function drawScarecrow(sky){const m=G.m,x=sxOf(m.scarecrow.x+.5),y=syOf(m.scarecrow.y+.75),s=T;
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(0,0,s*.25,s*.08,0,0,7);ctx.fill();
+  ctx.fillStyle='#7a5230';ctx.fillRect(-s*.04,-s*.95,s*.08,s*.95);ctx.fillRect(-s*.42,-s*.78,s*.84,s*.07);
+  ctx.fillStyle='#d9534f';ctx.beginPath();ctx.moveTo(-s*.3,-s*.8);ctx.lineTo(s*.3,-s*.8);ctx.lineTo(s*.22,-s*.45);ctx.lineTo(-s*.22,-s*.45);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#a23a36';ctx.lineWidth=1.5;for(const k of [-.12,0,.12]){ctx.beginPath();ctx.moveTo(s*k,-s*.8);ctx.lineTo(s*k*.8,-s*.45);ctx.stroke();}
+  ctx.strokeStyle='#e8c35f';ctx.lineWidth=2;for(const sg of [-1,1]){ctx.beginPath();ctx.moveTo(sg*s*.42,-s*.74);ctx.lineTo(sg*s*.5,-s*.68);ctx.moveTo(sg*s*.42,-s*.74);ctx.lineTo(sg*s*.49,-s*.78);ctx.stroke();}
+  ctx.fillStyle='#d8b98a';ctx.beginPath();ctx.arc(0,-s*.95,s*.15,0,7);ctx.fill();
+  ctx.fillStyle='#2d2a24';ctx.beginPath();ctx.arc(-s*.05,-s*.97,s*.022,0,7);ctx.arc(s*.05,-s*.97,s*.022,0,7);ctx.fill();
+  ctx.strokeStyle='#2d2a24';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(0,-s*.93,s*.06,.3,2.8);ctx.stroke();
+  ctx.fillStyle='#e9c46a';ctx.beginPath();ctx.ellipse(0,-s*1.06,s*.26,s*.06,0,0,7);ctx.fill();ctx.fillStyle='#d9a93f';ctx.beginPath();ctx.ellipse(0,-s*1.12,s*.13,s*.09,0,0,7);ctx.fill();
+  // the lantern on the left arm, over the gate
+  const lx=-s*.44,ly=-s*.62;ctx.strokeStyle='#4a3a2a';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(lx,-s*.74);ctx.lineTo(lx,ly-s*.08);ctx.stroke();
+  const on=sky.lantern,fl=on*(.85+.15*Math.sin(G.clock*13)*Math.sin(G.clock*7.3));
+  ctx.fillStyle=on>0?`rgb(${255},${190+50*fl|0},${80+60*fl|0})`:'#d8d2c0';ctx.fillRect(lx-s*.06,ly-s*.08,s*.12,s*.15);
+  ctx.strokeStyle='#3a3026';ctx.lineWidth=1.5;ctx.strokeRect(lx-s*.06,ly-s*.08,s*.12,s*.15);
+  ctx.restore();}
+function drawLanternGlow(sky){const m=G.m,x=sxOf(m.scarecrow.x+.5)-T*.44,y=syOf(m.scarecrow.y+.75)-T*.62,fl=sky.lantern*(.85+.15*Math.sin(G.clock*13)*Math.sin(G.clock*7.3)),r=T*2.4*fl;
+  if(r<1)return;ctx.save();ctx.globalCompositeOperation='lighter';const gr=ctx.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,`rgba(255,200,90,${.55*fl})`);gr.addColorStop(.35,`rgba(255,160,60,${.18*fl})`);gr.addColorStop(1,'rgba(255,140,40,0)');ctx.fillStyle=gr;ctx.fillRect(x-r,y-r,r*2,r*2);ctx.restore();
+  ctx.fillStyle=`rgba(255,236,170,${fl})`;ctx.beginPath();ctx.arc(x,y,T*.06,0,7);ctx.fill();}
+function gateMarker(sky){const m=G.m,x=sxOf(m.gate.x+.5),y=syOf(m.gate.y+.5);if(x>20&&x<VW-20&&y>20&&y<VH-20)return;
+  const a=Math.atan2(y-VH/2,x-VW/2),p=M.edgePoint(a,VW,VH,30),pu=.7+.3*Math.sin(G.clock*4);
+  ctx.save();ctx.translate(p.x,p.y);const gr=ctx.createRadialGradient(0,0,0,0,0,26);gr.addColorStop(0,`rgba(255,210,110,${.7*pu})`);gr.addColorStop(1,'rgba(255,170,60,0)');ctx.fillStyle=gr;ctx.beginPath();ctx.arc(0,0,26,0,7);ctx.fill();
+  ctx.fillStyle='#ffd27a';ctx.strokeStyle='#5a3a1a';ctx.lineWidth=2;ctx.fillRect(-6,-8,12,15);ctx.strokeRect(-6,-8,12,15);
+  ctx.rotate(a);ctx.fillStyle='#fffdf4';ctx.beginPath();ctx.moveTo(22,0);ctx.lineTo(13,-6);ctx.lineTo(13,6);ctx.closePath();ctx.fill();ctx.restore();}
+// The "whinny wave": ripples at the screen edge roughly toward the foal; bigger and bolder when closer.
+function drawCue(c){const p=M.edgePoint(c.ang,VW,VH,34),life=c.t/1.6,al=Math.max(0,(1-life))*(.45+.55*c.vol),sz=14+22*c.vol;
+  ctx.save();ctx.translate(p.x,p.y);ctx.rotate(c.ang);ctx.lineCap='round';
+  for(let k=0;k<3;k++){const r=sz*(.45+k*.35)+life*sz*.8;ctx.strokeStyle=`rgba(45,42,36,${al*.55})`;ctx.lineWidth=6;ctx.beginPath();ctx.arc(-sz*.6,0,r,-.7,.7);ctx.stroke();ctx.strokeStyle=`rgba(255,248,225,${al*(1-k*.22)})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(-sz*.6,0,r,-.7,.7);ctx.stroke();}
+  ctx.rotate(-c.ang);ctx.globalAlpha=al;ctx.font=`${Math.round(12+8*c.vol)}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';const back=M.edgePoint(c.ang,VW,VH,34+sz*1.3);ctx.fillText('🐴',back.x-p.x,back.y-p.y);ctx.restore();}
+function bubble(x,y,text,al){if(al<=0)return;ctx.save();ctx.globalAlpha=Math.min(1,al);ctx.font=`900 ${Math.round(T*.32)}px system-ui,sans-serif`;const w=ctx.measureText(text).width+T*.4,h=T*.5;
+  ctx.fillStyle='#fffdf4';ctx.strokeStyle='#2d2a24';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(x-w/2,y-h,w,h,h/2):ctx.rect(x-w/2,y-h,w,h);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x-5,y-1);ctx.lineTo(x,y+7);ctx.lineTo(x+5,y-1);ctx.fill();ctx.fillStyle='#2d2a24';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y-h/2);ctx.restore();}
+function label(x,y,text,col){ctx.font=`900 ${Math.round(T*.3)}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=4;ctx.strokeStyle='#fffdf4';ctx.strokeText(text,x,y);ctx.fillStyle=col;ctx.fillText(text,x,y);}
+function heart(x,y,s){ctx.beginPath();ctx.moveTo(x,y+s*.6);ctx.bezierCurveTo(x-s*1.2,y-s*.2,x-s*.5,y-s,x,y-s*.35);ctx.bezierCurveTo(x+s*.5,y-s,x+s*1.2,y-s*.2,x,y+s*.6);ctx.fill();}
+function drawShoe(x,y,s,t){ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(0,s*.2,s*.18,s*.05,0,0,7);ctx.fill();
+  ctx.lineCap='round';ctx.strokeStyle='#5d6670';ctx.lineWidth=s*.13;ctx.beginPath();ctx.arc(0,-s*.02,s*.15,Math.PI*.82,Math.PI*2.18);ctx.stroke();
+  ctx.strokeStyle='#c7ced6';ctx.lineWidth=s*.08;ctx.beginPath();ctx.arc(0,-s*.02,s*.15,Math.PI*.82,Math.PI*2.18);ctx.stroke();
+  ctx.fillStyle='#5d6670';for(const a of [1.05,1.35,1.65,1.95])ctx.fillRect(Math.cos(a*Math.PI)*s*.15-1,Math.sin(a*Math.PI)*s*.15-s*.02-1,2,2);
+  const tw=Math.max(0,Math.sin(t*2.3));if(tw>.6){ctx.fillStyle=`rgba(255,255,255,${(tw-.6)*2.5})`;const sx=s*.12,sy=-s*.18,r=s*.09;ctx.beginPath();ctx.moveTo(sx,sy-r);ctx.lineTo(sx+r*.25,sy);ctx.lineTo(sx,sy+r);ctx.lineTo(sx-r*.25,sy);ctx.closePath();ctx.moveTo(sx-r,sy);ctx.lineTo(sx,sy+r*.25);ctx.lineTo(sx+r,sy);ctx.lineTo(sx,sy-r*.25);ctx.closePath();ctx.fill();}
+  ctx.restore();}
+function drawApple(x,y,s){ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(0,s*.2,s*.16,s*.05,0,0,7);ctx.fill();
+  ctx.fillStyle='#d8343a';ctx.beginPath();ctx.arc(-s*.06,0,s*.13,0,7);ctx.arc(s*.06,0,s*.13,0,7);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.ellipse(-s*.08,-s*.05,s*.035,s*.06,-.4,0,7);ctx.fill();
+  ctx.strokeStyle='#6b4423';ctx.lineWidth=s*.035;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(0,-s*.1);ctx.lineTo(s*.02,-s*.2);ctx.stroke();
+  ctx.fillStyle='#5f9d3e';ctx.beginPath();ctx.ellipse(s*.08,-s*.18,s*.07,s*.03,-.5,0,7);ctx.fill();ctx.restore();}
+// You: a kid in a straw hat, seen from a friendly three-quarter angle.
+function drawKid(x,y,s,face,t,moving){const step=moving?Math.sin(t*13):0,bob=moving?Math.abs(step)*s*.04:Math.sin(t*2)*s*.01;
+  ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(0,0,s*.2,s*.07,0,0,7);ctx.fill();
+  ctx.translate(0,-bob);ctx.fillStyle='#4a3a2a';ctx.fillRect(-s*.09,-s*.16+step*s*.03,s*.07,s*.16);ctx.fillRect(s*.02,-s*.16-step*s*.03,s*.07,s*.16);
+  ctx.fillStyle='#e4572e';ctx.beginPath();ctx.ellipse(-s*.17,-s*.32-step*s*.02,s*.05,s*.08,.3,0,7);ctx.ellipse(s*.17,-s*.32+step*s*.02,s*.05,s*.08,-.3,0,7);ctx.fill();
+  ctx.fillStyle='#3d7cc0';ctx.beginPath();ctx.roundRect?ctx.roundRect(-s*.14,-s*.44,s*.28,s*.3,s*.08):ctx.rect(-s*.14,-s*.44,s*.28,s*.3);ctx.fill();
+  ctx.fillStyle='#f3c969';ctx.fillRect(-s*.1,-s*.4,s*.04,s*.04);ctx.fillRect(s*.06,-s*.4,s*.04,s*.04);
+  ctx.fillStyle='#f4c9a0';ctx.beginPath();ctx.arc(0,-s*.56,s*.14,0,7);ctx.fill();
+  ctx.fillStyle='#2d2a24';ctx.beginPath();ctx.arc(-s*.045+face*s*.03,-s*.55,s*.02,0,7);ctx.arc(s*.045+face*s*.03,-s*.55,s*.02,0,7);ctx.fill();
+  ctx.fillStyle='#f6a5c0';ctx.globalAlpha=.6;ctx.beginPath();ctx.arc(-s*.08+face*s*.03,-s*.5,s*.025,0,7);ctx.arc(s*.08+face*s*.03,-s*.5,s*.025,0,7);ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle='#f2cf6b';ctx.strokeStyle='#c99a3a';ctx.lineWidth=1.2;ctx.beginPath();ctx.ellipse(0,-s*.65,s*.25,s*.07,0,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.ellipse(0,-s*.7,s*.13,s*.08,0,Math.PI,0);ctx.fill();ctx.stroke();ctx.fillStyle='#e4572e';ctx.fillRect(-s*.13,-s*.69,s*.26,s*.03);
+  ctx.restore();}
+// The foal: a chestnut with a white blaze, big eyes and a fluffy mane, seen from the side.
+function drawFoal(x,y,s,face,t,moving,found){const st=moving?Math.sin(t*14):0,bob=moving?Math.abs(st)*s*.03:Math.sin(t*2.2)*s*.008;
+  const body='#c87a3e',dark='#6b3a1a',leg='#a85f2c',light='#f1d2a8';
+  ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(0,0,s*.34,s*.08,0,0,7);ctx.fill();
+  ctx.scale(face,1);ctx.translate(0,-bob);
+  const legAt=(lx,sw,c)=>{ctx.save();ctx.translate(lx,-s*.36);ctx.rotate(sw);ctx.fillStyle=c;ctx.fillRect(-s*.028,0,s*.056,s*.33);ctx.fillStyle='#3b2b1a';ctx.fillRect(-s*.032,s*.3,s*.064,s*.05);ctx.restore();};
+  legAt(-s*.17,-st*.35,leg);legAt(s*.13,st*.35,leg);
+  // tail
+  ctx.strokeStyle=dark;ctx.lineWidth=s*.07;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-s*.27,-s*.46);ctx.quadraticCurveTo(-s*.38,-s*.4+Math.sin(t*3)*s*.03,-s*.35,-s*.28);ctx.stroke();
+  ctx.fillStyle=body;ctx.beginPath();ctx.ellipse(0,-s*.43,s*.28,s*.13,0,0,7);ctx.fill();
+  ctx.fillStyle=light;ctx.globalAlpha=.6;ctx.beginPath();ctx.ellipse(0,-s*.36,s*.18,s*.05,0,0,7);ctx.fill();ctx.globalAlpha=1;
+  legAt(-s*.1,st*.35,body);legAt(s*.2,-st*.35,body);
+  // neck + head (head dips to graze now and then while lost)
+  const graze=!found&&!moving?Math.max(0,Math.sin(t*.7))*.5:0;
+  ctx.save();ctx.translate(s*.16,-s*.48);ctx.rotate(graze);
+  ctx.fillStyle=body;ctx.beginPath();ctx.moveTo(-s*.04,s*.06);ctx.lineTo(s*.06,-s*.24);ctx.lineTo(s*.16,-s*.2);ctx.lineTo(s*.1,s*.04);ctx.closePath();ctx.fill();
+  ctx.save();ctx.translate(s*.15,-s*.26);ctx.rotate(.35);
+  ctx.fillStyle=body;ctx.beginPath();ctx.ellipse(0,0,s*.14,s*.1,0,0,7);ctx.fill();
+  ctx.fillStyle=light;ctx.beginPath();ctx.ellipse(s*.11,s*.02,s*.065,s*.06,0,0,7);ctx.fill();
+  ctx.fillStyle='#fffdf4';ctx.beginPath();ctx.ellipse(s*.03,-s*.04,s*.07,s*.02,.1,0,7);ctx.fill();
+  ctx.fillStyle='#2d2a24';ctx.beginPath();ctx.arc(-s*.01,-s*.015,s*.03,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-s*.0,-s*.025,s*.011,0,7);ctx.fill();
+  ctx.fillStyle='#f6a5c0';ctx.globalAlpha=.55;ctx.beginPath();ctx.arc(s*.03,s*.04,s*.022,0,7);ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle='#3b2b1a';ctx.beginPath();ctx.arc(s*.15,s*.01,s*.012,0,7);ctx.fill();
+  ctx.fillStyle=leg;ctx.beginPath();ctx.moveTo(-s*.09,-s*.06);ctx.lineTo(-s*.08,-s*.17);ctx.lineTo(-s*.03,-s*.08);ctx.closePath();ctx.moveTo(-s*.04,-s*.08);ctx.lineTo(-s*.01,-s*.18);ctx.lineTo(s*.02,-s*.07);ctx.closePath();ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle=dark;ctx.lineWidth=s*.06;for(let k=0;k<4;k++){const u=k/3;ctx.beginPath();ctx.moveTo(-s*.02+u*s*.1,s*.02-u*s*.26);ctx.quadraticCurveTo(-s*.08+u*s*.1,-s*.02-u*s*.26,-s*.06+u*s*.1,-s*.06-u*s*.26);ctx.stroke();}
+  ctx.restore();ctx.restore();}
+
+// ---------- Input: tap to go, press-and-drag thumbstick, keys ----------
+const stickEl=$('stick');
+function stickEnd(){ptr=null;stickV=null;stickEl.hidden=true;}
+cv.addEventListener('pointerdown',e=>{if(!G||G.state!=='play')return;if(e.button>0)return;e.preventDefault();audio();try{cv.setPointerCapture(e.pointerId)}catch{}
+  const r=stage.getBoundingClientRect();ptr={id:e.pointerId,sx:e.clientX-r.left,sy:e.clientY-r.top,drag:false};});
+cv.addEventListener('pointermove',e=>{if(!ptr||e.pointerId!==ptr.id)return;const r=stage.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,dx=x-ptr.sx,dy=y-ptr.sy;
+  if(!ptr.drag&&Math.hypot(dx,dy)>12){ptr.drag=true;if(G){G.path=[];G.tapMark=null;}stickEl.style.left=ptr.sx+'px';stickEl.style.top=ptr.sy+'px';stickEl.hidden=false;}
+  if(ptr.drag){const l=Math.hypot(dx,dy),k=Math.min(1,50/Math.max(1,l));stickEl.firstChild.style.transform=`translate(${dx*k}px,${dy*k}px)`;stickV={x:dx/50,y:dy/50};}});
+function endPtr(e,tap){if(!ptr||e.pointerId!==ptr.id)return;const was=ptr;stickEnd();if(tap&&!was.drag)tapTo(was.sx,was.sy);}
+cv.addEventListener('pointerup',e=>endPtr(e,true));cv.addEventListener('pointercancel',e=>endPtr(e,false));cv.addEventListener('lostpointercapture',e=>endPtr(e,false));
+// Tap: walk there along paths you've already seen (the nearest seen spot to your tap).
+function tapTo(sx,sy){const g=G;if(!g||g.state!=='play')return;const m=g.m,wx=g.cam.x+(sx-VW/2)/T,wy=g.cam.y+(sy-VH/2)/T;
+  let best=-1,bd=1e9;const cx=Math.floor(wx),cy=Math.floor(wy);
+  for(let y=cy-2;y<=cy+2;y++)for(let x=cx-2;x<=cx+2;x++){if(!M.isOpen(m,x,y))continue;const i=y*m.cols+x;if(!g.explored[i])continue;const d=Math.hypot(x+.5-wx,y+.5-wy);if(d<bd){bd=d;best=i;}}
+  if(best<0){toast('Walk closer to see that bit of the maze',1500);return;}
+  const start=tileOf(m,g.p.x,g.p.y),path=M.astar(m,start,best,i=>g.explored[i]===1);
+  if(!path){toast('Can’t find a way there yet',1400);return;}
+  path.shift();g.path=path;g.tapMark=best;if(!path.length)g.tapMark=null;}
+window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();
+  if((k==='escape'||k==='p')&&G){if(G.state==='play'){e.preventDefault();pause();}else if(G.state==='pause'&&!$('pauseSheet').hidden){e.preventDefault();resume();}return;}
+  if(!G||G.state!=='play')return;if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(k)){if(e.target.closest?.('button,a')&&e.target!==cv&&k.startsWith('arrow')===false)return;e.preventDefault();keys.add(k);audio();}});
+window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+window.addEventListener('blur',()=>{keys.clear();stickEnd();});
+
+// ---------- Pause ----------
+function pause(text){if(!G||G.state!=='play')return;G.state='pause';keys.clear();stickEnd();$('pauseText').textContent=text||`The sun waits for you. ${fmtT(G.limit-G.t)} of daylight left.`;$('pauseSheet').hidden=false;$('resumeBtn').focus({preventScroll:true});}
+function resume(){if(!G||G.state!=='pause')return;$('pauseSheet').hidden=true;G.state='play';audio();kick();cv.focus({preventScroll:true});}
+$('pauseBtn').onclick=()=>pause();
+$('resumeBtn').onclick=resume;
+$('restartBtn').onclick=()=>{if(G)startMaze(G.cfg);};
+$('leaveBtn').onclick=()=>{$('pauseSheet').hidden=true;G=null;showSetup();};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&G&&G.state==='play')pause();});
+
+// ---------- How to play ----------
+let howThen=null;
+function openHow(then){howThen=then||null;$('howto').hidden=false;$('howClose').focus({preventScroll:true});}
+$('howClose').onclick=()=>{$('howto').hidden=true;store.set(HELP_KEY,'1');const f=howThen;howThen=null;f?.();};
+$('howBtn').onclick=()=>openHow();
+$('helpBtn').onclick=()=>{if(G&&G.state==='play')pause();openHow();};
+
+// ---------- Setup: mazes, daily ----------
+function showSetup(){G=null;if(raf){cancelAnimationFrame(raf);raf=0;}paintSetup();$('results').hidden=true;$('setup').hidden=false;}
+function paintSetup(){const next=M.nextLevel(prog),date=M.todayKey(),dd=M.dailyDone(prog,date),allDone=Object.keys(prog.cleared).length>=M.LEVELS.length;
+  $('playBtn').innerHTML=`Play maze ${next+1}<small>${M.TIERS[M.LEVELS[next].tier].name} · up to 30 Trotties</small>`;
+  $('playBtn').onclick=()=>begin(M.LEVELS[next]);
+  $('dailyBtn').classList.toggle('done',dd);
+  $('dailyBtn').innerHTML=dd?`Daily maze ✓<small>Done today${prog.daily?.best?` in ${fmtT(prog.daily.best)}`:''} · play again for fun</small>`:'Daily maze<small>A new maze every day · 40 Trotties once a day</small>';
+  $('dailyBtn').onclick=()=>begin(M.dailyConfig(date));
+  $('levels').innerHTML=M.TIERS.map(tr=>`<h3>${esc(tr.name)} <small>${esc(tr.blurb)}</small></h3><div class="levels">${M.LEVELS.filter(l=>l.tier===tr.id).map(l=>{const c=prog.cleared[l.id],open=M.isUnlocked(prog,l.id);
+    return `<button type="button" class="lvl${l.id===next&&!c?' next':''}" data-lvl="${l.id}" ${open?'':'disabled'} aria-label="Maze ${l.n}${c?`, ${c.stars} stars`:open?'':', locked'}">${open?l.n:'🔒'}${c?`<small>${'★'.repeat(c.stars)}${'☆'.repeat(3-c.stars)}</small>`:`<small class="t">${open?'new':'&nbsp;'}</small>`}</button>`;}).join('')}</div>`).join('');
+  for(const b of $('levels').querySelectorAll('[data-lvl]'))b.onclick=()=>begin(M.LEVELS[+b.dataset.lvl]);
+  const cleared=Object.keys(prog.cleared).length,stars=Object.values(prog.cleared).reduce((s,c)=>s+(c.stars||0),0);
+  $('statline').textContent=prog.played?`Foals found ${prog.found} · Mazes cleared ${cleared} of 12 · ${stars} ★${allDone?' · Every maze done!':''}`:'Your first foal is waiting in maze 1.';}
+function begin(cfg){audio();if(!store.get(HELP_KEY)){openHow(()=>startMaze(cfg));return;}startMaze(cfg);}
+
+// ---------- Results + rewards ----------
+function finish(won){const g=G;if(!g||g.state==='done')return;g.state='done';
+  const cfg=g.cfg,daily=cfg.id==='daily',date=daily?cfg.date:M.todayKey(),wasDone=daily&&M.dailyDone(prog,date);
+  const left=Math.max(0,g.limit-g.t),stars=won?M.starsFor(left,g.limit):0;
+  const rw=M.rewardFor({won,left,limit:g.limit,shoes:g.shoes,apples:g.apples,daily,dailyDone:wasDone});
+  const prev=daily?null:prog.cleared[cfg.id];
+  prog=M.applyResult(prog,{level:daily?'daily':cfg.id,won,stars,secs:Math.round(g.t),date});saveProg();
+  const collectId=rw.coins?queueCoins({from:'Maize Runner',coins:rw.coins,lines:rw.lines}):null;
+  if(!won)sfx.sad();
+  const name=esc(g.m.name),nextId=!daily&&won&&cfg.id<M.LEVELS.length-1?cfg.id+1:null;
+  const newBest=won&&!daily&&prev&&prev.best!=null&&Math.round(g.t)<prev.best;
+  const art=won?`<svg class="resart" viewBox="0 0 300 90" aria-hidden="true"><rect width="300" height="90" rx="16" fill="#ffd9a0"/><circle cx="250" cy="30" r="14" fill="#ff9d3c"/><rect y="56" width="300" height="34" fill="#8cc46f"/><path d="M40 56v-22M40 40h28M68 56v-22" stroke="#8a5a33" stroke-width="4"/><g transform="translate(150 70)"><ellipse rx="22" ry="4" cy="2" fill="#0002"/><path d="M-12 0 v-14 M-6 0 v-14 M12 0 v-14 M18 0 v-14" stroke="#8a4d22" stroke-width="3.2" stroke-linecap="round"/><ellipse cx="3" cy="-18" rx="19" ry="9" fill="#c87a3e"/><path d="M14 -22 L22 -36 L30 -32 L22 -16Z" fill="#c87a3e"/><ellipse cx="28" cy="-38" rx="9" ry="7" transform="rotate(25 28 -38)" fill="#c87a3e"/><ellipse cx="34" cy="-35" rx="4.5" ry="3.6" fill="#f1d2a8"/><circle cx="27" cy="-39" r="2.2" fill="#2d2a24"/><path d="M-15 -22 q-8 2 -7 10" stroke="#6b3a1a" stroke-width="4" fill="none" stroke-linecap="round"/></g><g transform="translate(205 70)"><ellipse rx="28" ry="5" cy="2" fill="#0002"/><path d="M-16 0 v-20 M-8 0 v-20 M16 0 v-20 M24 0 v-20" stroke="#5a3418" stroke-width="4" stroke-linecap="round"/><ellipse cx="4" cy="-26" rx="26" ry="12" fill="#9a5a2c"/><path d="M20 -30 L30 -50 L40 -45 L30 -22Z" fill="#9a5a2c"/><ellipse cx="38" cy="-52" rx="11" ry="8" transform="rotate(25 38 -52)" fill="#9a5a2c"/><circle cx="37" cy="-54" r="2.4" fill="#2d2a24"/></g><path d="M178 34 c-4 -6 -12 -2 -8 4 l8 7 l8 -7 c4 -6 -4 -10 -8 -4z" fill="#e4572e"/></svg>`
+    :`<svg class="resart" viewBox="0 0 300 90" aria-hidden="true"><rect width="300" height="90" rx="16" fill="#2c3566"/><circle cx="60" cy="24" r="10" fill="#fffbe6"/><circle cx="66" cy="20" r="9" fill="#2c3566"/><circle cx="120" cy="16" r="1.5" fill="#fff"/><circle cx="200" cy="26" r="1.5" fill="#fff"/><circle cx="250" cy="12" r="1.5" fill="#fff"/><rect y="58" width="300" height="32" fill="#2f4a2a"/><path d="M230 58 v-26 h30 v26" fill="#7a3b2a"/><path d="M226 34 l19 -14 l19 14Z" fill="#5a2b1e"/><rect x="240" y="42" width="10" height="16" fill="#ffd27a"/><circle cx="150" cy="70" r="5" fill="#ffd27a"/></svg>`;
+  $('resultsCard').innerHTML=won?`${art}<h2>${name} is home!</h2>
+    <div class="stars" aria-label="${stars} of 3 stars">${'★'.repeat(stars)}<i>${'★'.repeat(3-stars)}</i></div>
+    <p style="text-align:center">${daily?'Daily maze':`Maze ${cfg.id+1}`} done in ${fmtT(g.t)} with ${fmtT(left)} of daylight to spare.${newBest?' New best time!':''}</p>
+    <div class="finds"><span>${SHOE_SVG}${g.shoes} of ${g.nShoes}</span><span>🍎 ${g.apples} of ${g.nApples}</span></div>
+    ${collectId?`<button class="tc-collect" id="collect" type="button" style="margin:6px 0 10px">Collect ${rw.coins} Trotties</button>`:''}
+    ${daily&&wasDone?'<p style="text-align:center;font-size:13px;color:var(--muted)">Today’s 40 Trotties are already yours. Come back tomorrow for a new daily maze.</p>':''}
+    <div class="stack">${nextId!=null?`<button class="btn go" id="nextBtn" type="button">Next maze<small>Maze ${nextId+1} · ${M.TIERS[M.LEVELS[nextId].tier].name}</small></button>`:''}
+    <div class="row2"><button class="btn ${nextId!=null?'soft':'go'}" id="againBtn" type="button">Play again</button><button class="btn soft" id="mazesBtn" type="button">All mazes</button></div>
+    ${inWorld?'':'<a class="btn soft" href="#home">Back to Trottville</a>'}</div>`
+    :`${art}<h2>The sun went down</h2>
+    <p>${name}’s mum called ${name} home for supper. They’re safe and snug in the barn. Want another go?</p>
+    <div class="finds"><span>${SHOE_SVG}${g.shoes} of ${g.nShoes}</span><span>🍎 ${g.apples} of ${g.nApples}</span></div>
+    ${collectId?`<button class="tc-collect" id="collect" type="button" style="margin:6px 0 10px">Collect ${rw.coins} Trotties</button>`:''}
+    <div class="stack"><button class="btn go" id="againBtn" type="button">Try again</button><button class="btn soft" id="mazesBtn" type="button">All mazes</button>${inWorld?'':'<a class="btn soft" href="#home">Back to Trottville</a>'}</div>`;
+  $('results').hidden=false;
+  $('collect')?.addEventListener('click',e=>{e.currentTarget.remove();showCollect({title:won?'Maze rewards':'Lucky finds',ids:[collectId]});});
+  $('againBtn').onclick=()=>startMaze(cfg);
+  $('mazesBtn').onclick=showSetup;
+  if(nextId!=null)$('nextBtn').onclick=()=>startMaze(M.LEVELS[nextId]);}
+
+// ---------- Boot ----------
+paintSetup();
+if(!store.get(HELP_KEY))openHow();
+</script>
+<script type="module" src="pixel-icons.js"></script>
+</body>
+</html>

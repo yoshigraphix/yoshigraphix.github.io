@@ -1,0 +1,52 @@
+{
+ "id": "./",
+ "name": "Trottville \u2014 Your horse community",
+ "short_name": "Trottville",
+ "description": "A private horse-community prototype. Care, connect and take the scenic route.",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f6f5f0",
+ "theme_color": "#304a3e",
+ "lang": "en",
+ "categories": [
+  "games",
+  "social"
+ ],
+ "icons": [
+  {
+   "src": "assets/horse-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "assets/horse-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "assets/horse-maskable.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Your stable",
+   "url": "/#stable",
+   "icons": [
+    {
+     "src": "/assets/horse-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Trail ride",
+   "url": "/#trail"
+  }
+ ]
+}

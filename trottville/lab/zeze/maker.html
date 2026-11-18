@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rider Test · Zeze head</title>
+<style>
+:root{--bg:#f3efe8;--ink:#23402f;--card:#fffaf0;--line:#e3dccb;--acc:#2c5e45}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{margin:4px 0 2px;font-size:26px}p.sub{margin:0 0 12px;color:#5b6d60}
+#stage{position:relative;height:62vh;min-height:420px;border-radius:22px;overflow:hidden;background:linear-gradient(#e9eeec 70%,#ddd5c2 70%)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font:600 15px system-ui}
+.chip[aria-pressed=true]{background:var(--acc);color:#fff;border-color:var(--acc)}
+.sw{width:44px;height:44px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px var(--line)}
+.sw[aria-pressed=true]{box-shadow:0 0 0 3px var(--acc)}
+section{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:12px 14px;margin-top:12px}
+h2{font-size:15px;margin:0;color:#46604f}
+#loading{position:absolute;inset:0;display:grid;place-items:center;font-weight:600}
+#loading[hidden]{display:none}
+</style></head><body><main>
+<h1>Rider test</h1><p class="sub">Zeze's head on a new simple body, one rig, cartoon shader. Clothes are painted on for this test.</p>
+<div id="stage"><canvas id="c"></canvas><div id="loading">Loading…</div></div>
+<div class="row" id="cams"></div>
+<section><h2>Pose</h2><div class="row" id="poses"></div></section>
+<section><h2>Skin</h2><div class="row" id="skin"></div></section>
+<section><h2>Hair</h2><div class="row" id="hair"></div></section>
+<section><h2>Top</h2><div class="row" id="top"></div></section>
+</main>
+<script type="module">
+import * as T from '../../vendor/three-0.180.0/three.module.js';
+import {GLTFLoader} from '../../vendor/three-0.180.0/addons/loaders/GLTFLoader.js';
+const $=id=>document.getElementById(id);
+const cv=$('c'),r=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true});r.setPixelRatio(Math.min(2,devicePixelRatio));r.outputColorSpace=T.SRGBColorSpace;
+const scene=new T.Scene(),cam=new T.PerspectiveCamera(26,1,.05,50);
+const look={skin:'#fde6da',hair:'#e98aa0',top:'#2f4f7f',pose:'walk'};
+const SKINS=['#fff0e6','#fde6da','#f1c9a8','#d9a37a','#a8704a','#6e452c'];
+const HAIRS=['#2a1d18','#5b3a26','#9a6538','#e3b866','#e98aa0','#c94a3a','#7b5ea7','#dcd6d0'];
+const TOPS=['#2f4f7f','#ffffff','#c8463d','#3d7a52','#e7b33e','#7b5ea7'];
+const REF_SKIN=new T.Color('#fde6da'),REF_HAIR=new T.Color('#e98aa0');
+const TL=new T.TextureLoader(),tex=async f=>{const t=await TL.loadAsync(f);t.colorSpace=T.SRGBColorSpace;t.flipY=false;return t;};
+const [tBody,tEyes,tHair]=await Promise.all(['body.png','eyes.png','hair.png'].map(tex));
+const g=await new GLTFLoader().loadAsync('rider.glb');scene.add(g.scene);
+const U={uSkin:{value:new T.Color(look.skin)},uRefSkin:{value:REF_SKIN},uHair:{value:new T.Color(look.hair)},uRefHair:{value:REF_HAIR},uTop:{value:new T.Color(look.top)},uLight:{value:new T.Vector3(.45,.75,.5).normalize()}};
+const OUTLINE=new T.Color(.18,.03,.03);
+// shared cel shading: 2 tones from a fixed light in view space
+const cel=`float ndl=dot(normalize(vN),uLight);float lit=smoothstep(.02,.12,ndl);`;
+function toon(kind,map){
+  const m=new T.ShaderMaterial({uniforms:Object.assign({uMap:{value:map||null}},U),side:kind==='flat'?T.DoubleSide:T.FrontSide,
+    vertexShader:`#include <common>
+#include <skinning_pars_vertex>
+varying vec3 vN;varying vec3 vB;varying vec2 vUv;
+void main(){vUv=uv;vB=position;
+#include <skinbase_vertex>
+#include <beginnormal_vertex>
+#include <skinnormal_vertex>
+#include <begin_vertex>
+#include <skinning_vertex>
+vN=normalize(normalMatrix*objectNormal);gl_Position=projectionMatrix*modelViewMatrix*vec4(transformed,1.);}`,
+    fragmentShader:`uniform sampler2D uMap;uniform vec3 uSkin,uRefSkin,uHair,uRefHair,uTop,uLight;varying vec3 vN;varying vec3 vB;varying vec2 vUv;
+void main(){vec3 c;
+${kind==='body'?`${cel}
+  vec3 base=uSkin;float y=vB.y,ax=abs(vB.x);
+  float boots=1.-smoothstep(.40,.41,y);
+  float legs=smoothstep(.40,.41,y)*(1.-smoothstep(.85,.86,y));
+  float top=smoothstep(.85,.86,y)*(1.-smoothstep(1.285,1.29,y))*(1.-smoothstep(.27,.28,ax));
+  base=mix(base,vec3(.96,.94,.88),legs);base=mix(base,vec3(.28,.17,.11),boots);base=mix(base,uTop,top);
+  float isSkin=1.-max(max(legs,boots),top);
+  vec3 shade=base*mix(vec3(.80,.80,.86),vec3(.95,.76,.76),isSkin);
+  c=mix(shade,base,lit);`:''}
+${kind==='cap'?`${cel} c=mix(uHair*vec3(.78,.74,.8),uHair,lit);`:''}
+${kind==='head'?`vec3 t=texture2D(uMap,vUv).rgb;float mx=max(t.r,max(t.g,t.b)),mn=min(t.r,min(t.g,t.b));float sat=(mx-mn)/max(mx,.001);
+  float skin=smoothstep(.03,.10,sat)*(1.-smoothstep(.45,.6,sat))*step(t.b,t.r);c=mix(t,t*uSkin/uRefSkin,skin);`:''}
+${kind==='hair'?`vec3 t=texture2D(uMap,vUv).rgb;c=t*uHair/uRefHair;`:''}
+${kind==='flat'?`c=texture2D(uMap,vUv).rgb;`:''}
+gl_FragColor=vec4(c,1.);
+#include <colorspace_fragment>
+}`});
+  return m;}
+function outline(src,w){const m=new T.ShaderMaterial({side:T.BackSide,uniforms:{uC:{value:OUTLINE},uW:{value:w}},
+  vertexShader:`#include <common>
+#include <skinning_pars_vertex>
+uniform float uW;void main(){
+#include <skinbase_vertex>
+#include <beginnormal_vertex>
+#include <skinnormal_vertex>
+#include <begin_vertex>
+transformed+=normalize(objectNormal)*uW;
+#include <skinning_vertex>
+gl_Position=projectionMatrix*modelViewMatrix*vec4(transformed,1.);}`,
+  fragmentShader:`uniform vec3 uC;void main(){gl_FragColor=vec4(uC,1.);
+#include <colorspace_fragment>
+}`});
+  const o=new T.SkinnedMesh(src.geometry,m);o.bind(src.skeleton,src.bindMatrix);o.bindMode=src.bindMode;src.parent.add(o);o.position.copy(src.position);o.quaternion.copy(src.quaternion);o.scale.copy(src.scale);o.frustumCulled=false;return o;}
+const meshes=[];g.scene.traverse(o=>{if(o.isMesh)meshes.push(o);});
+for(const o of meshes){const n=o.name,mn=o.material.name;o.frustumCulled=false;
+  if(n.startsWith('Body')){o.material=toon('body');outline(o,.0045);}
+  else if(n.startsWith('HairCap')){o.material=toon('cap');o.material.side=T.DoubleSide;outline(o,.0035);}
+  else if(mn==='Material.002'){o.material=new T.MeshBasicMaterial({color:OUTLINE});}     // Zeze's own outline shells
+  else if(mn==='Body'){o.material=toon('head',tBody);}
+  else if(mn==='Hair'){o.material=toon('hair',tHair);o.material.side=T.DoubleSide;}
+  else if(mn==='Material.001'){o.material=toon('flat',tEyes);}
+  else if(mn==='Material'){o.material=new T.MeshBasicMaterial({color:new T.Color(1,.43,.36)});}
+}
+// ---------- poses: rotations about rest-pose world axes ----------
+const sk=meshes.find(o=>o.isSkinnedMesh).skeleton,B={};const key=n=>n.replace(/\./g,'');for(const b of sk.bones)B[key(b.name)]=b;
+g.scene.updateMatrixWorld(true);const rest={};for(const b of sk.bones){rest[b.name]={q:b.quaternion.clone(),w:b.getWorldQuaternion(new T.Quaternion())};}
+const X=new T.Vector3(1,0,0),Y=new T.Vector3(0,1,0),Z=new T.Vector3(0,0,1),qa=new T.Quaternion();
+function rot(n,list){const b=B[key(n)];if(!b)return;const R=rest[b.name];let q=new T.Quaternion();for(const [ax,deg] of list)q.premultiply(qa.setFromAxisAngle(ax,deg*Math.PI/180));
+  const wi=R.w.clone().invert();b.quaternion.copy(R.q).multiply(wi.multiply(q).multiply(R.w));}
+const POSES={stand:t=>({}),walk:t=>{const s=Math.sin(t*5.5),c=Math.cos(t*5.5);return{'thigh.L':[[X,-26*s]],'thigh.R':[[X,26*s]],'shin.L':[[X,Math.max(0,30*c)]],'shin.R':[[X,Math.max(0,-30*c)]],'upper_arm.L':[[X,22*s]],'upper_arm.R':[[X,-22*s]],'hips':[[Y,4*s]],'chest':[[Y,-6*s]]};},
+  wave:t=>({'upper_arm.R':[[Z,100],[X,-25]],'forearm.R':[[Z,30+18*Math.sin(t*7)]]}),ride:t=>({'thigh.L':[[X,-70],[Z,-18]],'thigh.R':[[X,-70],[Z,18]],'shin.L':[[X,75]],'shin.R':[[X,75]],'upper_arm.L':[[X,-35]],'upper_arm.R':[[X,-35]],'forearm.L':[[X,-50]],'forearm.R':[[X,-50]]})};
+function pose(t){for(const b of sk.bones)b.quaternion.copy(rest[b.name].q);
+  const base={'upper_arm.L':[[Z,-38]],'upper_arm.R':[[Z,38]],'forearm.L':[[Z,-6]],'forearm.R':[[Z,6]]};   // rig rests in an A pose: lower the arms
+  const p=POSES[look.pose](t);for(const k of new Set([...Object.keys(base),...Object.keys(p)]))rot(k,[...(base[k]||[]),...(p[k]||[])]);
+  const bob=look.pose==='walk'?Math.abs(Math.sin(t*5.5))*.012:0;g.scene.position.y=bob;}
+// ---------- camera ----------
+let yaw=0,shot='full';const SHOTS={full:{y:.85,h:1.9},face:{y:1.47,h:.42},upper:{y:1.15,h:1.0}};
+function frame(){const w=cv.clientWidth,h=cv.clientHeight;r.setSize(w,h,false);cam.aspect=w/h;const s=SHOTS[shot];const d=s.h/(2*Math.tan(13*Math.PI/180))*(w<h?1.15:1);cam.position.set(Math.sin(yaw)*d,s.y,Math.cos(yaw)*d);cam.lookAt(0,s.y,0);cam.updateProjectionMatrix();}
+let drag=null;cv.addEventListener('pointerdown',e=>{drag=e.clientX;cv.setPointerCapture(e.pointerId);});cv.addEventListener('pointermove',e=>{if(drag!=null){yaw-=(e.clientX-drag)*.01;drag=e.clientX;frame();}});cv.addEventListener('pointerup',()=>drag=null);
+function chips(el,items,cur,on,sw){el.innerHTML='';for(const [id,name] of items){const b=document.createElement('button');b.className=sw?'sw':'chip';if(sw){b.style.background=id;b.setAttribute('aria-label',name);}else b.textContent=name;b.setAttribute('aria-pressed',String(id===cur));b.onclick=()=>{for(const x of el.children)x.setAttribute('aria-pressed','false');b.setAttribute('aria-pressed','true');on(id);};el.appendChild(b);}}
+chips($('cams'),[['full','Full body'],['upper','Upper'],['face','Face']],shot,v=>{shot=v;frame();});
+chips($('poses'),[['stand','Stand'],['walk','Walk'],['wave','Wave'],['ride','Ride']],look.pose,v=>look.pose=v);
+chips($('skin'),SKINS.map((c,i)=>[c,'Skin '+(i+1)]),look.skin,v=>U.uSkin.value.set(v),true);
+chips($('hair'),HAIRS.map((c,i)=>[c,'Hair '+(i+1)]),look.hair,v=>U.uHair.value.set(v),true);
+chips($('top'),TOPS.map((c,i)=>[c,'Top '+(i+1)]),look.top,v=>U.uTop.value.set(v),true);
+addEventListener('resize',frame);$('loading').hidden=true;frame();
+let t0=performance.now(),paused=false,fixedT=null;
+function tick(now){const t=fixedT??(now-t0)/1000;pose(t);r.render(scene,cam);requestAnimationFrame(tick);}requestAnimationFrame(tick);
+window.__z={look,U,set:(k,v)=>{look[k]=v;},shot:v=>{shot=v;frame();},yaw:v=>{yaw=v;frame();},freeze:v=>fixedT=v,ready:true};
+</script></body></html>

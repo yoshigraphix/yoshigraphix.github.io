@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en" data-no-chip>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Clover Steeplechase</title>
+<link rel="stylesheet" href="coin-collect.css?v=157">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&display=swap">
+<style>
+/* Open-country steeplechase: village to church steeple, any route, one computer rival, a timer. Phone portrait first. */
+:root{--ink:#24402f;--card:#fffdf6;--edge:#2f6b3a;--gold:#f2b632;--sky:#9ad7f5;
+  --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;--body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:light}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--sky);font-family:var(--body);color:var(--ink);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.hud{position:fixed;inset:0;pointer-events:none;padding:max(12px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.hud[hidden]{display:none}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.clock{background:#fffdf6e8;border-radius:16px;padding:8px 12px;box-shadow:0 3px 0 #1e3b2a33;min-width:110px}
+.clock b{display:block;font:700 28px/1 var(--display);font-variant-numeric:tabular-nums}
+.clock small{display:block;font:800 12px/1.3 var(--body);margin-top:3px}
+.clock .pen{color:#b4462e}
+#map{width:92px;height:170px;border-radius:14px;background:#cfe8b8e8;box-shadow:0 3px 0 #1e3b2a33}
+.quit{pointer-events:auto;all:unset;pointer-events:auto;margin-top:8px;display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border-radius:99px;background:#fffdf6d0;font:800 12px/1 var(--body);cursor:pointer}
+#toast{position:fixed;left:50%;top:32%;transform:translateX(-50%);max-width:86vw;text-align:center;background:#24402fe8;color:#fff;border-radius:14px;padding:10px 16px;font:800 15px/1.3 var(--body);opacity:0;transition:opacity .2s}
+#toast.on{opacity:1}
+#count{position:fixed;left:0;right:0;top:38%;text-align:center;font:700 84px/1 var(--display);color:#fff;text-shadow:0 4px 0 #2b7fa8;pointer-events:none}
+.right{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.gauge{background:#fffdf6e8;border-radius:14px;padding:7px 10px;min-width:104px;box-shadow:0 3px 0 #1e3b2a33}
+.gauge b{font:700 22px/1 var(--display);font-variant-numeric:tabular-nums}.gauge b small{font:800 11px var(--body);margin-left:3px}
+.bar{height:7px;border-radius:9px;background:#24402f22;margin-top:5px;overflow:hidden}.bar i{display:block;height:100%;background:#4f9a3e;border-radius:9px}
+.bar.tired i{background:#d0703a}
+.gauge small.lbl{display:block;font:800 10px/1.4 var(--body);letter-spacing:.06em;opacity:.7;margin-top:4px}
+#jump{pointer-events:auto;all:unset;pointer-events:auto;position:relative;width:104px;height:104px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  font:700 22px/1 var(--display);color:#fff;background:#9aa59c;box-shadow:0 5px 0 #5d6a60;-webkit-tap-highlight-color:transparent;touch-action:none}
+#jump svg{position:absolute;inset:-6px;width:116px;height:116px;transform:rotate(-90deg)}
+#jump circle{fill:none;stroke-width:6}#jump .track{stroke:#ffffff55}#jump .fill{stroke:var(--gold);stroke-linecap:round;transition:stroke .15s}
+#jump.ready{background:var(--edge);box-shadow:0 5px 0 #1f4a27}#jump.ready .fill{stroke:#ffe27a}
+#jump.unsure{background:#c9853c;box-shadow:0 5px 0 #8a5522}
+#jump span{position:relative;text-align:center}#jump span small{display:block;font:800 11px/1.2 var(--body);margin-top:3px}
+#stick{position:fixed;left:0;bottom:0;width:58%;height:48%;pointer-events:auto;touch-action:none}
+#knob{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid #ffffffa0;background:#ffffff26;pointer-events:none;display:none}
+#knob i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:#fffdf6;box-shadow:0 3px 0 #1e3b2a44}
+.hint{position:fixed;left:max(16px,env(safe-area-inset-left));bottom:max(20px,env(safe-area-inset-bottom));font:800 12px/1.35 var(--body);color:#fff;text-shadow:0 1px 2px #0006;max-width:46vw;pointer-events:none}
+.panel{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:linear-gradient(180deg,#9ad7f5cc,#cfe9c4ee);overflow:auto}
+.panel[hidden]{display:none}
+.card{width:min(440px,100%);background:var(--card);border-radius:22px;padding:18px;box-shadow:0 6px 0 #1e3b2a2a;box-sizing:border-box}
+.card h1{margin:0;font:700 28px/1.1 var(--display);color:var(--edge)}
+.card h2{margin:16px 0 8px;font:800 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.card p{margin:6px 0 0;font:600 14px/1.4 var(--body)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button,.btn{all:unset;box-sizing:border-box;min-height:44px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;border-radius:99px;cursor:pointer;
+  font:800 14px/1 var(--body);background:#eef3e6;color:var(--ink);-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s}
+.chips button[aria-pressed="true"]{background:var(--edge);color:#fff}
+#home{width:100%;margin-top:10px}#home[hidden]{display:none}
+.btn.primary{background:var(--edge);color:#fff;width:100%;margin-top:16px;font-size:16px;min-height:52px}
+.btn.secondary{width:100%;margin-top:8px}
+.chips button:focus-visible,.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.stats{display:grid;grid-template-columns:auto 1fr auto;gap:5px 10px;align-items:center;font:800 13px/1.2 var(--body)}
+.stats .bar{margin:0;height:9px}.stats .bar i{background:var(--edge)}
+.stats em{font-style:normal;font-variant-numeric:tabular-nums;opacity:.7}
+.stats .note{grid-column:1/-1;font:600 12px/1.35 var(--body);opacity:.75;margin:-2px 0 4px}
+.result{font:700 46px/1 var(--display);color:var(--edge);margin:8px 0 2px;font-variant-numeric:tabular-nums}
+.rows{margin-top:10px;font:700 14px/1.6 var(--body)}.rows div{display:flex;justify-content:space-between;border-bottom:1px dashed #24402f22}
+.next{background:#fffdf6e8;border-radius:14px;padding:6px 10px;box-shadow:0 3px 0 #1e3b2a33;display:flex;align-items:center;gap:8px;align-self:flex-start;margin-top:2px}
+.next svg{width:30px;height:30px;flex:none;transition:transform .08s linear}.next b{display:block;font:800 13px/1.15 var(--body)}.next small{display:block;font:800 11px/1.2 var(--body);opacity:.7}
+.chips button.off{flex-direction:column;gap:2px;cursor:default;opacity:.6;background:#e6e8e2;padding:4px 14px}
+.chips button.off small{font:800 11px/1.1 var(--body);color:#8a4b2a}
+.stats .note.tack{color:#8a4b2a;opacity:1;margin:2px 0 0}
+.note-line{font-size:12px;color:#5d6b5f;margin:8px 0 0;line-height:1.4}
+/* ---- Trottville game family: same buttons, back key and HUD chips as the other game pages ---- */
+:root{--gf-chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --gf-x:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E")}
+.card{padding:16px 16px 18px}
+.card h1{font-size:27px}
+.card p.lede{font-size:14px;line-height:1.4}
+.card p.lede b{font-weight:800;white-space:nowrap}
+.card h2{margin:14px 0 7px}
+.btn{border-radius:14px}
+.btn.primary{border-radius:16px;box-shadow:0 4px 0 #1f4a27;min-height:54px;font:700 18px/1 var(--display);letter-spacing:.2px}
+.btn.secondary{border-radius:16px;box-shadow:0 3px 0 #d6dcc9}
+.stats{gap:7px 10px}
+.stats .note.tack{display:block;justify-self:start;min-width:0;box-sizing:border-box;background:#fbefd9;color:#7a4320;border-radius:10px;padding:5px 9px;font:800 11.5px/1.3 var(--body);margin:2px 0 0}
+.stats .note.tack::before{content:'⚠ ';opacity:.8}
+/* Back to Trottville: the family back key, top-left (chevron on phones, chevron + label wider) */
+#home.gf-home{position:fixed;z-index:5;left:max(10px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));width:44px;min-height:44px;height:44px;margin:0;padding:0;border-radius:14px;background:#2f6b3a;color:#fffdf4;box-shadow:0 3px 0 #1f4a27;font-size:0;gap:4px}
+#home.gf-home::before{content:'';width:24px;height:24px;background:currentColor;-webkit-mask:var(--gf-chev) center/24px no-repeat;mask:var(--gf-chev) center/24px no-repeat}
+@media (min-width:480px){#home.gf-home{width:auto;padding:0 14px 0 8px;font-size:14px}}
+.panel{padding-top:max(62px,calc(env(safe-area-inset-top) + 56px))}
+/* HUD: one chip style, an icon-only leave key, and a quiet hint */
+.quit{width:44px;height:44px;min-height:44px;padding:0;margin-top:8px;justify-content:center;border-radius:14px;background:#fffdf6e8;box-shadow:0 3px 0 #1e3b2a33;font-size:0;color:var(--ink)}
+.quit::before{content:'';width:20px;height:20px;background:currentColor;-webkit-mask:var(--gf-x) center/20px no-repeat;mask:var(--gf-x) center/20px no-repeat}
+.clock,.next,.gauge{border-radius:14px}
+.next{min-height:44px;box-sizing:border-box}
+.hint{background:#1e3b2a8c;text-shadow:none;border-radius:12px;padding:8px 10px;max-width:min(52vw,230px)}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Countryside steeplechase"></canvas>
+
+<div class="hud" id="hud" hidden>
+  <div class="top">
+    <div>
+      <div class="clock"><b id="time">0:00.0</b><small id="place">—</small></div>
+      <button class="quit" id="quit" type="button" aria-label="Leave race">Leave race</button>
+    </div>
+    <div class="next" aria-live="polite"><svg viewBox="0 0 30 30" id="arrow" aria-hidden="true"><path d="M15 3 L25 25 L15 19 L5 25 Z" fill="#f2b632" stroke="#24402f" stroke-width="2" stroke-linejoin="round"/></svg><div><b id="nextName">Windmill</b><small id="nextDist">—</small></div></div>
+    <canvas id="map" width="92" height="170" aria-label="Map of the countryside"></canvas>
+  </div>
+  <div id="stick" aria-label="Steering stick: push up to speed up, sideways to turn, down to back up"></div>
+  <div class="hint" id="hint">Hold here: push up to go, slide to steer, pull down to back up.</div>
+  <div class="right">
+    <div class="gauge"><b id="mph">0<small>mph</small></b><div class="bar" id="staBar"><i id="sta" style="width:100%"></i></div><small class="lbl" id="staLbl">STAMINA</small></div>
+    <button id="jump" type="button" aria-label="Jump"><svg viewBox="0 0 116 116" aria-hidden="true"><circle class="track" cx="58" cy="58" r="54"/><circle class="fill" id="ring" cx="58" cy="58" r="54" stroke-dasharray="339.3" stroke-dashoffset="339.3"/></svg><span id="jumpTxt">Jump<small>build speed</small></span></button>
+  </div>
+</div>
+<div id="knob"><i></i></div>
+<div id="count"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<div class="panel" id="menu">
+  <div class="card">
+    <h1>Clover Steeplechase</h1>
+    <p class="lede">Village green to the church steeple. Pass <b>⚑1 the windmill</b>, then <b>⚑2 the old oak</b>; the gold arrow points the way. No track: jump farm fences at speed, or use a gate.</p>
+    <h2>Countryside</h2>
+    <div class="chips" id="modes"></div>
+    <p id="courseNote" style="font-size:12px;opacity:.75"></p>
+    <h2>Your horse</h2>
+    <div class="chips" id="horses"></div>
+    <div class="stats" id="stats" style="margin-top:12px"></div>
+    <button class="btn primary" id="go" type="button">Start race</button>
+    <button class="btn gf-home" id="home" type="button" aria-label="Back to Trottville" hidden>Trottville</button>
+  </div>
+</div>
+<div class="panel" id="done" hidden>
+  <div class="card" id="doneCard"></div>
+</div>
+
+<script type="module">
+import * as T from './vendor/three-0.180.0/three.module.js?v=157';
+import {makeSculptedHorse} from './horse-sculpt.js?v=157';
+import {addTackAndRider} from './rider-sculpt.js?v=157';
+import {loadLook,lookFromSeed} from './character-looks.mjs?v=157';
+import {queueCoins,showCollect} from './coin-collect.js?v=157';
+import {convertRace} from './economy.mjs?v=157';
+import {markDone} from './world-today.mjs?v=157';
+import {buildCountry,planRoute,hashSeed,weekKey,segX,W,LEN} from './steeple-country.mjs?v=157';
+import {loadRanch,condition} from './ranch.mjs?v=157';
+import * as G from './riding.mjs?v=157';
+import {herdRoster,readWorldTrust,noneReadyText} from './steeple-herd.mjs?v=157';
+
+// ---------- Horses and their five stats (0–100). Step 2 will feed these from care, practice and condition. ----------
+const HORSES={
+  willow:{name:'Willow',stats:{speed:62,stamina:70,trust:68,agility:60,heart:72}},
+  atlas:{name:'Atlas',stats:{speed:70,stamina:78,trust:81,agility:48,heart:64}},
+  sunny:{name:'Sunny',stats:{speed:55,stamina:60,trust:54,agility:88,heart:80}}
+};
+// Your own herd races here (steeple-herd.mjs: who can race, stats from care/age/condition, tack caps, the world's
+// riding trust). Willow, Atlas and Sunny stay as the computer riders' horses, and stand in only when no herd is saved
+// on this device (the page opened on its own). A herd with nobody ready gets a friendly card instead.
+let ranchHerd=null;try{ranchHerd=loadRanch()?.herd||null;}catch{}
+if(!ranchHerd?.length)ranchHerd=null;
+let worldTrust=null;try{worldTrust=readWorldTrust(localStorage);}catch{}
+const ROSTER=herdRoster(ranchHerd||[],{condOf:h=>{try{return condition(h).id;}catch{return 'fed';}},trust:worldTrust});
+for(const {id,entry} of ROSTER.ready)HORSES[id]=entry;
+const MINE=Object.keys(HORSES).filter(id=>HORSES[id].mine),PICKS=ranchHerd?MINE:Object.keys(HORSES).filter(id=>!HORSES[id].mine);
+const STAT_INFO=[['speed','Speed','Top speed on open ground'],['stamina','Stamina','How long you can gallop, uphill most of all'],['trust','Trust','Fewer refusals on a first approach'],['agility','Agility','Tighter turns round bushes and buildings'],['heart','Heart','Faster pick-up after water, woods or a stumble']];
+const RIVAL_NAMES=['Rosie','Buck','Maple','Juniper','Dash'];
+// cap: tack on your own horse (Complimentary saddle holds top speed down, Complimentary bridle turns wider).
+const derive=(s,cap={speed:1,turn:1})=>({maxV:(13+s.speed*.05)*cap.speed,accel:3+s.speed*.03,turn:(1.1+s.agility*.013)*cap.turn,drain:9-s.stamina*.06,heart:s.heart/100,refuse:.55*(1-s.trust/100)});
+const mph=v=>Math.round(Math.abs(v)*2);
+const fmt=t=>{t=Math.max(0,t);const m=Math.floor(t/60),s=t-m*60;return `${m}:${s<10?'0':''}${s.toFixed(1)}`;};
+
+// ---------- Renderer, light, camera (same look as the world) ----------
+const canvas=document.getElementById('c'),renderer=new T.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.outputColorSpace=T.SRGBColorSpace;
+renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.38;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+const scene=new T.Scene();scene.background=new T.Color('#9ad7f5');scene.fog=new T.Fog('#cfeaf6',120,440);
+const camera=new T.PerspectiveCamera(58,1,.3,900);
+const sun=new T.DirectionalLight('#fff0d0',3.1);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);
+Object.assign(sun.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:140});sun.shadow.bias=-.0006;
+scene.add(sun,sun.target,new T.HemisphereLight('#effbff','#91ac67',2.2));
+
+let C=null,world=null,sails=null,markers=[];
+const M=(color,o={})=>new T.MeshStandardMaterial({color,roughness:.9,...o});
+const mats={dirt:M('#cfa86c',{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),water:M('#5cb7e0',{roughness:.2,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}),
+  wood:M('#8a6440'),rail:M('#b48a5c'),white:M('#f4efe2'),stone:M('#a9a59a',{flatShading:true}),hedge:M('#4f8a3a',{flatShading:true}),plank:M('#9c7146'),rock:M('#9aa19c',{flatShading:true}),
+  barn:M('#b9473a'),slate:M('#55606a'),churchStone:M('#ddd5c4'),gold:M('#e7b94a',{roughness:.4}),glass:new T.MeshBasicMaterial({color:'#9fd3e8'}),door:M('#6b4a3a'),
+  leaf:M('#ffffff',{flatShading:true}),trunk:M('#7a5636'),wool:M('#f7f3ea',{flatShading:true}),face:M('#2f2a27'),ground:new T.MeshStandardMaterial({vertexColors:true,roughness:1}),
+  mill:M('#f3ece0'),millCap:M('#6b4a3a'),sail:M('#efe6d2')};
+const dummy=new T.Object3D(),xAxis=new T.Vector3(1,0,0),tmpV=new T.Vector3(),col=new T.Color();
+function inst(geo,mat,list,fn){const m=new T.InstancedMesh(geo,mat,Math.max(1,list.length));
+  list.forEach((it,i)=>{dummy.position.set(0,0,0);dummy.rotation.set(0,0,0,'XYZ');dummy.quaternion.identity();dummy.scale.set(1,1,1);const c=fn(it,dummy);dummy.updateMatrix();m.setMatrixAt(i,dummy.matrix);if(c)m.setColorAt(i,col.set(c));});
+  m.count=list.length;m.castShadow=true;m.receiveShadow=true;world.add(m);return m;}
+// A strip draped over the terrain (lanes, the stream).
+function ribbon(pts,w,yAt,mat){
+  const pos=[],idx=[];
+  pts.forEach((p,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b.x-a.x,dz=b.z-a.z,L=Math.hypot(dx,dz)||1,nx=dz/L*w/2,nz=-dx/L*w/2;
+    pos.push(p.x+nx,yAt(p.x+nx,p.z+nz,p),p.z+nz,p.x-nx,yAt(p.x-nx,p.z-nz,p),p.z-nz);if(i)idx.push(2*i-2,2*i-1,2*i,2*i-1,2*i+1,2*i);});
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+  const n=g.attributes.normal;for(let i=0;i<n.count;i++)if(n.getY(i)<0)n.setXYZ(i,-n.getX(i),-n.getY(i),-n.getZ(i));
+  const m=new T.Mesh(g,mat);m.receiveShadow=true;world.add(m);return m;
+}
+function textBanner(text,color){const c=document.createElement('canvas');c.width=512;c.height=128;const g=c.getContext('2d');g.fillStyle=color;g.fillRect(0,0,512,128);
+  g.fillStyle='#fff';g.font='700 64px Fredoka, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(text,256,68);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return new T.MeshBasicMaterial({map:t});}
+const FIELD_COLORS={pasture:['#8cc66e','#86c068'],meadow:['#9bd075','#a6d47c'],crop:['#d8c46a','#cdb75c'],plough:['#9c7a52','#87673f']};
+// Prism with its ridge along z: a cottage or barn roof.
+const roofGeo=(()=>{const s=new T.Shape();s.moveTo(-.5,0);s.lineTo(.5,0);s.lineTo(0,1);s.closePath();const g=new T.ExtrudeGeometry(s,{depth:1,bevelEnabled:false});g.translate(0,0,-.5);return g;})();
+const box=new T.BoxGeometry(1,1,1);
+
+function buildWorld(C){
+  if(world){scene.remove(world);world.traverse(o=>{if(o.geometry&&o.geometry!==box&&o.geometry!==roofGeo)o.geometry.dispose();for(const m of [o.material].flat())m?.map?.dispose();});}
+  world=new T.Group();scene.add(world);markers=[];
+  // Ground: one draped grid coloured by field, village green, woods floor, and the land beyond the hedges.
+  const GX=W+380,GZ=LEN+380,nx=150,nz=260,pos=[],cols=[],idx=[];
+  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=-GX/2+i*GX/nx,z=-190+j*GZ/nz;pos.push(x,C.height(x,z),z);
+    const f=C.fieldOf(x,z),inMap=Math.abs(x)<W/2&&z>0&&z<LEN;let c;
+    if(f&&inMap){const [a,b]=FIELD_COLORS[f.type],along=x*Math.cos(f.ang)+z*Math.sin(f.ang);c=col.set(f.type==='plough'||f.type==='crop'?(Math.sin(along*1.25)>0?a:b):a);
+      if(f.type==='meadow'&&Math.sin(x*3.1)*Math.sin(z*2.7)>.93)c.set('#f6e27a');}
+    else c=col.set(inMap?'#93c873':'#7fb862');
+    for(const w of C.woods)if(Math.hypot(w.x-x,w.z-z)<w.r)c.set('#6f9c56');
+    const shade=.94+.06*Math.sin(x*.7+z*.3);cols.push(c.r*shade,c.g*shade,c.b*shade);}
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+nx+1,c=a+1,d=b+1;idx.push(a,b,c,b,d,c);}
+  const gg=new T.BufferGeometry();gg.setAttribute('position',new T.Float32BufferAttribute(pos,3));gg.setAttribute('color',new T.Float32BufferAttribute(cols,3));gg.setIndex(idx);gg.computeVertexNormals();
+  const ground=new T.Mesh(gg,mats.ground);ground.receiveShadow=true;world.add(ground);
+  for(const L of C.lanes)ribbon(L,5.2,(x,z)=>C.height(x,z)+.07,mats.dirt);
+  ribbon(C.stream.pts,C.stream.w+2,(x,z,p)=>C.waterY(p.x),mats.water);
+  for(const p of C.ponds){const m=new T.Mesh(new T.CircleGeometry(p.r,28),mats.water);m.rotation.x=-Math.PI/2;m.position.set(p.x,C.height(p.x,p.z)+.1,p.z);world.add(m);}
+  for(const b of C.bridges){const g=new T.Group();g.position.set(b.x,b.y,b.z);g.rotation.y=Math.atan2(b.tx,b.tz);world.add(g);
+    const deck=new T.Mesh(box,mats.stone);deck.scale.set(b.w,.6,b.len);deck.position.y=-.3;deck.castShadow=deck.receiveShadow=true;g.add(deck);
+    for(const s of [-1,1]){const wall=new T.Mesh(box,mats.stone);wall.scale.set(.5,.8,b.len);wall.position.set(s*(b.w/2+.25),.4,0);wall.castShadow=true;g.add(wall);}}
+
+  // Farm fences: rail fences, dry-stone walls and hedges, built span by span over the hills.
+  const spans={rail:[],wall:[],hedge:[]},posts=[];
+  for(const f of C.fences){const L=Math.hypot(f.bx-f.ax,f.bz-f.az),n=Math.max(1,Math.round(L/3.4));
+    for(let k=0;k<n;k++){const ax=f.ax+(f.bx-f.ax)*k/n,az=f.az+(f.bz-f.az)*k/n,bx=f.ax+(f.bx-f.ax)*(k+1)/n,bz=f.az+(f.bz-f.az)*(k+1)/n;
+      spans[f.type].push({ax,az,ay:C.height(ax,az),bx,bz,by:C.height(bx,bz)});if(f.type==='rail')posts.push({x:ax,z:az});}
+    if(f.type==='rail')posts.push({x:f.bx,z:f.bz});}
+  const along=(s,y,sx,sy,sz,o)=>{o.position.set((s.ax+s.bx)/2,(s.ay+s.by)/2+y,(s.az+s.bz)/2);tmpV.set(s.bx-s.ax,s.by-s.ay,s.bz-s.az);const L=tmpV.length();o.quaternion.setFromUnitVectors(xAxis,tmpV.normalize());o.scale.set(L*sx+.05,sy,sz);};
+  inst(box,mats.wood,posts,(p,o)=>{o.position.set(p.x,C.height(p.x,p.z)+.55,p.z);o.scale.set(.2,1.15,.2);});
+  for(const y of [.45,.85])inst(box,mats.rail,spans.rail,(s,o)=>along(s,y,1,.1,.08,o));
+  inst(box,mats.stone,spans.wall,(s,o)=>{along(s,.36,1,.78+((s.ax*7.3)%1+1)%1*.12,.7,o);return ['#aaa69b','#9f9b90','#b3aea2','#a39d8f'][Math.floor(Math.abs(s.az*3.1))%4];});
+  inst(box,mats.hedge,spans.hedge,(s,o)=>{along(s,.58,1,1.2,1.15,o);return ['#4f8a3a','#558f3d','#4a8236'][Math.floor(Math.abs(s.ax*2.3))%3];});
+  inst(new T.IcosahedronGeometry(.75,0),mats.hedge,spans.hedge,(s,o)=>{o.position.set((s.ax+s.bx)/2,(s.ay+s.by)/2+1.15,(s.az+s.bz)/2);o.scale.set(1.3,.7,1.1);o.rotation.y=s.ax;return '#5a9542';});
+  // Gates: two posts and an open white gate.
+  const gp=[],gl=[];for(const g of C.gates){for(const s of [-1,1])gp.push({x:g.x+g.tx*s*g.w/2,z:g.z+g.tz*s*g.w/2});gl.push(g);}
+  inst(box,mats.wood,gp,(p,o)=>{o.position.set(p.x,C.height(p.x,p.z)+.7,p.z);o.scale.set(.28,1.45,.28);});
+  inst(box,mats.white,gl,(g,o)=>{const a=Math.atan2(g.tx,g.tz)+1.25,hx=g.x+g.tx*g.w/2,hz=g.z+g.tz*g.w/2,cx=hx+Math.sin(a+Math.PI)*1.5,cz=hz+Math.cos(a+Math.PI)*1.5;
+    o.position.set(cx,C.height(cx,cz)+.6,cz);o.rotation.y=a+Math.PI/2;o.scale.set(3,.9,.08);});
+
+  // Buildings.
+  for(const b of C.boxes){const g=new T.Group(),corner=[[1,1],[1,-1],[-1,1],[-1,-1]].map(([u,v])=>C.height(b.x+Math.sin(b.h)*u*b.l/2+Math.cos(b.h)*v*b.w/2,b.z+Math.cos(b.h)*u*b.l/2-Math.sin(b.h)*v*b.w/2));
+    g.position.set(b.x,Math.min(...corner),b.z);g.rotation.y=b.h;world.add(g);
+    const part=(mat,sx,sy,sz,x,y,z,geo=box)=>{const m=new T.Mesh(geo,mat);m.scale.set(sx,sy,sz);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m;};
+    if(b.kind==='house'){const wm=M(b.wall),rm=M(b.roof,{flatShading:true});
+      part(mats.stone,b.w,3,b.l,0,-1.4,0);part(wm,b.w,3.2,b.l,0,1.6,0);part(rm,b.w+.9,2.7,b.l+.7,0,3.2,0,roofGeo);
+      part(mats.stone,.8,2,.8,b.w*.24,4.8,-b.l*.15);part(mats.door,1.05,1.9,.12,0,.95,b.l/2+.04);
+      for(const s of [-1,1]){part(mats.glass,.95,.85,.1,s*b.w*.28,1.95,b.l/2+.05);part(mats.glass,.1,.85,.95,s*(b.w/2+.05),1.95,0);}}
+    else if(b.kind==='barn'){part(mats.stone,b.w,3,b.l,0,-1.4,0);part(mats.barn,b.w,6,b.l,0,3,0);part(mats.slate,b.w+1,4.2,b.l+1,0,6,0,roofGeo);
+      part(mats.white,5.4,4.8,.14,0,2.4,b.l/2+.05);part(mats.barn,4.6,4.2,.16,0,2.2,b.l/2+.07);part(mats.white,1.8,1.4,.14,0,7.4,b.l/2+.05);}
+    else if(b.kind==='church'){part(mats.stone,10,3,20,0,-1.4,4);part(mats.churchStone,10,7,20,0,3.5,4);part(mats.slate,10.8,4.6,20.6,0,7,4,roofGeo);
+      part(mats.churchStone,6.4,17,6.4,0,8.5,-8.5);const spire=new T.Mesh(new T.ConeGeometry(4.6,18,4),mats.slate);spire.rotation.y=Math.PI/4;spire.position.set(0,26,-8.5);spire.castShadow=true;g.add(spire);
+      part(mats.gold,.6,.6,.6,0,35.4,-8.5,new T.SphereGeometry(1,12,8));part(mats.gold,.18,2.4,.18,0,36.8,-8.5);part(mats.gold,1.3,.18,.18,0,37.2,-8.5);
+      part(mats.door,2,3.2,.2,0,1.6,-11.75);part(mats.white,2.4,2.4,.15,0,13,-11.75,new T.CylinderGeometry(.5,.5,1,20).rotateX(Math.PI/2));
+      for(const z of [0,4,8,12])for(const s of [-1,1])part(mats.glass,.12,2.2,1.1,s*5.05,4,z);}}
+  // Windmill with turning sails.
+  {const m=C.mill,y=C.height(m.x,m.z),g=new T.Group();g.position.set(m.x,y,m.z);world.add(g);
+    const tower=new T.Mesh(new T.CylinderGeometry(2.9,4.6,13,12),mats.mill);tower.position.y=6.5;tower.castShadow=true;g.add(tower);
+    const cap=new T.Mesh(new T.ConeGeometry(3.4,3.4,12),mats.millCap);cap.position.y=14.6;cap.castShadow=true;g.add(cap);
+    const door=new T.Mesh(box,mats.door);door.scale.set(1.4,2.4,.3);door.position.set(0,1.2,-4.4);g.add(door);
+    sails=new T.Group();sails.position.set(0,12,-3.5);g.add(sails);
+    for(let k=0;k<4;k++){const arm=new T.Group();arm.rotation.z=k*Math.PI/2;sails.add(arm);const sp=new T.Mesh(box,mats.millCap);sp.scale.set(.3,10,.3);sp.position.y=5;arm.add(sp);
+      const sl=new T.Mesh(box,mats.sail);sl.scale.set(1.8,8,.08);sl.position.set(1.05,5.6,0);sl.castShadow=true;arm.add(sl);}}
+  // The old oak.
+  {const o=C.oak,y=C.height(o.x,o.z);const tr=new T.Mesh(new T.CylinderGeometry(1,1.6,6,9),mats.trunk);tr.position.set(o.x,y+3,o.z);tr.castShadow=true;world.add(tr);
+    const crown=new T.IcosahedronGeometry(1,1);for(const [dx,dy,dz,r] of [[0,8,0,5],[3,7,1,3.6],[-3,7.2,-1,3.8],[1,9.6,-2,3.4],[-1,7,3,3.4]]){const c=new T.Mesh(crown,M('#4d8a3c',{flatShading:true}));c.scale.setScalar(r);c.position.set(o.x+dx,y+dy,o.z+dz);c.castShadow=true;world.add(c);}}
+  // Trees (round and conifer), bushes, rocks, sheep.
+  const trees=[...C.trees.map(t=>({...t,y:C.height(t.x,t.z)})),...C.border.map(t=>({...t,y:C.height(t.x,t.z)}))];
+  inst(new T.CylinderGeometry(.3,.45,1,6),mats.trunk,trees,(t,o)=>{o.position.set(t.x,t.y+1.4*t.s,t.z);o.scale.set(t.s,2.8*t.s,t.s);});
+  inst(new T.IcosahedronGeometry(2.3,1),mats.leaf,trees.filter(t=>!t.conifer),(t,o)=>{o.position.set(t.x,t.y+4.3*t.s,t.z);o.scale.set(t.s,t.s*.95,t.s);o.rotation.y=t.x;return ['#5d9c47','#6aa64f','#56923f','#7aae55'][Math.floor(Math.abs(t.x*1.7))%4];});
+  inst(new T.ConeGeometry(2.1,5.4,7),mats.leaf,trees.filter(t=>t.conifer),(t,o)=>{o.position.set(t.x,t.y+5*t.s,t.z);o.scale.setScalar(t.s);return ['#3f7a45','#4a8a4f'][Math.floor(Math.abs(t.z))%2];});
+  inst(new T.IcosahedronGeometry(1,1),mats.leaf,C.bushes,(b,o)=>{o.position.set(b.x,C.height(b.x,b.z)+b.r*.55,b.z);o.scale.set(b.r*1.1,b.r*.85,b.r*1.1);o.rotation.y=b.s*6;return ['#4f8f3c','#5b9a44','#467f35','#6aa24b'][Math.floor(b.s*4)];});
+  inst(new T.DodecahedronGeometry(1,0),mats.rock,C.rocks,(r,o)=>{o.position.set(r.x,C.height(r.x,r.z)+r.r*.3,r.z);o.scale.set(r.r,r.r*.7,r.r);o.rotation.set(r.x,r.z,0);});
+  // Round hay bales lying in rows, haystacks, and fallen logs.
+  inst(new T.CylinderGeometry(1.05,1.05,1.5,14),M('#e2c272',{flatShading:true}),C.bales,(b,o)=>{o.position.set(b.x,C.height(b.x,b.z)+1,b.z);o.rotation.set(0,b.a+Math.PI/2,Math.PI/2);});
+  inst(new T.ConeGeometry(2.4,4.2,9),M('#d9b45c',{flatShading:true}),C.stacks,(b,o)=>{o.position.set(b.x,C.height(b.x,b.z)+2.1,b.z);o.rotation.y=b.x;});
+  inst(new T.CylinderGeometry(.5,.6,1,9),mats.trunk,C.logs,(b,o)=>{o.position.set(b.x,C.height(b.x,b.z)+.5,b.z);o.rotation.set(Math.PI/2,b.h,0,'YXZ');o.scale.set(1,b.l,1);});
+  inst(new T.IcosahedronGeometry(1,1),mats.wool,C.sheep,(s,o)=>{o.position.set(s.x,C.height(s.x,s.z)+.75,s.z);o.rotation.y=s.h;o.scale.set(.62,.5,.85);});
+  inst(box,mats.face,C.sheep,(s,o)=>{o.position.set(s.x+Math.sin(s.h)*.85,C.height(s.x,s.z)+.85,s.z+Math.cos(s.h)*.85);o.rotation.y=s.h;o.scale.set(.32,.36,.42);});
+  const legs=[];for(const s of C.sheep)for(const [u,v] of [[.45,.25],[.45,-.25],[-.4,.25],[-.4,-.25]])legs.push({x:s.x+Math.sin(s.h)*u+Math.cos(s.h)*v,z:s.z+Math.cos(s.h)*u-Math.sin(s.h)*v});
+  inst(box,mats.face,legs,(p,o)=>{o.position.set(p.x,C.height(p.x,p.z)+.25,p.z);o.scale.set(.12,.5,.12);});
+  // Well on the green.
+  for(const c of C.circles.filter(c=>c.kind==='well')){const y=C.height(c.x,c.z);const m=new T.Mesh(new T.CylinderGeometry(1.2,1.3,1,14),mats.stone);m.position.set(c.x,y+.5,c.z);m.castShadow=true;world.add(m);
+    const r=new T.Mesh(new T.ConeGeometry(1.7,1.1,4),mats.slate);r.position.set(c.x,y+2.7,c.z);r.rotation.y=Math.PI/4;world.add(r);
+    for(const s of [-1,1]){const p=new T.Mesh(box,mats.wood);p.scale.set(.15,2.2,.15);p.position.set(c.x+s*1.05,y+1.6,c.z);world.add(p);}}
+  // Checkpoint markers: a tall flag you can see from far off, and a ring on the ground.
+  C.checkpoints.forEach((cp,i)=>{const y=C.height(cp.x,cp.z),g=new T.Group();g.position.set(cp.x,y,cp.z);world.add(g);
+    const pole=new T.Mesh(box,mats.white);pole.scale.set(.25,11,.25);pole.position.y=5.5;g.add(pole);
+    const ban=new T.Mesh(box,[mats.white,mats.white,mats.white,mats.white,textBanner(cp.finish?'3 · FINISH':`${i+1} · ${cp.name.toUpperCase()}`,cp.finish?'#c0473a':'#2f6b3a'),textBanner(cp.finish?'3 · FINISH':`${i+1} · ${cp.name.toUpperCase()}`,cp.finish?'#c0473a':'#2f6b3a')]);
+    ban.scale.set(5.6,1.4,.12);ban.position.set(0,9.8,0);g.add(ban);
+    const pts=[];for(let k=0;k<40;k++){const a=k/40*Math.PI*2,x=cp.x+Math.sin(a)*cp.r,z=cp.z+Math.cos(a)*cp.r;pts.push(new T.Vector3(x-cp.x,C.height(x,z)-y+.25,z-cp.z));}
+    const ringMat=new T.MeshBasicMaterial({color:'#ffffff'});const ring=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts,true),80,.22,6,true),ringMat);g.add(ring);
+    const ball=new T.Mesh(new T.SphereGeometry(.6,12,8),ringMat);ball.position.y=11.2;g.add(ball);markers.push({ringMat});});
+  // Start banner on the village green.
+  {const s=C.start,y=C.height(s.x,s.z),g=new T.Group();g.position.set(s.x,y,s.z+5);world.add(g);
+    for(const k of [-1,1]){const p=new T.Mesh(box,mats.wood);p.scale.set(.4,10.5,.4);p.position.set(k*7,5.25,0);p.castShadow=true;g.add(p);}
+    const ban=new T.Mesh(box,[mats.wood,mats.wood,mats.wood,mats.wood,textBanner('START','#2f6b3a'),textBanner('START','#2f6b3a')]);ban.scale.set(14.4,1.4,.2);ban.position.y=10.4;g.add(ban);}
+}
+
+// ---------- Minimap: north up (the steeple at the top); +x drawn to the left, matching the view from behind ----------
+const mapCanvas=document.getElementById('map'),mapCtx=mapCanvas.getContext('2d');let mapBase=null,mapT=null;
+function buildMap(){
+  const dpr=Math.min(devicePixelRatio||1,2),MW=92,MH=170;mapCanvas.width=MW*dpr;mapCanvas.height=MH*dpr;
+  mapT=p=>[(W/2-p.x)/W*MW,(LEN-p.z)/LEN*MH];const sc=MW/W;
+  mapBase=document.createElement('canvas');mapBase.width=MW*dpr;mapBase.height=MH*dpr;const g=mapBase.getContext('2d');g.scale(dpr,dpr);g.lineCap=g.lineJoin='round';
+  g.fillStyle='#93c873';g.fillRect(0,0,MW,MH);
+  for(const f of C.fields){g.fillStyle=FIELD_COLORS[f.type][0];g.beginPath();f.poly.forEach((p,i)=>g[i?'lineTo':'moveTo'](...mapT(p)));g.fill();}
+  g.fillStyle='#5f8f4a';for(const w of C.woods){const [x,y]=mapT(w);g.beginPath();g.arc(x,y,w.r*sc,0,7);g.fill();}
+  g.strokeStyle='#5cb7e0';g.lineWidth=2.4;g.beginPath();C.stream.pts.forEach((p,i)=>g[i?'lineTo':'moveTo'](...mapT(p)));g.stroke();
+  g.strokeStyle='#d9b77e';g.lineWidth=1.8;for(const L of C.lanes){g.beginPath();L.forEach((p,i)=>g[i?'lineTo':'moveTo'](...mapT(p)));g.stroke();}
+  g.lineWidth=1;for(const f of C.fences){g.strokeStyle=f.type==='hedge'?'#2f6b2a':f.type==='wall'?'#6d6a62':'#7a5636';g.beginPath();g.moveTo(...mapT({x:f.ax,z:f.az}));g.lineTo(...mapT({x:f.bx,z:f.bz}));g.stroke();}
+  g.fillStyle='#5cb7e0';for(const p of C.ponds){const [x,y]=mapT(p);g.beginPath();g.arc(x,y,Math.max(1.5,p.r*sc),0,7);g.fill();}
+  g.fillStyle='#8a3a2e';for(const b of C.boxes.filter(b=>b.kind!=='log')){const [x,y]=mapT(b);g.fillRect(x-1.6,y-1.6,3.2,3.2);}
+}
+function drawMap(){
+  const dpr=Math.min(devicePixelRatio||1,2);mapCtx.setTransform(1,0,0,1,0,0);mapCtx.clearRect(0,0,mapCanvas.width,mapCanvas.height);mapCtx.drawImage(mapBase,0,0);mapCtx.scale(dpr,dpr);
+  C.checkpoints.forEach((cp,i)=>{const [x,y]=mapT(cp),next=i===player.cp;mapCtx.fillStyle=i<player.cp?'#7fbf6a':next?'#f2b632':'#ffffff';mapCtx.strokeStyle='#24402f';mapCtx.lineWidth=1.2;
+    mapCtx.beginPath();mapCtx.arc(x,y,next?5:4,0,7);mapCtx.fill();mapCtx.stroke();mapCtx.fillStyle='#24402f';mapCtx.font='800 7px Nunito, sans-serif';mapCtx.textAlign='center';mapCtx.fillText(cp.finish?'⛪':String(i+1),x,y+2.5);});
+  for(const R of [rival,player]){const [x,y]=mapT(R);mapCtx.fillStyle=R===player?'#fff':'#c0473a';mapCtx.strokeStyle='#24402f';mapCtx.lineWidth=1.4;mapCtx.beginPath();mapCtx.arc(x,y,R===player?3.6:3,0,7);mapCtx.fill();mapCtx.stroke();}
+  const [px,py]=mapT(player);mapCtx.strokeStyle='#24402f';mapCtx.lineWidth=1.6;mapCtx.beginPath();mapCtx.moveTo(px,py);mapCtx.lineTo(px-Math.sin(player.h)*8,py-Math.cos(player.h)*8);mapCtx.stroke();
+}
+
+// ---------- Riders ----------
+// One physics step serves both the player and the computer rider, so the rival plays by the same rules.
+function makeRider(id,horseId,stats,isPlayer){
+  const mine=HORSES[horseId]?.horse,model=makeSculptedHorse(T,mine||{id:horseId},{style:'cel'}),group=new T.Group();group.rotation.order='YXZ';group.add(model.root);scene.add(group);
+  const tack=mine?{saddle:G.tackColor(G.tackOf(mine).saddle),bridle:G.tackColor(G.tackOf(mine).bridle)}:{};
+  const kit=addTackAndRider(T,model,{look:isPlayer?loadLook():lookFromSeed('rival-'+horseId),...tack});
+  model.root.traverse(o=>{if(o.isMesh&&o.material.type!=='MeshBasicMaterial')o.castShadow=true;});
+  return {id,horseId,name:HORSES[horseId]?.name||horseId,stats,d:derive(stats,isPlayer&&mine?HORSES[horseId].cap:undefined),isPlayer,model,kit,group,x:0,z:0,h:0,v:0,pitch:0,sta:100,tired:false,stun:0,recover:0,
+    cp:0,finished:null,refusing:null,unsure:0,lastHit:0,mode:'go',backT:0,stuckT:0,pi:0,path:null,fs:new Map(),refusals:0,jumps:0};
+}
+function disposeRider(R){if(!R)return;scene.remove(R.group);R.kit.dispose();R.model.dispose();}
+
+const airborne=R=>{const t=R.model.jumpT;return t>=.2&&t<=.74;};
+const inAir=R=>R.model.jumpT>=0;
+const fstate=(R,f)=>{let s=R.fs.get(f.line);if(!s)R.fs.set(f.line,s={tries:0,rolled:false,cleared:false});return s;};
+// The fence straight ahead of the rider, if any, within max units.
+function fenceAhead(R,max=40,only=null){
+  if(R.v<-.2)return null;const fx=Math.sin(R.h),fz=Math.cos(R.h),ex=R.x+fx*max,ez=R.z+fz*max;let best=null,bt=2;
+  for(const f of only?[only]:C.fencesNear(R.x+fx*max/2,R.z+fz*max/2,max/2+4)){const t=segX(R.x,R.z,ex,ez,f.ax,f.az,f.bx,f.bz);if(t!==null&&t<bt){bt=t;best=f;}}
+  return best?{f:best,dist:bt*max}:null;
+}
+
+function say(R,text){if(R.isPlayer)toast(text);}
+function step(R,inp,dt){
+  const d=R.d,g=C.ground(R.x,R.z),air=inAir(R),fx=Math.sin(R.h),fz=Math.cos(R.h);
+  const grade=(C.ground(R.x+fx*1.6,R.z+fz*1.6).y-C.ground(R.x-fx*1.6,R.z-fz*1.6).y)/3.2;
+  if(g.factor<.8)R.recover=2.2;else R.recover=Math.max(0,R.recover-dt);
+  // Uphill costs speed and stamina, downhill gives a little back.
+  let cap=g.factor*Math.max(.55,Math.min(1.1,1-grade*1.4))*(R.tired?.72:1),target=inp.throttle>.05?inp.throttle*d.maxV*cap:inp.throttle<-.3?-3.4:0;
+  if(R.stun>0){R.stun-=dt;target=0;}
+  // A refusing horse plants its feet in the last few strides before the fence.
+  if(R.refusing){const a=fenceAhead(R,45,R.refusing);
+    if(!a){fstate(R,R.refusing).rolled=false;R.refusing=null;}
+    else if(a.dist<9){target=0;R.v=Math.max(0,R.v-30*dt);
+      if(R.v<.4){fstate(R,R.refusing).tries++;R.refusals++;R.refusing=null;R.stun=.6;say(R,`${R.name} refused! Circle back and build speed. ${R.name} will go next time.`);}}}
+  if(!air){
+    if(target>R.v){let a=d.accel*(1-.45*Math.max(0,R.v)/d.maxV);if(R.recover>0&&!g.water)a*=1+d.heart;R.v=Math.min(target,R.v+a*dt);}
+    else R.v=Math.max(target,R.v-(R.v>target+3?13:7)*dt);
+    const rate=Math.abs(R.v)<.6?1.4:d.turn/(1+Math.abs(R.v)/12);R.h-=inp.steer*rate*dt*(R.v<-.2?-1:1);
+  }
+  if(R.v>.78*d.maxV)R.sta=Math.max(0,R.sta-d.drain*(1+Math.max(0,grade)*2.5)*dt);else R.sta=Math.min(100,R.sta+7*dt);
+  if(R.sta<=0&&!R.tired){R.tired=true;say(R,`${R.name} is out of breath. Ease off to recover stamina.`);}
+  if(R.tired&&R.sta>35)R.tired=false;
+  const px=R.x,pz=R.z;R.x+=Math.sin(R.h)*R.v*dt;R.z+=Math.cos(R.h)*R.v*dt;
+  R.x=Math.max(-W/2+2,Math.min(W/2-2,R.x));R.z=Math.max(2,Math.min(LEN-2,R.z));
+  // Houses, trees, bushes, sheep, rocks: solid. Ponds are just wet.
+  let bumped=false;
+  for(const o of C.obstaclesNear(R.x,R.z,10)){if(o.soft)continue;
+    if(o.w){const dx=R.x-o.x,dz=R.z-o.z,c=Math.cos(o.h),s=Math.sin(o.h),u=dx*s+dz*c,v=dx*c-dz*s,hu=o.l/2+1,hv=o.w/2+1;
+      if(Math.abs(u)<hu&&Math.abs(v)<hv){const pu=hu-Math.abs(u),pv=hv-Math.abs(v);let nu=u,nv=v;if(pu<pv)nu=Math.sign(u)*hu;else nv=Math.sign(v)*hv;R.x=o.x+nu*s+nv*c;R.z=o.z+nu*c-nv*s;bumped=true;}}
+    else{const dx=R.x-o.x,dz=R.z-o.z,dd=Math.hypot(dx,dz),m=o.r+1.1;if(dd<m&&dd>0){R.x=o.x+dx/dd*m;R.z=o.z+dz/dd*m;bumped=true;}}}
+  if(bumped&&clock-R.lastHit>.8){R.lastHit=clock;R.v*=.35;R.stun=.25;R.recover=2.2;say(R,'Bumped! Ride round it.');}
+  // Fences: solid unless the horse is in the air as it crosses the line.
+  for(const f of C.fencesNear((px+R.x)/2,(pz+R.z)/2,6)){const t=segX(px,pz,R.x,R.z,f.ax,f.az,f.bx,f.bz);if(t===null)continue;
+    // Brushing past the very end post doesn't count as hitting the fence.
+    {const L=Math.hypot(f.bx-f.ax,f.bz-f.az),u=((px+(R.x-px)*t-f.ax)*(f.bx-f.ax)+(pz+(R.z-pz)*t-f.az)*(f.bz-f.az))/L;if(u<1.2||u>L-1.2)continue;}
+    const s=fstate(R,f);
+    if(airborne(R)){R.jumps++;if(!s.cleared){s.cleared=true;s.tries++;say(R,s.tries===1?`Clean over the ${f.name}!`:'Over! Nice recovery.');}}
+    else{const L=Math.hypot(f.bx-f.ax,f.bz-f.az),nx=-(f.bz-f.az)/L,nz=(f.bx-f.ax)/L,side=Math.sign((px-f.ax)*nx+(pz-f.az)*nz)||1,hx=px+(R.x-px)*t,hz=pz+(R.z-pz)*t;
+      R.x=hx+nx*side*1.4;R.z=hz+nz*side*1.4;R.v=0;R.stun=.7;s.tries++;s.rolled=true;
+      // Computer rider: if its route jumps this fence, circle back for a run-up; if not, back off and go round.
+      if(R.path){const P=R.path;let crosses=false;for(let k=Math.max(0,R.pi-2);k<Math.min(P.length-1,R.pi+14)&&!crosses;k++)crosses=segX(P[k].x,P[k].z,P[k+1].x,P[k+1].z,f.ax,f.az,f.bx,f.bz)!==null;
+        if(crosses){R.mode='away';R.awayIdx=Math.max(0,R.pi-7);}else{R.mode='back';R.backT=.8;}}
+      say(R,R.model.jumpT>=0?'Mistimed! Jump a little closer to the fence.':`Bumped the ${f.name}. Get up to speed and press Jump, or find a gate.`);break;}}
+  // Roll Trust once per fence line, on the first proper approach at jump speed. Never on a second try.
+  const nf=fenceAhead(R,30);
+  if(nf&&!R.refusing&&nf.dist>7&&R.v>=nf.f.need*.85){const s=fstate(R,nf.f);
+    if(!s.rolled&&!s.cleared&&s.tries===0){s.rolled=true;if(rand()<d.refuse){R.refusing=nf.f;R.unsure=1.2;say(R,`${R.name} looks unsure about this ${nf.f.name}…`);}}}
+  if(inp.jump&&!air&&R.stun<=0){const ahead=fenceAhead(R,40),need=ahead?ahead.f.need:9;
+    if(R.refusing){if(R.isPlayer)toast(`${R.name} won't jump this one. Circle back for another go.`);}
+    else if(R.v>=need)R.model.jump();}
+  // Checkpoints in order; the last is the church.
+  const cp=C.checkpoints[R.cp];
+  // Riding into a later flag's ring too early: say which flag is still missing (once per visit).
+  if(R.isPlayer){const early=C.checkpoints.findIndex((c,i)=>i>R.cp&&Math.hypot(c.x-R.x,c.z-R.z)<c.r+1.5);
+    if(early>=0&&R.earlyAt!==early){R.earlyAt=early;const miss=C.checkpoints.slice(R.cp,early).map(c=>c.name).join(' and the ');
+      toast(`Not yet! You still need the ${miss} first. Follow the gold arrow.`);toastT=4;}
+    else if(early<0)R.earlyAt=-1;}
+  if(cp&&Math.hypot(cp.x-R.x,cp.z-R.z)<cp.r+1.5){R.cp++;
+    if(R.cp>=C.checkpoints.length){if(R.finished===null){R.finished=raceTime;onFinish(R);}}
+    else say(R,`⚑ ${cp.name}! Next: ${C.checkpoints[R.cp].name}.`);}
+  // Animate: gait from speed, body tilted with the hill, a hop on top of the model's lift so jumps read.
+  const sp=Math.abs(R.v);R.model.setGait(sp<.3?'stand':sp<3?'walk':sp<6.5?'trot':sp<10.5?'canter':'gallop');R.model.update(dt);
+  R.kit.update(dt,{jumpT:R.model.jumpT,speed:Math.max(0,R.v)/d.maxV});
+  if(R.refusing||R.unsure>0){R.unsure=Math.max(0,R.unsure-dt);R.model.head.rotation.y+=Math.sin(clock*13)*.18;R.model.neck.rotation.x+=.12;}
+  const jt=R.model.jumpT,hop=jt>=0?.6*Math.sin(Math.PI*Math.min(1,Math.max(0,(jt-.14)/.66))):0,g2=C.ground(R.x,R.z);
+  R.pitch+=(-Math.atan(grade)-R.pitch)*Math.min(1,dt*6);
+  R.group.position.set(R.x,g2.y+hop-(g2.water?.45:0),R.z);R.group.rotation.set(R.pitch,R.h,0);
+}
+
+// Computer rider: follows its planned route, jumps when in range and fast enough, circles back when it has to.
+function aiInput(R,dt){
+  const P=R.path;let i=R.pi;
+  for(let k=0;k<12&&i<P.length-1;k++){const a=P[i],b=P[i+1],da=(a.x-R.x)**2+(a.z-R.z)**2;if((b.x-R.x)**2+(b.z-R.z)**2<=da||da<9)i++;else break;}
+  if(i>R.pi){R.pi=i;R.progT=0;if(i>(R.recovAt||0)+6)R.recov=0;}else R.progT=(R.progT||0)+dt;
+  // Lost the line (circling a building, say): back off, then pick up the route again from the nearest point.
+  // Twice lost in the same spot: the route itself is bad there, so plan a fresh one from here.
+  if(R.progT>3.5&&R.mode==='go'&&(R.recov||0)>=2){R.progT=0;R.recov=0;R.path=replan(R);R.pi=0;R.mode='back';R.backT=1;return {steer:0,throttle:-1,jump:false};}
+  if(R.progT>3.5&&R.mode==='go'){R.progT=0;R.recov=(R.recov||0)+1;R.recovAt=i;let best=i,bd=1e9;for(let k=Math.max(0,i-20);k<Math.min(P.length,i+30);k++){const q=P[k],dd=(q.x-R.x)**2+(q.z-R.z)**2;if(dd<bd){bd=dd;best=k;}}R.pi=i=best;R.mode='back';R.backT=1.2;}
+  if(R.mode==='back'){R.backT-=dt;if(R.backT<=0)R.mode='go';return {steer:0,throttle:-1,jump:false};}
+  if(R.mode!=='away')R.awayT=0;
+  // Circle back for a run-up, but never for long: if the way back is blocked, just carry on.
+  if(R.mode==='away'){const p=P[R.awayIdx];R.awayT+=dt;if(Math.hypot(p.x-R.x,p.z-R.z)<4||R.awayT>6){R.mode='go';R.pi=R.awayIdx;R.progT=0;}
+    else{let dd=Math.atan2(p.x-R.x,p.z-R.z)-R.h;dd=Math.atan2(Math.sin(dd),Math.cos(dd));return {steer:Math.max(-1,Math.min(1,-dd*2.6)),throttle:Math.abs(dd)>1?.25:.6,jump:false};}}
+  const at=k=>P[Math.min(P.length-1,i+k)],tgt=at(2),want=Math.atan2(tgt.x-R.x,tgt.z-R.z);let diff=want-R.h;diff=Math.atan2(Math.sin(diff),Math.cos(diff));
+  let bend=Math.atan2(at(7).x-at(6).x,at(7).z-at(6).z)-Math.atan2(at(2).x-at(1).x,at(2).z-at(1).z);bend=Math.abs(Math.atan2(Math.sin(bend),Math.cos(bend)));
+  let throttle=R.skill*(bend>.6?.7:1)*(Math.abs(diff)>.9?.5:1),jump=false;
+  // Only fences the route really crosses count; a hedge running alongside the route is not one to jump.
+  let nf=fenceAhead(R,35);
+  if(nf){let crosses=false;for(let k=i;k<Math.min(P.length-1,i+14)&&!crosses;k++)crosses=segX(P[k].x,P[k].z,P[k+1].x,P[k+1].z,nf.f.ax,nf.f.az,nf.f.bx,nf.f.bz)!==null;if(!crosses)nf=null;}
+  if(nf)throttle=Math.max(throttle,1);
+  if(nf){if(R.v>=nf.f.need&&nf.dist<=R.v*.7&&nf.dist>=R.v*.5)jump=true;
+    if(R.v<1&&nf.dist<9&&!R.refusing){R.mode='away';R.awayIdx=Math.max(0,i-7);}}
+  if(Math.abs(R.v)<.5){R.stuckT+=dt;if(R.stuckT>2.5&&R.mode==='go'){R.mode='back';R.backT=1.4;R.stuckT=0;}}else R.stuckT=0;
+  return {steer:Math.max(-1,Math.min(1,-diff*2.6)),throttle,jump};
+}
+function replan(R){let pos={x:R.x,z:R.z},pts=[];for(const cp of C.checkpoints.slice(R.cp)){const leg=planRoute(C,pos,cp,Math.random)||[pos,cp];pts.push(...leg);pos=cp;}return pts;}
+function planFull(rnd){let pos=C.start,pts=[];for(const cp of C.checkpoints){const leg=planRoute(C,pos,cp,rnd)||[pos,cp];pts.push(...leg);pos=cp;}return pts;}
+
+// ---------- Input: floating stick on the left, Jump on the right, keyboard on desktop ----------
+const input={steer:0,throttle:0,jump:false};const keys=new Set();
+const stick=document.getElementById('stick'),knob=document.getElementById('knob'),knobDot=knob.firstElementChild;let stickId=null,sx=0,sy=0;
+stick.addEventListener('pointerdown',e=>{stickId=e.pointerId;sx=e.clientX;sy=e.clientY;stick.setPointerCapture(e.pointerId);knob.style.display='block';knob.style.left=sx+'px';knob.style.top=sy+'px';moveStick(e);document.getElementById('hint').hidden=true;});
+function moveStick(e){if(e.pointerId!==stickId)return;let dx=(e.clientX-sx)/55,dy=(e.clientY-sy)/55;const L=Math.hypot(dx,dy);if(L>1){dx/=L;dy/=L;}
+  input.steer=Math.abs(dx)<.12?0:dx;input.throttle=-dy;knobDot.style.transform=`translate(${dx*34}px,${dy*34}px)`;}
+stick.addEventListener('pointermove',moveStick);
+const endStick=e=>{if(e.pointerId!==stickId)return;stickId=null;input.steer=0;input.throttle=0;knob.style.display='none';knobDot.style.transform='';};
+stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);
+const jumpBtn=document.getElementById('jump');jumpBtn.addEventListener('pointerdown',e=>{e.preventDefault();input.jump=true;});
+addEventListener('keydown',e=>{keys.add(e.key.toLowerCase());if(e.key===' '){input.jump=true;e.preventDefault();}});
+addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+function keyInput(){if(!keys.size)return null;const k=a=>a.some(x=>keys.has(x));
+  return {steer:(k(['arrowright','d'])?1:0)-(k(['arrowleft','a'])?1:0),throttle:k(['arrowup','w'])?1:k(['arrowdown','s'])?-1:0};}
+
+// ---------- Race flow ----------
+const els=Object.fromEntries(['hud','menu','done','doneCard','time','place','mph','sta','staBar','staLbl','ring','jumpTxt','count','toast','modes','horses','stats','go','courseNote','quit','arrow','nextName','nextDist'].map(id=>[id,document.getElementById(id)]));
+let toastT=0;function toast(t){els.toast.textContent=t;els.toast.classList.add('on');toastT=2.6;}
+const store={get(k){try{return localStorage.getItem(k);}catch{return null;}},set(k,v){try{localStorage.setItem(k,v);}catch{}}};
+const sel={horse:store.get('trottville.steeple.horse')||PICKS[0],mode:'weekly'};if(!PICKS.includes(sel.horse))sel.horse=PICKS[0];
+const params=new URLSearchParams(location.search),ROOM_SEED=parent!==window&&params.get('in')==='world'?(Number(params.get('race'))>>>0):0;
+let player=null,rival=null,phase='menu',raceTime=0,countT=0,clock=0,rand=Math.random,seed=0,results=null;
+
+function chips(el,items,key,after){el.innerHTML='';for(const [v,label] of items){const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(sel[key]===v));
+  b.onclick=()=>{sel[key]=v;el.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));after?.();};el.append(b);}}
+function paintStats(){if(!HORSES[sel.horse]){els.stats.innerHTML='';return;}const {stats:s,notes=[]}=HORSES[sel.horse];els.stats.innerHTML=STAT_INFO.map(([k,label,note])=>`<span title="${note}">${label}</span><div class="bar"><i style="width:${s[k]}%"></i></div><em>${s[k]}</em>`).join('')+notes.filter(Boolean).map(n=>`<span class="note tack">${esc(n)}</span>`).join('');}
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Horses that can't race yet: greyed, with the reason as a short chip. Not selectable.
+function blockedChips(){for(const b of ROSTER.blocked){const el=document.createElement('button');el.type='button';el.className='off';el.disabled=true;el.setAttribute('aria-disabled','true');
+  el.setAttribute('aria-label',`${b.name}: ${b.chip}`);el.innerHTML=`${esc(b.name)}<small>${esc(b.chip)}</small>`;els.horses.append(el);}}
+function paintCourseNote(){els.courseNote.textContent=sel.mode==='weekly'?`Same land for every rider this week (${weekKey()}). New one on Monday.`:'Fresh land every race. Good for learning.';}
+chips(els.modes,[['weekly',"This week"],['practice','Practice']],'mode',paintCourseNote);
+chips(els.horses,PICKS.map(id=>[id,HORSES[id].name]),'horse',()=>{store.set('trottville.steeple.horse',sel.horse);paintStats();});
+blockedChips();
+// A herd but nobody can race: say why, with a way back (no sample horses for a player who has their own).
+const NONE_READY=!!ranchHerd&&!PICKS.length;
+if(NONE_READY){els.menu.querySelector('.card').innerHTML=`<h1>No horse ready to race</h1>
+  <p>${esc(noneReadyText(ROSTER.blocked))}</p><h2>Your horses</h2><div class="chips" id="horses"></div>
+  <button class="btn primary" id="noneBack" type="button">Back</button>`;
+  els.horses=document.getElementById('horses');blockedChips();
+  document.getElementById('noneBack').onclick=()=>{if(parent!==window)parent.postMessage('trottville:close-steeple',location.origin);else if(history.length>1)history.back();else location.href='./';};}
+paintStats();paintCourseNote();
+
+const weeklySeed=()=>hashSeed('country-'+weekKey());
+function loadCountry(s){if(C&&C.seed===s)return;C=buildCountry(s);buildWorld(C);buildMap();}
+function startRace(sameSeed){
+  seed=ROOM_SEED||(sameSeed?seed:(sel.mode==='weekly'?weeklySeed():(Math.random()*2**32)>>>0));
+  loadCountry(seed);
+  disposeRider(player);disposeRider(rival);
+  player=makeRider('you',sel.horse,HORSES[sel.horse].stats,true);
+  const pool=Object.keys(HORSES).filter(id=>id!==sel.horse&&!HORSES[id].mine),rid=pool[Math.floor(Math.random()*pool.length)],base=HORSES[rid].stats;
+  const rs={};for(const k in base)rs[k]=Math.max(30,Math.min(95,base[k]+Math.round((Math.random()-.5)*12)));
+  rival=makeRider('rival',rid,rs,false);rival.name=RIVAL_NAMES[Math.floor(Math.random()*RIVAL_NAMES.length)]+' on '+HORSES[rid].name;rival.skill=.9+Math.random()*.08;
+  // The rival plans its own way across the country each race, even on the weekly countryside.
+  rival.path=planFull(Math.random);
+  const S=C.start;player.x=S.x-2.2;player.z=S.z;rival.x=S.x+2.2;rival.z=S.z;player.h=rival.h=S.h;
+  for(const R of [player,rival]){R.group.position.set(R.x,C.height(R.x,R.z),R.z);R.group.rotation.set(0,R.h,0);}
+  rand=Math.random;raceTime=0;countT=3.5;phase='count';results=null;
+  els.menu.hidden=true;els.done.hidden=true;els.hud.hidden=false;document.getElementById('hint').hidden=false;
+  camPos.set(player.x,C.height(player.x,player.z)+9,player.z-14);
+}
+function onFinish(R){
+  if(R===player){phase='finished';if(ROOM_SEED)parent.postMessage({type:'trottville:steeple-finish',ms:Math.round(R.finished*1000)},location.origin);const best=Number(store.get('trottville.country.best.'+seed))||0,t=R.finished,isBest=!best||t<best;if(isBest)store.set('trottville.country.best.'+seed,String(t));
+    markDone('race');const conv=convertRace({time:t,par:rival.finished??95,isBest}),collectId=queueCoins({from:'Steeplechase',coins:conv.coins,lines:conv.lines});results={t,best:isBest?t:best,isBest,coins:conv.coins,collectId};setTimeout(showResults,1400);}
+  else if(phase==='race')toast(`${rival.name} reached the steeple in ${fmt(R.finished)}. Keep going!`);
+}
+function showResults(){
+  const won=rival.finished===null||player.finished<rival.finished,clean=[...player.fs.values()].filter(s=>s.cleared&&s.tries===1).length;
+  els.doneCard.innerHTML=`<h1>${won?'You won!':'Good race!'}</h1><div class="result">${fmt(results.t)}</div>
+    <p>${sel.mode==='weekly'?"This week's countryside":'Practice countryside'}${results.isBest?' · New best here!':' · Best '+fmt(results.best)}</p>
+    <div class="rows"><div><span>You and ${HORSES[sel.horse].name}</span><b>${fmt(results.t)}</b></div>
+    <div><span>${rival.name}</span><b>${rival.finished===null?'still riding':fmt(rival.finished)}</b></div>
+    <div><span>Fences cleared first try</span><b>${clean}</b></div><div><span>Refusals</span><b>${player.refusals||'none'}</b></div></div>
+    <p style="font-size:12px;opacity:.75;margin-top:10px">${ROOM_SEED?'Your time went to the friends race. Close this to see who won.':'Best times are kept on this device.'}</p>
+    ${results.collectId?`<button class="tc-collect" id="collect" type="button" style="margin:12px 0 4px">Collect ${results.coins} Trotties</button>`:''}
+    <button class="btn primary" id="again" type="button">Ride again</button>
+    ${sel.mode==='practice'?'<button class="btn secondary" id="newc" type="button">New countryside</button>':''}
+    <button class="btn secondary" id="menuBtn" type="button">Change horse</button>
+    <button class="btn secondary" id="doneHome" type="button">Back to Trottville</button>`;
+  els.done.hidden=false;els.hud.hidden=true;els.toast.classList.remove('on');toastT=0;// v137: no stale 'looks unsure' toast over the result
+  document.getElementById('doneHome').onclick=()=>{if(parent!==window)parent.postMessage('trottville:close-steeple',location.origin);else location.href='./#world';};
+  document.getElementById('collect')?.addEventListener('click',e=>{e.currentTarget.remove();showCollect({title:'Race rewards',ids:[results.collectId]});results.collectId=null;});
+  document.getElementById('again').onclick=()=>startRace(true);document.getElementById('newc')?.addEventListener('click',()=>startRace(false));
+  document.getElementById('menuBtn').onclick=()=>{els.done.hidden=true;els.menu.hidden=false;phase='menu';};
+}
+els.go.onclick=()=>startRace(false);
+els.quit.onclick=()=>{phase='menu';els.hud.hidden=true;els.menu.hidden=false;};
+// Opened from Clover Racecourse in the 3D world: offer the way back.
+const home=document.getElementById('home');
+// A friends race from the world (?race=<seed>): everyone rides the same countryside, starts at once and reports a time.
+if(home&&params.get('in')==='world'&&parent!==window){home.hidden=false;home.onclick=()=>parent.postMessage('trottville:close-steeple',location.origin);}
+else if(home&&parent===window){home.hidden=false;home.onclick=()=>{location.href='./#world';};} // opened directly (refresh/bookmark): still a way out
+
+// ---------- Camera + frame ----------
+const camPos=new T.Vector3(0,30,-40),camLook=new T.Vector3();
+function fit(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w<h?62:50;camera.updateProjectionMatrix();}
+addEventListener('resize',fit);fit();
+
+function hud(){
+  els.time.textContent=fmt(player.finished??raceTime);
+  const prog=R=>R.finished!==null?1e6-R.finished:R.cp*1e4-Math.hypot(C.checkpoints[Math.min(R.cp,C.checkpoints.length-1)].x-R.x,C.checkpoints[Math.min(R.cp,C.checkpoints.length-1)].z-R.z);
+  els.place.textContent=prog(player)>=prog(rival)?'1st · leading':'2nd · chasing '+rival.name.split(' ')[0];
+  els.mph.innerHTML=`${mph(player.v)}<small>mph</small>`;els.sta.style.width=player.sta+'%';els.staBar.classList.toggle('tired',player.tired);els.staLbl.textContent=player.tired?'OUT OF BREATH':'STAMINA';
+  const nf=fenceAhead(player,40),need=nf?nf.f.need:9,frac=Math.min(1,Math.max(0,player.v)/need),ready=frac>=1&&!inAir(player);
+  els.ring.style.strokeDashoffset=String(339.3*(1-frac));
+  jumpBtn.classList.toggle('ready',ready&&!player.refusing);jumpBtn.classList.toggle('unsure',!!player.refusing);
+  els.jumpTxt.innerHTML=inAir(player)?'Jump<small>in the air!</small>':player.refusing?'Unsure<small>circle back</small>':ready?`Jump<small>${nf?nf.f.name:'ready'}</small>`:`Jump<small>need ${mph(need)} mph</small>`;
+  jumpBtn.setAttribute('aria-label',ready?'Jump':'Jump, not fast enough yet');
+  // Next checkpoint: name, distance, and an arrow relative to where the horse is facing.
+  const cp=C.checkpoints[Math.min(player.cp,C.checkpoints.length-1)];let rel=Math.atan2(cp.x-player.x,cp.z-player.z)-player.h;rel=Math.atan2(Math.sin(rel),Math.cos(rel));
+  els.arrow.style.transform=`rotate(${-rel}rad)`;els.nextName.textContent=(cp.finish?'⛪ ':'⚑ ')+cp.name;
+  els.nextDist.textContent=player.finished!==null?'Finished!':`${Math.round(Math.hypot(cp.x-player.x,cp.z-player.z)*.9)} m · ${Math.min(player.cp+1,C.checkpoints.length)} of ${C.checkpoints.length}`;
+  markers.forEach((m,i)=>m.ringMat.color.set(i<player.cp?'#7fbf6a':i===player.cp?'#f2b632':'#ffffff'));
+}
+
+const tclock=new T.Clock();
+window.race={get player(){return player},get rival(){return rival},get country(){return C},get phase(){return phase},get time(){return raceTime},input,startRace,sel,step:dt=>frame(dt),
+  // Test hooks: freeze the real-time loop, and let the computer drive the player's horse.
+  freeze(){renderer.setAnimationLoop(null);},autopilot(){player.path=planFull(Math.random);player.skill=1;player.mode='go';player.pi=0;},ai:aiInput};
+function frame(dt){
+  clock+=dt;
+  if(toastT>0){toastT-=dt;if(toastT<=0)els.toast.classList.remove('on');}
+  if(sails)sails.rotation.z+=dt*.7;
+  if(phase==='count'){countT-=dt;els.count.textContent=countT>.5?String(Math.ceil(countT-.5)):countT>0?'Go!':'';if(countT<=.5&&countT+dt>.5)phase='race';
+    for(const R of [player,rival]){R.model.update(dt);R.kit.update(dt);}}
+  else els.count.textContent='';
+  if(phase==='race'||phase==='finished'){
+    raceTime+=dt;
+    const k=keyInput(),inp=player.path&&player.finished===null?aiInput(player,dt):player.finished!==null?{steer:0,throttle:.25,jump:false}:{steer:k?k.steer:input.steer,throttle:k?k.throttle:input.throttle,jump:input.jump};
+    step(player,inp,dt);
+    if(rival.finished===null||rival.v>.3)step(rival,rival.finished!==null?{steer:0,throttle:0,jump:false}:aiInput(rival,dt),dt);
+    hud();
+  }
+  input.jump=false;
+  if(player&&phase!=='menu'){
+    const fx=Math.sin(player.h),fz=Math.cos(player.h),py=player.group.position.y,air=player.model.jumpT>=0;
+    camPos.lerp(tmpV.set(player.x-fx*14,py+9.4,player.z-fz*14),1-Math.exp(-dt*4));camPos.y=Math.max(camPos.y,C.height(camPos.x,camPos.z)+3);
+    camLook.lerp(tmpV.set(player.x+fx*9,py+(air?2:1.4),player.z+fz*9),1-Math.exp(-dt*6));camera.position.copy(camPos);camera.lookAt(camLook);
+    sun.position.set(player.x-18,py+40,player.z+14);sun.target.position.set(player.x,py,player.z);
+    drawMap();
+  }else if(C){// Menu: a slow fly-over of the countryside toward the steeple.
+    const t=clock*.04,cx=C.start.x+Math.sin(t)*60,cz=-30+((clock*6)%(LEN*.6));camera.position.set(cx,C.height(cx,cz)+45,cz);camera.lookAt(C.church.x,20,C.church.z);
+    sun.position.set(cx-18,80,cz+60);sun.target.position.set(cx,0,cz+60);}
+  renderer.render(scene,camera);
+}
+renderer.setAnimationLoop(()=>frame(Math.min(tclock.getDelta(),.05)));
+
+// The menu sits over a fly-over of this week's countryside.
+if(ROOM_SEED&&!NONE_READY)startRace(false);else loadCountry(weeklySeed());
+</script>
+<script type="module" src="pixel-icons.js?v=157"></script>
+</body>
+</html>

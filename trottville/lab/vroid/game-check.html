@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%;background:#cfe6f2}canvas{width:100%;height:100%;display:block}</style></head><body><canvas id="c"></canvas>
+<script type="module">
+const q=new URLSearchParams(location.search);
+import * as T from '../../vendor/three-0.180.0/three.module.js';
+import {makeSculptedHorse} from '../../horse-sculpt.js';
+import {addTackAndRider} from '../../rider-sculpt.js';
+import {makeChibiCharacter} from '../../chibi-character.js';
+import {preloadRider,RIDE} from '../../vroid-character.js';
+for(const k of ['tx','tz','sx','sz','seat'])if(q.has(k))RIDE[k]=+q.get(k);
+import {lookFromSeed} from '../../character-looks.mjs';
+const r=new T.WebGLRenderer({canvas:c,antialias:true});r.setPixelRatio(2);r.outputColorSpace=T.SRGBColorSpace;
+const s=new T.Scene();s.add(new T.HemisphereLight('#fff','#8a9',2.2));const sun=new T.DirectionalLight('#fff',2);sun.position.set(-3,8,6);s.add(sun);
+const cam=new T.PerspectiveCamera(30,1,.1,100);
+const horse=makeSculptedHorse(T,{id:q.get('h')||'willow'},{style:'cel'});s.add(horse.root);
+const tack=addTackAndRider(T,horse,{look:lookFromSeed(q.get('seed')||'a')});
+const st=makeChibiCharacter(T,lookFromSeed('b'));st.root.position.set(-2.2,0,0);s.add(st.root);
+await preloadRider(T);
+const yaw=+(q.get('yaw')||1.57),d=+(q.get('d')||11),ty=+(q.get('ty')||2.2);
+function fit(){r.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.position.set(Math.sin(yaw)*d,ty+.6,Math.cos(yaw)*d);cam.lookAt(0,ty,0);cam.updateProjectionMatrix();}fit();
+let t=0;function tick(){t+=1/60;horse.update?.(1/60);tack.update(1/60,{speed:+(q.get('sp')||0)});st.update(1/60,{pose:q.get('p')||'stand'});r.render(s,cam);requestAnimationFrame(tick);}tick();
+window.__ok=1;
+</script></body></html>

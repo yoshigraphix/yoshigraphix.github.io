@@ -1,0 +1,22 @@
+{
+ "hair": {
+  "tris": 5220,
+  "pushed_out": 1125
+ },
+ "bomber": {
+  "tris": 9692,
+  "pushed_out": 2363
+ },
+ "joggers": {
+  "tris": 3436,
+  "pushed_out": 832
+ },
+ "sneakers": {
+  "tris": 2678,
+  "pushed_out": 282
+ },
+ "body_mask": {
+  "hidden_faces": 20627,
+  "covered_verts": 14549
+ }
+}

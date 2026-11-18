@@ -1,0 +1,18 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%;background:#e8ece8}canvas{display:block;width:100%;height:100%}</style>
+<script type=module>
+import * as T from '../../vendor/three-0.180.0/three.module.js';
+import {GLTFLoader} from '../../vendor/three-0.180.0/addons/loaders/GLTFLoader.js';
+const r=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});r.setPixelRatio(2);r.setSize(innerWidth,innerHeight);r.outputColorSpace=T.SRGBColorSpace;document.body.appendChild(r.domElement);
+const s=new T.Scene(),cam=new T.PerspectiveCamera(30,innerWidth/innerHeight,.01,100);
+const g=await new GLTFLoader().loadAsync(new URLSearchParams(location.search).get('f')||'zeze.glb');s.add(g.scene);r.setClearColor(0xe8ece8);
+// Sketchfab put the colours on the emissive slot; unlit materials ignore it, so move them to the base colour
+const TL=new T.TextureLoader(),texOf={};for(const [k,f] of [['Body','body.png'],['Material.001','eyes.png'],['Hair','hair.png']]){const t=await TL.loadAsync(f);t.colorSpace=T.SRGBColorSpace;t.flipY=false;texOf[k]=t;}
+const COL={'Material.002':[.042,.001,.001],'Material':[1,.427,.364]};
+g.scene.traverse(o=>{if(!o.isMesh)return;const n=o.material.name,mat=new T.MeshBasicMaterial({side:o.material.side});if(texOf[n]){mat.map=texOf[n];}else if(COL[n])mat.color.setRGB(...COL[n]);mat.name=n;o.material=mat;});
+const J={materials:[]};const byName={};for(let i=0;i<J.materials.length;i++)byName[J.materials[i].name]=J.materials[i];
+for(const [nm,m] of Object.entries(byName)){m.__tex=m.emissiveTexture?await g.parser.getDependency('texture',m.emissiveTexture.index):null;}
+g.scene.traverse(o=>{if(!o.isMesh)return;const m=byName[o.material.name];if(!m)return;const mat=o.material;if(m.__tex){m.__tex.colorSpace=T.SRGBColorSpace;mat.map=m.__tex;mat.color.set(0xffffff);}else if(m.emissiveFactor)mat.color.setRGB(...m.emissiveFactor);mat.needsUpdate=true;});
+const box=new T.Box3().setFromObject(g.scene),c=box.getCenter(new T.Vector3()),sz=box.getSize(new T.Vector3());
+const gh=new T.GridHelper(2,40,0x3366ff,0x99aacc);gh.rotation.x=Math.PI/2;gh.visible=false;s.add(gh);const gs=new T.GridHelper(2,40,0x3366ff,0x99aacc);gs.rotation.z=Math.PI/2;gs.visible=false;s.add(gs);window.view={gh,gs,g,T,box,shot(ang=0,focus='all',dist=1){const box=this.box,c=box.getCenter(new T.Vector3()),sz=box.getSize(new T.Vector3());let tc=c.clone(),h=Math.max(sz.y,sz.x*innerHeight/innerWidth);if(focus==='head'){tc.set(c.x,box.max.y-sz.y*.18,c.z);h=sz.y*.32;}const d=h/(2*Math.tan(15*Math.PI/180))*1.15*dist;cam.position.set(tc.x+Math.sin(ang)*d,tc.y,tc.z+Math.cos(ang)*d);cam.lookAt(tc);r.render(s,cam);},hideOutline(v){g.scene.traverse(o=>{if(o.isMesh&&o.material.name==='Material.002')o.visible=!v;});}};
+view.shot(0);window.ready=true;
+</script>

@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en" data-no-chip>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b1a22">
+<title>Smugglers’ Grotto · Trottville</title>
+<link rel="stylesheet" href="coin-collect.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+<style>
+:root{--ink:#fff8e6;--gold:#f5c444;--sb:env(safe-area-inset-bottom)}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#0b1a22;color:var(--ink);font-family:Fredoka,system-ui,sans-serif;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#stage{position:fixed;inset:0}#stage canvas{display:block;width:100%;height:100%}
+.top{position:fixed;left:0;right:0;top:0;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px 8px;z-index:5;pointer-events:none}
+.top>*{pointer-events:auto}
+.back{width:48px;height:48px;border:0;border-radius:14px;background:#0008;color:var(--ink);font:700 24px/1 system-ui;cursor:pointer;display:grid;place-items:center}
+.back:hover{background:#000a}
+.title{font-weight:700;font-size:18px;text-shadow:0 2px 6px #000;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coins{display:flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 6px;border-radius:20px;background:linear-gradient(#ffe48a,#f5c444);color:#5a3e0c;font:800 16px/1 system-ui}
+.coins img{width:30px;height:30px}
+#jump{position:fixed;right:calc(18px + env(safe-area-inset-right));bottom:calc(22px + var(--sb));width:96px;height:96px;border:0;background:none;padding:0;z-index:6;cursor:pointer;touch-action:none}
+#jump img{width:96px;height:96px;filter:drop-shadow(0 4px 6px #000b);pointer-events:none}
+#jump.down img{filter:drop-shadow(0 0 10px #ffe08a) drop-shadow(0 4px 6px #000b)}
+#stick{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid #fff6;pointer-events:none;z-index:4;display:none}
+#stick i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:#fff8;box-shadow:0 2px 8px #0006}
+.say{position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top));transform:translateX(-50%);max-width:min(88vw,460px);padding:10px 16px;border-radius:16px;background:#0b1a22d9;font-weight:600;font-size:16px;text-align:center;z-index:5;transition:opacity .4s;pointer-events:none}
+.say[hidden]{display:block;opacity:0}
+.fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:8;transition:opacity .35s}
+.fade.on{opacity:1}
+.loading{position:fixed;inset:0;display:grid;place-items:center;background:#0b1a22;z-index:9;font-size:20px;font-weight:700;transition:opacity .5s}
+.loading.gone{opacity:0;pointer-events:none}
+.cabin-ui{position:fixed;left:0;right:0;bottom:calc(24px + var(--sb));display:flex;flex-direction:column;align-items:center;gap:12px;z-index:7}
+.cabin-ui[hidden]{display:none}
+.btn{min-height:52px;padding:0 26px;border:0;border-radius:16px;background:#f5c444;color:#4a3208;font:700 18px/1 Fredoka,system-ui;box-shadow:0 4px 0 #b8861d,0 8px 20px #0007;cursor:pointer}
+.btn:hover{background:#ffd45e}.btn.soft{background:#fff3d6;box-shadow:0 4px 0 #c9b48a,0 8px 20px #0007}
+.rotate{position:fixed;left:50%;bottom:calc(132px + var(--sb));transform:translateX(-50%);font-size:13px;opacity:.75;z-index:5;pointer-events:none;white-space:nowrap}
+@media (orientation:landscape){.rotate{display:none}}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div class="top">
+  <button class="back" id="back" type="button" aria-label="Leave the cave" title="Leave the cave">‹</button>
+  <div class="title">Smugglers’ Grotto</div>
+  <div class="coins" aria-label="Trotties"><img src="assets/icons/coin.webp" alt=""><span data-trottcoins>0</span></div>
+</div>
+<div class="say" id="say" hidden></div>
+<div id="stick"><i></i></div>
+<button id="jump" type="button" aria-label="Jump (Space)" title="Jump"><img src="assets/icons/jump-fence.webp" alt="" draggable="false"></button>
+<div class="rotate" id="rotate">Turn your phone sideways for a wider view</div>
+<div class="cabin-ui" id="cabinUI" hidden><button class="btn" id="openChest" type="button">Open the chest</button><button class="btn soft" id="leave" type="button" hidden>Back to the valley</button></div>
+<div class="fade" id="fade"></div>
+<div class="loading" id="loading">Lighting the lanterns…</div>
+
+<script type="module">
+import * as T from './vendor/three-0.180.0/three.module.js';
+import * as C from './cave.mjs';
+import {makeChibiCharacter} from './chibi-character.js';
+import {loadLook} from './character-looks.mjs';
+import {queueCoins,showCollect,paintCounters} from './coin-collect.js';
+
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
+const still=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+const inWorld=new URLSearchParams(location.search).get('in')==='world'&&parent!==window;
+function goOut(){if(inWorld)parent.postMessage('trottville:close-board',location.origin);else location.href='./#world';}
+$('back').onclick=goOut;$('leave').onclick=goOut;
+paintCounters();
+
+// ---------- sound (shares the Trottville Sounds switch) ----------
+const soundOn=(()=>{const v=String(store.get('trottville-sound-v1')??'').trim().toLowerCase();return !(v==='0'||v==='off'||v==='false');})();
+let ac=null;const ctx=()=>{if(!soundOn)return null;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();return ac;}catch{return null;}};
+function tone(f,d=.12,type='sine',vol=.18,slide=0,delay=0){const a=ctx();if(!a)return;const t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,f*slide),t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.02);}
+function noise(d=.4,vol=.25,f=900){const a=ctx();if(!a)return;const n=a.createBuffer(1,a.sampleRate*d,a.sampleRate),ch=n.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=(Math.random()*2-1)*(1-i/ch.length);const s=a.createBufferSource(),bq=a.createBiquadFilter(),g=a.createGain();bq.type='lowpass';bq.frequency.value=f;g.gain.value=vol;s.buffer=n;s.connect(bq).connect(g).connect(a.destination);s.start();}
+const sfx={jump:()=>tone(420,.14,'triangle',.14,1.6),land:()=>tone(130,.08,'sine',.2,.6),grab:()=>{tone(220,.1,'square',.06,.8);noise(.12,.1,1500);},
+  splash:()=>noise(.7,.35,700),ouch:()=>tone(300,.3,'sawtooth',.08,.5),checkpoint:()=>[523,659,784].forEach((f,i)=>tone(f,.18,'triangle',.12,1,i*.08)),
+  creak:()=>tone(90,.4,'sawtooth',.04,1.3),chest:()=>{noise(.3,.15,600);[784,988,1175,1568].forEach((f,i)=>tone(f,.25,'triangle',.12,1,.2+i*.09));}};
+
+// ---------- renderer / scene ----------
+const stage=$('stage');
+const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+stage.append(renderer.domElement);
+const scene=new T.Scene();scene.background=new T.Color('#08141b');scene.fog=new T.Fog('#0b1d26',26,78);
+const camera=new T.PerspectiveCamera(50,1,.1,200);
+scene.add(new T.HemisphereLight('#6f9fbf','#2a1d14',1.1));
+const sun=new T.DirectionalLight('#ffe2a8',2.2);sun.position.set(3,40,2);sun.target.position.set(0,C.DECK,0);scene.add(sun,sun.target);
+const fill=new T.DirectionalLight('#9cc3dc',1.1);scene.add(fill,fill.target);
+
+// seeded random so the cave looks the same every visit
+let seed=29;const rnd=()=>((seed=Math.imul(seed^seed>>>15,2246822507)+1013904223>>>0)/4294967296);
+const mats=new Map();const mat=(c,o={})=>{const k=c+JSON.stringify(o);if(!mats.has(k))mats.set(k,new T.MeshStandardMaterial({color:c,roughness:.9,flatShading:true,...o}));return mats.get(k);};
+const jitter=(g,a)=>{const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setXYZ(i,p.getX(i)+(rnd()-.5)*a,p.getY(i)+(rnd()-.5)*a,p.getZ(i)+(rnd()-.5)*a);g.computeVertexNormals();return g;};
+const mesh=(g,m,x=0,y=0,z=0,parent=scene)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);parent.add(o);return o;};
+
+// cave shell: a lumpy dome, darker low down
+{const g=new T.SphereGeometry(36,48,24,0,Math.PI*2,0,Math.PI*.62);const p=g.attributes.position,col=[];
+  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),n=1+(Math.sin(x*.35)+Math.cos(z*.31)+Math.sin((x+z)*.17))*.05+(rnd()-.5)*.05;p.setXYZ(i,x*n,y*.62*n,z*n);
+    const k=.55+.45*Math.min(1,Math.max(0,y/36));col.push(.28*k,.25*k,.27*k);}
+  g.setAttribute('color',new T.Float32BufferAttribute(col,3));g.computeVertexNormals();
+  const dome=mesh(g,new T.MeshStandardMaterial({vertexColors:true,side:T.BackSide,roughness:1,flatShading:true}),0,C.WATER-2,0);
+  // the hole in the roof the sunbeam comes through
+  const sky=mesh(new T.CircleGeometry(2.6,18),new T.MeshBasicMaterial({color:'#dff2ff',fog:false}),1.2,C.WATER-2+36*.62-.6,.6);sky.rotation.x=Math.PI/2;}
+// stalactites (hidden while they sit between the camera and the rider)
+const blockers=[];
+for(let i=0;i<70;i++){const a=rnd()*Math.PI*2,r=4+rnd()*28,h=1.5+rnd()*5;const top=C.WATER-2+Math.sqrt(Math.max(0,36*36-r*r))*.62;
+  if(Math.hypot(Math.cos(a)*r-1.2,Math.sin(a)*r-.6)<4)continue;const s=mesh(jitter(new T.ConeGeometry(.35+rnd()*.7,h,6),.12),mat('#3d383a'),Math.cos(a)*r,top-h/2+.3,Math.sin(a)*r);s.rotation.x=Math.PI;blockers.push(s);}
+// glowing crystals on the wall (and their light)
+const crystals=[];
+for(let i=0;i<9;i++){const a=i/9*Math.PI*2+.3,r=31,y=C.WATER+2+rnd()*9;const g=new T.Group();g.position.set(Math.cos(a)*r,y,Math.sin(a)*r);g.lookAt(0,y,0);scene.add(g);
+  const col=i%3===0?'#c79bff':'#7ff0ff';for(let k=0;k<5;k++){const c=mesh(new T.OctahedronGeometry(.3+rnd()*.5,0),new T.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:1.6,roughness:.3,flatShading:true}),(rnd()-.5)*1.6,(rnd()-.5)*1.2,.4,g);c.scale.y=1.8+rnd();c.rotation.z=(rnd()-.5)*.8;}
+  if(i%2===0){const l=new T.PointLight(col,18,22,1.6);l.position.set(Math.cos(a)*(r-2),y,Math.sin(a)*(r-2));scene.add(l);}crystals.push(g);blockers.push(g);}
+
+// the lake
+const ripple=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');x.fillStyle='#1b6470';x.fillRect(0,0,256,256);
+  for(let i=0;i<90;i++){x.strokeStyle=`rgba(170,240,255,${.05+rnd()*.12})`;x.lineWidth=1+rnd()*2;x.beginPath();const cx=rnd()*256,cy=rnd()*256,w=10+rnd()*40;x.ellipse(cx,cy,w,w*.35,0,0,Math.PI*2);x.stroke();}
+  const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(7,7);t.colorSpace=T.SRGBColorSpace;return t;})();
+const lake=mesh(new T.CircleGeometry(35,64),new T.MeshStandardMaterial({map:ripple,color:'#7fd6e0',emissive:'#0d4a55',emissiveIntensity:.9,roughness:.15,metalness:.2,transparent:true,opacity:.93}),0,C.WATER,0);lake.rotation.x=-Math.PI/2;
+// the island under the ship
+{const sand=mesh(jitter(new T.CylinderGeometry(10.5,13,3.2,20,1),.25),mat('#c9a874'),0,C.WATER-.2,0);
+  for(let i=0;i<10;i++){const a=rnd()*Math.PI*2,r=9+rnd()*3;mesh(jitter(new T.DodecahedronGeometry(.6+rnd()*.9,0),.15),mat('#5d5552'),Math.cos(a)*r,C.WATER+1.3,Math.sin(a)*r);}}
+
+// ---------- the course ----------
+const P=s=>C.coursePoint(s);
+const posAt=(s,y,out=new T.Vector3())=>{const p=P(s);return out.set(p.x,y,p.z);};
+const rock=mat('#5a5250'),moss=mat('#5f7a46'),wood=mat('#7a5232'),woodDark=mat('#4e3420'),rope=new T.MeshStandardMaterial({color:'#b89a63',roughness:1});
+const lanterns=[];
+function lantern(x,y,z,lit=false){const g=new T.Group();g.position.set(x,y,z);scene.add(g);
+  mesh(new T.BoxGeometry(.06,1.1,.06),woodDark,0,.55,0,g);const glass=mesh(new T.BoxGeometry(.32,.38,.32),new T.MeshStandardMaterial({color:'#ffcf7a',emissive:'#ff9f2a',emissiveIntensity:lit?2:0,roughness:.4}),0,1.25,0,g);
+  mesh(new T.ConeGeometry(.26,.18,4),woodDark,0,1.52,0,g).rotation.y=Math.PI/4;const light=new T.PointLight('#ffad4a',lit?8:0,9,1.8);light.position.y=1.25;g.add(light);
+  const L={g,glass,light,lit};lanterns.push(L);return L;}
+const cpLanterns=[];
+C.PLATFORMS.forEach((pl,idx)=>{const [s0,s1,top,cp,kind]=pl;if(kind==='deck')return;
+  const beam=s0>=C.BEND;const n=Math.max(1,Math.round((s1-s0)/1.1));
+  for(let i=0;i<n;i++){const a=s0+(s1-s0)*i/n,b=s0+(s1-s0)*(i+1)/n,m=(a+b)/2,p=P(m),len=b-a+.04,yaw=Math.atan2(p.tx,p.tz);
+    if(beam){const plank=mesh(new T.BoxGeometry(2.2,.28,len),wood,p.x,top-.14,p.z);plank.rotation.y=yaw;
+      if(i===0||i===n-1){for(const side of [-1,1]){const sx=p.x-p.tz*side*1.0,sz=p.z+p.tx*side*1.0;const ch=mesh(new T.CylinderGeometry(.04,.04,22,5),mat('#4b4b52',{metalness:.6,roughness:.5}),sx,top+11,sz);}}}
+    else{const h=top-C.WATER+1.5;const col=mesh(jitter(new T.BoxGeometry(2.6,h,len,2,3,1),.18),rock,p.x,top-h/2,p.z);col.rotation.y=yaw;
+      const cap=mesh(jitter(new T.BoxGeometry(2.7,.22,len+.05,2,1,1),.05),moss,p.x,top-.08,p.z);cap.rotation.y=yaw;}}
+  if(cp){const p=P(Math.min(s1-.5,s0+.6));const side=C.sideOf(p);cpLanterns.push(lantern(p.x-side.x*.9,top,p.z-side.z*.9,idx===0));}
+});
+// ropes
+const climbRopes=C.CLIMBS.map(c=>{const p=P(c.s),top=c.long?c.y1+.4:c.y1+.6,len=top-c.y0+.2;
+  const m=mesh(new T.CylinderGeometry(.06,.06,len,6),rope,p.x,c.y0-.2+len/2,p.z);
+  if(!c.long){const peg=mesh(new T.TorusGeometry(.18,.05,6,12),mat('#6b6b70',{metalness:.7,roughness:.4}),p.x,top,p.z);}
+  else{const post=mesh(new T.BoxGeometry(.3,1.2,.3),woodDark,p.x,c.y1+.2,p.z);}
+  // knots every 60 cm so it reads as a rope you can climb
+  for(let y=c.y0+.3;y<top-.2;y+=.6)mesh(new T.SphereGeometry(.1,6,4),rope,p.x,y,p.z);return m;});
+const swingRopes=C.SWINGS.map(w=>{const p=P(w.s),g=new T.Group();g.position.set(p.x,w.y,p.z);g.rotation.y=Math.atan2(p.tx,p.tz);scene.add(g);
+  const r=mesh(new T.CylinderGeometry(.055,.055,w.L,6),rope,0,-w.L/2,0,g);mesh(new T.SphereGeometry(.16,8,6),rope,0,-w.L,0,g);
+  mesh(jitter(new T.ConeGeometry(.9,3,6),.15),mat('#3d383a'),0,1.4,0,g).rotation.x=Math.PI;return {g,w,t:rnd()*6};});
+// cave mouth glow (the way back out)
+{const p=P(-3.8),gt=(()=>{const c=document.createElement('canvas');c.width=64;c.height=96;const x=c.getContext('2d'),g=x.createRadialGradient(32,60,4,32,60,44);g.addColorStop(0,'rgba(255,246,214,1)');g.addColorStop(.55,'rgba(255,226,160,.55)');g.addColorStop(1,'rgba(255,210,140,0)');x.fillStyle=g;x.fillRect(0,0,64,96);return new T.CanvasTexture(c);})();
+  const side=C.sideOf(p),glow=mesh(new T.PlaneGeometry(4,6),new T.MeshBasicMaterial({map:gt,transparent:true,depthWrite:false,blending:T.AdditiveBlending,fog:false}),p.x,2.2,p.z);glow.rotation.y=Math.atan2(p.tx+side.x*1.4,p.tz+side.z*1.4);
+  const l=new T.PointLight('#fff0c8',14,14,1.6);l.position.set(p.x+p.tx*1.5,2.4,p.z+p.tz*1.5);scene.add(l);}
+
+// ---------- the pirate ship ----------
+const ship=new T.Group();scene.add(ship);
+{const a=C.coursePoint(C.BEND+1);ship.rotation.y=Math.atan2(a.tx,a.tz);ship.position.set(0,0,0);}
+// course s along the beam maps to ship-local z = (s - (BEND+R))  (0 at the island centre)
+const SZ=s=>s-(C.BEND+C.R);
+{const L=24,W=6.4,D=C.DECK;
+  const hull=new T.BoxGeometry(W,3.6,L,6,3,16);const p=hull.attributes.position;
+  for(let i=0;i<p.count;i++){let x=p.getX(i),y=p.getY(i),z=p.getZ(i);const u=z/(L/2),bow=u<0?Math.abs(u):0,stern=u>0?u:0;
+    const narrow=1-Math.pow(bow,2.2)*.92-Math.pow(stern,6)*.25,down=y<0?.62:1;x*=narrow*down;if(y>0)y+=Math.pow(bow,2)*1.2+Math.pow(stern,3)*.9;p.setXYZ(i,x,y,z);}
+  hull.computeVertexNormals();
+  const planks=(()=>{const c=document.createElement('canvas');c.width=64;c.height=256;const x=c.getContext('2d');for(let i=0;i<16;i++){x.fillStyle=i%2?'#5b3b22':'#6a4529';x.fillRect(0,i*16,64,16);x.fillStyle='#3a2414';x.fillRect(0,i*16+15,64,1);}const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(1,3);return t;})();
+  mesh(hull,new T.MeshStandardMaterial({map:planks,roughness:.85}),0,D-1.8,0,ship);
+  const deck=mesh(new T.BoxGeometry(W-.6,.2,L-2),new T.MeshStandardMaterial({color:'#9a7550',roughness:.9}),0,D-.1,0,ship);
+  for(const side of [-1,1]){mesh(new T.BoxGeometry(.18,.9,L-3),woodDark,side*(W/2-.35),D+.45,0,ship);for(let z=-L/2+2;z<L/2-1;z+=1.6)mesh(new T.BoxGeometry(.14,.9,.14),woodDark,side*(W/2-.35),D+.45,z,ship);}
+  // moss and barnacles: long abandoned
+  for(let i=0;i<40;i++){const z=(rnd()-.5)*L*.9,side=rnd()<.5?-1:1;mesh(new T.SphereGeometry(.2+rnd()*.3,5,4),mat(rnd()<.6?'#4f6b3a':'#6d8a4d'),side*(W/2-.1)*(1-Math.pow(Math.abs(z)/(L/2),2)*.6),D-1.2-rnd()*1.4,z,ship);}
+  // masts, yards and torn sails
+  const sailTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle='#e9dcc0';x.fillRect(0,0,128,128);x.globalCompositeOperation='destination-out';
+    for(let i=0;i<9;i++){x.beginPath();const cx=rnd()*128,cy=40+rnd()*88;x.moveTo(cx,cy);for(let k=0;k<7;k++)x.lineTo(cx+(rnd()-.5)*40,cy+(rnd()-.5)*30);x.fill();}
+    x.beginPath();x.moveTo(0,128);for(let k=0;k<=16;k++)x.lineTo(k*8,110+rnd()*18);x.lineTo(128,128);x.fill();const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t;})();
+  const sailMat=new T.MeshStandardMaterial({map:sailTex,transparent:true,alphaTest:.3,side:T.DoubleSide,roughness:1,color:'#d8c9a8'});
+  for(const [z,h] of [[-5.5,12],[2.5,14]]){mesh(new T.CylinderGeometry(.22,.3,h,8),woodDark,0,D+h/2,z,ship);
+    for(const [y,w] of [[h*.55,5],[h*.85,3.6]]){mesh(new T.CylinderGeometry(.1,.1,w+.6,6),woodDark,0,D+y,z,ship).rotation.z=Math.PI/2;const s=mesh(new T.PlaneGeometry(w,h*.26,4,4),sailMat,0,D+y-h*.14,z+.12,ship);
+      const sp=s.geometry.attributes.position;for(let i=0;i<sp.count;i++)sp.setZ(i,Math.sin((sp.getX(i)/w+.5)*Math.PI)*.35);s.geometry.computeVertexNormals();}}
+  // a flag on the main mast
+  const flagTex=(()=>{const c=document.createElement('canvas');c.width=96;c.height=64;const x=c.getContext('2d');x.fillStyle='#1a1a1e';x.fillRect(0,0,96,64);x.fillStyle='#f2efe6';
+    x.beginPath();x.arc(48,26,11,0,Math.PI*2);x.fill();x.fillRect(42,33,12,8);x.fillStyle='#1a1a1e';x.beginPath();x.arc(44,25,3,0,Math.PI*2);x.arc(52,25,3,0,Math.PI*2);x.fill();
+    x.strokeStyle='#f2efe6';x.lineWidth=5;x.lineCap='round';x.beginPath();x.moveTo(30,44);x.lineTo(66,58);x.moveTo(66,44);x.lineTo(30,58);x.stroke();const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t;})();
+  const flag=mesh(new T.PlaneGeometry(1.8,1.2,6,2),new T.MeshStandardMaterial({map:flagTex,side:T.DoubleSide,roughness:1}),.95,D+14.4,2.5,ship);ship.userData.flag=flag;
+  // cabin at the stern with its door facing the bow
+  const cz=SZ(C.CABIN.s)+1.6;mesh(new T.BoxGeometry(W-1.2,3,4),new T.MeshStandardMaterial({color:'#6e4a2c',roughness:.9}),0,D+1.5,cz,ship);
+  mesh(new T.BoxGeometry(W-.8,.3,4.4),woodDark,0,D+3.1,cz,ship);
+  mesh(new T.BoxGeometry(1.3,2.1,.1),new T.MeshStandardMaterial({color:'#2b1a10',roughness:1}),0,D+1.05,cz-2.02,ship);
+  mesh(new T.BoxGeometry(1.6,.16,.14),mat('#c9a14a',{metalness:.6,roughness:.4}),0,D+2.2,cz-2.05,ship);
+  for(const x of [-1.6,1.6]){const w=mesh(new T.BoxGeometry(.7,.6,.08),new T.MeshStandardMaterial({color:'#ffcf7a',emissive:'#ff9f2a',emissiveIntensity:1.4}),x,D+1.8,cz-2.02,ship);}
+  const lamp=new T.PointLight('#ffad4a',10,10,1.6);lamp.position.set(0,D+2.6,cz-3);ship.add(lamp);
+  // barrels and crates
+  for(let i=0;i<7;i++){const z=SZ(74+rnd()*12),x=(rnd()<.5?-1:1)*(1.6+rnd()*.8);if(rnd()<.5)mesh(new T.CylinderGeometry(.4,.45,.9,10),mat('#7a5232'),x,C.DECK+.45,z,ship);else mesh(new T.BoxGeometry(.8,.8,.8),mat('#8a6a42'),x,C.DECK+.4,z,ship).rotation.y=rnd();}
+  // a treasure glint seen through the cabin windows from the beam
+}
+// sunbeam through the roof onto the ship
+{const h=36*.62-2,beam=mesh(new T.CylinderGeometry(2.4,4.2,h,20,1,true),new T.MeshBasicMaterial({color:'#fff1c4',transparent:true,opacity:.11,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,fog:false}),.6,C.WATER-2+36*.62-h/2-.6,.3);}
+
+// ---------- the rider ----------
+const look=loadLook();
+const rider=makeChibiCharacter(T,look);rider.root.scale.setScalar(.95);scene.add(rider.root);
+const playerLight=new T.PointLight('#ffe9c2',3,6,2);scene.add(playerLight);
+
+// ---------- cabin interior (its own little room, far below the cave) ----------
+const cabin=new T.Group();cabin.position.set(0,-300,0);scene.add(cabin);cabin.visible=false;
+let chestLid,coinPile;
+{const room=mesh(new T.BoxGeometry(7,3.4,7),new T.MeshStandardMaterial({color:'#6a4529',side:T.BackSide,roughness:.95}),0,1.7,0,cabin);
+  mesh(new T.PlaneGeometry(7,7),new T.MeshStandardMaterial({color:'#8a6440',roughness:1}),0,.01,0,cabin).rotation.x=-Math.PI/2;
+  const lamp=new T.PointLight('#ffb35a',22,12,1.5);lamp.position.set(0,2.8,.5);cabin.add(lamp);cabin.add(new T.AmbientLight('#6b4a30',.8));
+  mesh(new T.SphereGeometry(.18,10,8),new T.MeshStandardMaterial({color:'#ffd27a',emissive:'#ffa040',emissiveIntensity:2.5}),0,2.8,.5,cabin);
+  // chest
+  const chest=new T.Group();chest.position.set(0,0,-1.6);cabin.add(chest);
+  mesh(new T.BoxGeometry(1.6,.8,1),new T.MeshStandardMaterial({color:'#7a4a24',roughness:.8}),0,.4,0,chest);
+  for(const x of [-.6,.6])mesh(new T.BoxGeometry(.12,.84,1.04),mat('#c9a14a',{metalness:.7,roughness:.35}),x,.4,0,chest);
+  chestLid=new T.Group();chestLid.position.set(0,.8,.5);chest.add(chestLid);
+  const lid=mesh(new T.CylinderGeometry(.5,.5,1.6,12,1,false,0,Math.PI),new T.MeshStandardMaterial({color:'#7a4a24',roughness:.8}),0,0,-.5,chestLid);lid.rotation.z=Math.PI/2;
+  coinPile=new T.Group();chest.add(coinPile);
+  const gold=new T.MeshStandardMaterial({color:'#f5c444',emissive:'#a8730f',emissiveIntensity:.5,metalness:.8,roughness:.3});
+  for(let i=0;i<40;i++){const c=mesh(new T.CylinderGeometry(.09,.09,.025,12),gold,(rnd()-.5)*1.2,.72+rnd()*.12,(rnd()-.5)*.7,coinPile);c.rotation.set(rnd(),rnd(),rnd());}
+  // a hammock, a map, a porthole
+  const map=mesh(new T.PlaneGeometry(1.4,1),new T.MeshStandardMaterial({color:'#e8d6a8',roughness:1}),2.2,1.8,-3.48,cabin);
+  const port=mesh(new T.CircleGeometry(.4,16),new T.MeshBasicMaterial({color:'#7fd6e0'}),-3.48,1.9,-.5,cabin);port.rotation.y=Math.PI/2;
+  const ham=mesh(new T.CylinderGeometry(.8,.8,2.4,12,1,true,Math.PI*.15,Math.PI*.7),new T.MeshStandardMaterial({color:'#c9b58a',side:T.DoubleSide,roughness:1}),-2.4,1.3,1.4,cabin);ham.rotation.z=Math.PI/2;ham.rotation.x=Math.PI;}
+
+// ---------- input ----------
+const keys=new Set();let jumpQueued=false,stick={on:false,id:null,x0:0,y0:0,x:0,y:0};
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright','w','a','s','d','k'].includes(k))e.preventDefault();if((k===' '||k==='k')&&!keys.has(k))jumpQueued=true;keys.add(k);firstInput();});
+addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+const jumpBtn=$('jump');
+jumpBtn.addEventListener('pointerdown',e=>{e.preventDefault();jumpQueued=true;jumpBtn.classList.add('down');firstInput();});
+addEventListener('pointerup',()=>jumpBtn.classList.remove('down'));
+stage.addEventListener('pointerdown',e=>{if(stick.on||mode!=='play')return;stick={on:true,id:e.pointerId,x0:e.clientX,y0:e.clientY,x:0,y:0};const s=$('stick');s.style.left=e.clientX+'px';s.style.top=e.clientY+'px';s.style.display='block';s.firstElementChild.style.transform='';firstInput();});
+addEventListener('pointermove',e=>{if(!stick.on||e.pointerId!==stick.id)return;const dx=e.clientX-stick.x0,dy=e.clientY-stick.y0,d=Math.hypot(dx,dy),m=Math.min(1,d/55),k=d?m/d*55:0;stick.x=d?dx/d*m:0;stick.y=d?-dy/d*m:0;$('stick').firstElementChild.style.transform=`translate(${dx*k/Math.max(1,m*55)*m}px,${dy*k/Math.max(1,m*55)*m}px)`;});
+const endStick=e=>{if(e.pointerId!==stick.id)return;stick.on=false;stick.x=stick.y=0;$('stick').style.display='none';};
+addEventListener('pointerup',endStick);addEventListener('pointercancel',endStick);
+function readInput(){let x=stick.x,y=stick.y;if(keys.has('arrowleft')||keys.has('a'))x=-1;if(keys.has('arrowright')||keys.has('d'))x=1;if(keys.has('arrowup')||keys.has('w'))y=1;if(keys.has('arrowdown')||keys.has('s'))y=-1;
+  if(Math.abs(x)<.18)x=0;if(Math.abs(y)<.35)y=0;const j=jumpQueued;jumpQueued=false;return {x,y,jump:j};}
+
+// ---------- messages ----------
+let sayTimer=0;function say(t,secs=2.6){const s=$('say');s.textContent=t;s.hidden=false;sayTimer=secs;}
+let tipped=store.get('trottville-cave-tip')==='1';
+function firstInput(){ctx();if(!tipped){tipped=true;store.set('trottville-cave-tip','1');$('say').hidden=true;}}
+
+// ---------- play ----------
+let st=C.newRun(0),mode='play',lastFrame=0,camPos=new T.Vector3(),camLook=new T.Vector3(),camInit=false,cabinT=0,lidOpen=0;
+const v=new T.Vector3(),w=new T.Vector3();
+function frameSize(){const W=innerWidth,H=innerHeight;renderer.setSize(W,H,false);camera.aspect=W/H;camera.updateProjectionMatrix();}
+addEventListener('resize',frameSize);frameSize();
+const ROPE_ARMS=-2.9;
+function poseRider(dt){const p=P(st.s),dir=st.face;rider.root.position.copy(posAt(st.s,st.y,v));
+  const hanging=st.mode==='climb'||st.mode==='swing';
+  if(st.mode==='swing'){const r=st.rope,pp=P(r.s);rider.root.position.set(pp.x+p.tx*Math.sin(st.theta)*r.L,r.y-Math.cos(st.theta)*r.L-1.45,pp.z+p.tz*Math.sin(st.theta)*r.L);}
+  if(st.mode==='climb')rider.root.position.y=st.y-.6;
+  // face along the course; on a rope face the rope (into the screen) a little
+  const yaw=Math.atan2(p.tx*dir,p.tz*dir),side=C.sideOf(p),ropeYaw=Math.atan2(-side.x,-side.z);
+  const target=hanging?ropeYaw+dir*.6:yaw;let d=target-rider.root.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));rider.root.rotation.y+=d*Math.min(1,dt*14);
+  const moving=st.mode==='ground'&&Math.abs(st.vs)>.3;
+  rider.update(dt,{pose:moving?'walk':'stand',fast:moving,speed:Math.abs(st.vs)/C.RUN,air:st.mode==='air'?1:0});
+  if(hanging){const climb=st.mode==='climb'?Math.sin(st.y*5)*.25:0;rider.arms.forEach((a,i)=>{a.rotation.x=ROPE_ARMS+(i?climb:-climb);a.rotation.z=0;});rider.legs.forEach((l,i)=>l.rotation.x=(i?.25:-.1)+(i?-climb:climb));}
+  else if(st.mode==='air'){rider.arms.forEach((a,i)=>{a.rotation.x=-1.6;a.rotation.z=(i?-.5:.5);});rider.legs.forEach((l,i)=>l.rotation.x=i?.6:-.3);}
+}
+function updateCamera(dt){
+  const p=P(st.s),side=C.sideOf(p),portrait=innerHeight>innerWidth;
+  // keep ~12 m of course in view whatever the screen shape
+  const hf=2*Math.atan(Math.tan(T.MathUtils.degToRad(camera.fov/2))*camera.aspect),dist=Math.min(22,Math.max(10.5,(portrait?4.6:6.4)/Math.tan(hf/2)));
+  const lead=st.face*(portrait?1.2:2.4);const ahead=P(Math.max(-3,Math.min(C.COURSE_END,st.s+lead)));
+  const ty=(st.mode==='swing'?st.y:st.y)+1.4;
+  w.set(ahead.x,ty,ahead.z);v.set(p.x+side.x*dist,ty+dist*.22,p.z+side.z*dist);
+  if(!camInit){camPos.copy(v);camLook.copy(w);camInit=true;}
+  const k=1-Math.exp(-dt*4);camPos.lerp(v,k);camLook.lerp(w,1-Math.exp(-dt*6));camera.position.copy(camPos);camera.lookAt(camLook);fill.position.copy(camPos).y+=6;fill.target.position.copy(camLook);
+  // hide rocks and crystals that would block the view of the rider
+  const ax=camera.position.x,az=camera.position.z,bx=rider.root.position.x,bz=rider.root.position.z,dx=bx-ax,dz=bz-az,L2=dx*dx+dz*dz||1;
+  for(const b of blockers){const t=Math.max(0,Math.min(1,((b.position.x-ax)*dx+(b.position.z-az)*dz)/L2)),qx=ax+dx*t-b.position.x,qz=az+dz*t-b.position.z;b.visible=t>=1||qx*qx+qz*qz>4.5;}
+  playerLight.position.set(rider.root.position.x+side.x*2,rider.root.position.y+2,rider.root.position.z+side.z*2);}
+function handle(events){for(const e of events){
+  if(e==='jump'||e==='release')sfx.jump();else if(e==='land')sfx.land();else if(e==='grab'){sfx.grab();}
+  else if(e==='splash'){sfx.splash();flash();say('Splash! Too deep to swim. Back to the last lantern.');}
+  else if(e==='ouch'){sfx.ouch();flash();say('Oof, too far to drop! Back to the last lantern.');}
+  else if(e==='checkpoint'){sfx.checkpoint();const L=cpLanterns[st.cp];if(L){L.lit=true;L.glass.material.emissiveIntensity=2;L.light.intensity=8;}if(st.cp===C.PLATFORMS.filter(q=>q[3]).length-1)say('The ship! Lower yourself down the rope.',3.4);}
+  else if(e==='cabin')enterCabin();}}
+function flash(){const f=$('fade');f.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.remove('on')));}
+function enterCabin(){if(mode!=='play')return;mode='fading';const f=$('fade');f.classList.add('on');
+  f.addEventListener('transitionend',()=>{mode='cabin';cabin.visible=true;rider.root.visible=false;$('jump').hidden=true;$('rotate').hidden=true;$('stick').style.display='none';
+    camera.fov=innerHeight>innerWidth?78:55;camera.updateProjectionMatrix();camera.position.set(0,-300+2.3,3.2);camera.lookAt(0,-300+.6,-1.6);$('cabinUI').hidden=false;f.classList.remove('on');sfx.creak();},{once:true});}
+$('openChest').onclick=()=>{if(lidOpen)return;lidOpen=.001;sfx.chest();$('openChest').hidden=true;
+  let cave;try{cave=JSON.parse(store.get(C.CAVE_KEY));}catch{cave=null;}
+  const d=new Date(),key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const r=C.openChest(cave,key,st.t);store.set(C.CAVE_KEY,JSON.stringify(r.cave));
+  if(r.already){coinPile.visible=false;say('Empty! Someone (you!) already took today’s treasure. It washes back in overnight.',5);$('leave').hidden=false;return;}
+  const id=queueCoins({from:'Smugglers’ Grotto',coins:r.coins,lines:[`Pirate treasure in the ship’s cabin: ${r.coins} Trotties`]});
+  say(`Pirate treasure! ${r.coins} Trotties`,4);
+  // the collect card opens once the lid has finished swinging (see the frame loop)
+  pendingCollect=id;};
+let pendingCollect=null;
+
+function frame(t){requestAnimationFrame(frame);if(document.hidden){lastFrame=t;return;}const dt=Math.min(.05,(t-(lastFrame||t))/1000);lastFrame=t;
+  if(mode==='play'){const input=readInput();C.step(st,input,dt);handle(st.events);poseRider(dt);updateCamera(dt);}
+  if(mode==='cabin'&&lidOpen>0&&lidOpen<1){lidOpen=Math.min(1,lidOpen+dt*1.4);chestLid.rotation.x=-lidOpen*1.9;coinPile.position.y=Math.sin(lidOpen*Math.PI)*.08;
+    if(lidOpen>=1&&pendingCollect){const id=pendingCollect;pendingCollect=null;showCollect({title:'Pirate treasure!',ids:[id],onDone:()=>{$('leave').hidden=false;}});}}
+  if(sayTimer>0){sayTimer-=dt;if(sayTimer<=0)$('say').hidden=true;}
+  // ambience
+  ripple.offset.x+=dt*.006;ripple.offset.y+=dt*.004;const time=t/1000;
+  swingRopes.forEach(s=>{if(st.mode==='swing'&&st.rope===s.w)s.g.rotation.x=0,s.g.children[0].parent.rotation.set(0,s.g.rotation.y,0),s.g.rotation.z=0;
+    const ang=st.mode==='swing'&&st.rope===s.w?st.theta:(still()?0:Math.sin(time*1.1+s.t)*.08);s.g.rotation.x=0;s.g.rotateX(0);s.g.children.forEach(()=>{});s.g.quaternion.setFromEuler(new T.Euler(ang,s.g.userData.yaw??(s.g.userData.yaw=s.g.rotation.y),0,'YXZ'));});
+  const fl=ship.userData.flag;if(fl&&!still()){const fp=fl.geometry.attributes.position;for(let i=0;i<fp.count;i++){const x=fp.getX(i);fp.setZ(i,Math.sin(time*2.2+x*2.4)*.12*(x+.9));}fp.needsUpdate=true;}
+  renderer.render(scene,camera);}
+
+// start once the scene is compiled (load-based: no guessed delays)
+st.s=-2;poseRider(0);updateCamera(1);
+renderer.compileAsync(scene,camera).catch(()=>{}).then(()=>{requestAnimationFrame(t=>{lastFrame=t;frame(t);const l=$('loading');l.classList.add('gone');l.addEventListener('transitionend',()=>l.remove(),{once:true});
+  if(!tipped)say('Drag to run, tap the jump button. Jump into ropes to grab them. Find the ship!',6);});});
+window.__cave={st:()=>st,set:(s,y,cp)=>{Object.assign(st,C.newRun(cp??st.cp),{s,y:y??st.y});camInit=false;},C,enterCabin};
+</script>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en" data-no-chip>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Hay of the Land</title>
+<meta name="theme-color" content="#2f6b3a">
+<link rel="stylesheet" href="coin-collect.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&display=swap">
+<style>
+/* Hay of the Land: a Trottville tile-laying board game. Phone portrait first. Rules live in board-hayland.mjs. */
+:root{--cream:#fffdf4;--ink:#24402f;--green:#2f6b3a;--leaf:#5aa04a;--gold:#f2b632;--berry:#e0703a;--field:#e4eecb;
+  --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;--body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--field);font-family:var(--body);color:var(--ink);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+.app{position:fixed;inset:0;display:flex;flex-direction:column;height:100dvh}
+/* top bar */
+.bar{display:flex;align-items:center;gap:8px;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 6px max(10px,env(safe-area-inset-left));background:var(--green);color:#fff;box-shadow:0 2px 0 #1e4a27}
+.bar h1{flex:1;margin:0;font:700 19px/1 var(--display);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar h1 small{font:800 11px var(--body);opacity:.8;margin-left:6px}
+.pill{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;min-width:44px;padding:0 12px;border-radius:99px;background:#ffffff22;font:800 13px/1 var(--body);color:#fff;text-decoration:none;white-space:nowrap}
+.pill:focus-visible,.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.pill[hidden]{display:none}
+/* players + ribbons */
+.status{background:var(--cream);padding:6px 10px 6px;box-shadow:0 2px 0 #24402f14;z-index:2}
+.players{display:flex;gap:6px}
+.pl{flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:12px;background:#f1efe2;border:2px solid transparent;transition:border-color .2s,background .2s}
+.pl.on{border-color:var(--c);background:#fff}
+.pl i{flex:none;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--c)}
+.pl span{flex:1;min-width:0;font:800 12px/1.1 var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl b{font:700 17px/1 var(--display);font-variant-numeric:tabular-nums}
+.pl.bump b{animation:bump .5s}
+@keyframes bump{40%{transform:scale(1.35)}}
+.ribbons{display:flex;gap:6px;margin-top:6px}
+.rb{all:unset;cursor:pointer;flex:1;min-width:0;display:flex;align-items:center;gap:4px;min-height:30px;padding:0 8px;border-radius:99px;background:#fff6dc;border:1.5px dashed #d7b25a;font:800 11px/1.1 var(--body);white-space:nowrap;overflow:hidden}
+.rb em{font-style:normal;overflow:hidden;text-overflow:ellipsis}
+.rb.won{border-style:solid;border-color:var(--c);background:color-mix(in srgb,var(--c) 18%,#fff)}
+.rb.won::after{content:'✓';margin-left:auto;color:var(--c);font-weight:900}
+/* board */
+.boardwrap{position:relative;flex:1;min-height:0;overflow:hidden;background:radial-gradient(circle at 50% 40%,#eef5d9,#d7e6b6 70%,#c9dca4)}
+#board{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block;cursor:grab}
+#board:active{cursor:grabbing}
+.zoom{position:absolute;right:max(10px,env(safe-area-inset-right));top:10px;display:flex;flex-direction:column;gap:6px}
+.zbtn{all:unset;cursor:pointer;width:44px;height:44px;border-radius:14px;background:#fffdf4e8;box-shadow:0 2px 0 #24402f33;display:grid;place-items:center;font:700 20px/1 var(--display);color:var(--green)}
+.turnflag{position:absolute;left:50%;top:10px;transform:translateX(-50%);padding:7px 14px;border-radius:99px;background:#fffdf4ee;box-shadow:0 2px 0 #24402f2a;font:800 13px/1.2 var(--body);white-space:nowrap;pointer-events:none;max-width:70%;overflow:hidden;text-overflow:ellipsis}
+.turnflag i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:-1px}
+/* svg pieces */
+.spot rect{fill:#fffdf455;stroke:#fffdf4;stroke-width:3;stroke-dasharray:9 7}
+.spot.fit rect{fill:#fffdf4aa;stroke:var(--green);animation:breathe 1.6s ease-in-out infinite}
+.spot path{stroke:#2f6b3a99;stroke-width:5;stroke-linecap:round}
+.spot.fit path{stroke:var(--green)}
+@keyframes breathe{50%{fill:#fffdf4dd}}
+.drop{transform-box:fill-box;transform-origin:center;animation:drop .45s cubic-bezier(.2,1.5,.45,1) both}
+@keyframes drop{from{transform:translateY(-34px) scale(1.14);opacity:0}}
+.ghost{transform-box:fill-box;transform-origin:center;animation:hover 1.4s ease-in-out infinite}
+@keyframes hover{50%{transform:translateY(-4px)}}
+.ghost.spin{animation:spin .25s ease-out}
+@keyframes spin{from{transform:rotate(-90deg)}}
+.think{transform-box:fill-box;transform-origin:center;animation:think .55s ease-out both}
+@keyframes think{0%{opacity:0;transform:scale(.8)}60%{opacity:.85;transform:scale(1.05)}100%{opacity:.85;transform:scale(1)}}
+.glow{fill:#fff3b0;stroke:#f2b632;stroke-width:7;animation:glow 1.5s ease-out both;pointer-events:none}
+@keyframes glow{0%{opacity:0}20%{opacity:.75}100%{opacity:0}}
+.float{font:700 34px var(--display);paint-order:stroke;stroke:#fff;stroke-width:7px;text-anchor:middle;animation:float 1.3s ease-out both;pointer-events:none}
+@keyframes float{0%{opacity:0;transform:translateY(10px)}20%{opacity:1}100%{opacity:0;transform:translateY(-46px)}}
+.tag rect{fill:var(--c)}.tag text{font:700 22px var(--display);fill:#fff;text-anchor:middle}
+/* tray */
+.tray{display:flex;align-items:center;gap:10px;padding:10px max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:var(--cream);box-shadow:0 -2px 0 #24402f14}
+.hand{all:unset;cursor:pointer;position:relative;flex:none;width:84px;height:84px;border-radius:16px;background:#f1efe2;display:grid;place-items:center;box-shadow:0 3px 0 #24402f22}
+.hand svg{width:72px;height:72px;transition:transform .2s}
+.hand .rot{position:absolute;right:-6px;bottom:-6px;width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font:800 16px/1 var(--body);box-shadow:0 2px 0 #1e4a27}
+.hand .rot[hidden]{display:none}
+.hand:disabled{cursor:default;opacity:.75}
+.info{flex:1;min-width:0}
+.info b{display:block;font:700 17px/1.15 var(--display)}
+.info small{display:block;font:800 12px/1.3 var(--body);opacity:.75}
+.btn{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border-radius:16px;font:700 17px/1 var(--display);text-align:center}
+.btn.primary{background:var(--green);color:#fff;box-shadow:0 3px 0 #1e4a27}
+.btn.secondary{background:#f1efe2;color:var(--ink);box-shadow:0 3px 0 #24402f22}
+.btn.gold{background:var(--gold);color:#3b2a06;box-shadow:0 3px 0 #b8861c}
+.btn:disabled,.btn[aria-disabled=true]{opacity:.45;cursor:default}
+.btn:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+#placeBtn{min-width:104px}
+/* sheets */
+.sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;background:#1d33264d;padding:max(12px,env(safe-area-inset-top)) 0 0}
+.sheet[hidden]{display:none}
+.card{width:min(560px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;background:var(--cream);border-radius:24px 24px 0 0;padding:20px max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));box-shadow:0 -4px 0 #24402f22;animation:up .3s cubic-bezier(.2,1,.4,1)}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.card h2{margin:0 0 6px;font:700 26px/1.1 var(--display);color:var(--green)}
+.card h3{margin:16px 0 4px;font:700 18px/1.2 var(--display)}
+.card p{margin:4px 0;font:600 15px/1.45 var(--body)}
+.card .stack{display:grid;gap:10px;margin-top:14px}
+.howrow{display:flex;flex-direction:column;gap:8px;align-items:stretch;padding:10px;border-radius:16px;background:#fff;margin-top:10px;box-shadow:0 2px 0 #24402f12}
+.howrow svg{flex:none}
+.howrow p{font-size:14px}
+.howrow b{font-family:var(--display);font-weight:700;font-size:16px;display:block;margin-bottom:2px;color:var(--green)}
+/* menu */
+.menu{position:fixed;inset:0;z-index:15;overflow-y:auto;background:linear-gradient(#bfe3f5 0,#e4f2d8 34%,var(--cream) 60%);padding:max(10px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.menu[hidden]{display:none}
+.menu .top{display:flex;justify-content:space-between;align-items:center;min-height:44px}
+.menu .top .pill{background:#2f6b3a;}
+.hero{display:block;margin:4px auto 0;width:min(320px,86vw);height:auto}
+.menu h1{margin:4px 0 2px;text-align:center;font:700 38px/1 var(--display);color:var(--green);text-shadow:0 3px 0 #fff}
+.menu .tag{text-align:center;margin:6px auto 14px;max-width:330px;font:700 15px/1.4 var(--body)}
+.mcard{background:#fff;border-radius:20px;padding:14px;margin:0 auto 12px;max-width:440px;box-shadow:0 3px 0 #24402f1a}
+.mcard h2{margin:0 0 2px;font:700 21px/1.1 var(--display)}
+.mcard p{margin:2px 0 10px;font:700 13px/1.35 var(--body);opacity:.8}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.seg button{all:unset;cursor:pointer;min-height:56px;border-radius:14px;background:#f1efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:800 12px/1.1 var(--body);text-align:center}
+.seg button .dots{font-size:13px;letter-spacing:-2px}
+.seg button[aria-pressed=true]{background:var(--green);color:#fff;box-shadow:0 3px 0 #1e4a27}
+.stats{text-align:center;font:800 12px/1.4 var(--body);opacity:.7;margin-top:6px}
+/* end */
+.winner{text-align:center}
+.winner .big{font:700 46px/1 var(--display);color:var(--green);margin:6px 0}
+.res{border-radius:16px;background:#fff;padding:10px 12px;margin-top:8px;border-left:6px solid var(--c);box-shadow:0 2px 0 #24402f12}
+.res header{display:flex;align-items:center;gap:8px}
+.res header span{flex:1;font:700 17px var(--display)}
+.res header b{font:700 26px/1 var(--display);font-variant-numeric:tabular-nums}
+.res .crown{font-size:18px}
+.res .bd{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 8px;margin-top:6px}
+.res .bd div{display:flex;justify-content:space-between;font:800 12px/1.5 var(--body);background:#f6f4e8;border-radius:8px;padding:2px 7px}
+.res .bd div b{font-variant-numeric:tabular-nums}
+#toast{position:fixed;left:50%;bottom:calc(120px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);max-width:88vw;text-align:center;background:#24402fee;color:#fff;border-radius:14px;padding:10px 16px;font:800 14px/1.35 var(--body);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:30}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (min-width:700px){.sheet{align-items:center}.card{border-radius:24px}.menu h1{font-size:46px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* ===== Trottville game family chrome: the same top bar, icons and buttons on every game page ===== */
+:root{--gf-display:'Fredoka','Trebuchet MS',system-ui,sans-serif;--gf-bar:#2f6b3a;
+  --gf-chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --gf-snd:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h4l5-4v14l-5-4H4z' fill='%23000'/%3E%3Cpath d='M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12'/%3E%3C/svg%3E");
+  --gf-mute:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h4l5-4v14l-5-4H4z' fill='%23000'/%3E%3Cpath d='M17 9.5l5 5M22 9.5l-5 5'/%3E%3C/svg%3E");
+  --gf-menu:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.8' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E")}
+.gf-bar{display:flex;align-items:center;gap:6px;min-height:52px;box-sizing:border-box;padding:max(4px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) 4px max(6px,env(safe-area-inset-left));background:var(--gf-bar);color:#fffdf4;box-shadow:0 2px 0 #1e4a27}
+.gf-bar h1,.gf-bar .gf-title{flex:1;min-width:0;margin:0;text-align:center;font:700 clamp(17px,4.7vw,21px)/1.05 var(--gf-display);letter-spacing:.2px;color:#fffdf4;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;text-wrap:balance;white-space:normal}
+.gf-bar h1 small,.gf-bar .gf-title small{display:none}
+.gf-btn{all:unset;box-sizing:border-box;flex:none;cursor:pointer;width:44px;height:44px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:#ffffff1f;color:#fffdf4;font:700 21px/1 var(--gf-display);text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:background-color .15s}
+.gf-btn:hover{background:#ffffff33}.gf-btn:active{background:#ffffff40}
+.gf-btn:focus-visible{outline:3px solid #f2b632;outline-offset:2px}
+.gf-btn[hidden]{display:none!important}
+.gf-btn.gf-ico{font-size:0}
+.gf-btn>svg{width:24px;height:24px;flex:none}
+.gf-btn.gf-ico::before,.gf-btn.gf-back::before{content:'';flex:none;width:24px;height:24px;background:currentColor;-webkit-mask:var(--gf-i) center/24px no-repeat;mask:var(--gf-i) center/24px no-repeat}
+/* Back: a chevron on phones, chevron + "Trottville" from 480px up. The text stays in the button for screen readers. */
+.gf-btn.gf-back{--gf-i:var(--gf-chev);font-size:0;padding:0}
+.gf-btn.gf-back svg{display:none}
+@media (min-width:480px){.gf-btn.gf-back{width:auto;padding:0 14px 0 8px;font:800 14px/1 system-ui,-apple-system,'Segoe UI',sans-serif}.gf-btn.gf-back *{font:inherit}}
+.gf-snd{--gf-i:var(--gf-snd)}.gf-snd[aria-label^="Sound off"]{--gf-i:var(--gf-mute)}
+.gf-menu{--gf-i:var(--gf-menu)}
+.gf-coins{flex:none;display:inline-flex;align-items:center;gap:5px;height:36px;box-sizing:border-box;padding:0 12px 0 9px;border-radius:999px;background:#00000029;color:#fffdf4;font:700 15px/1 var(--gf-display);font-variant-numeric:tabular-nums;box-shadow:none;min-width:0;pointer-events:none}
+.gf-coins b{font-weight:700}
+/* Line icons inside text buttons (Undo, Hint, Clear, Levels, Turn...) — one size, centred. */
+.gi{width:20px;height:20px;flex:none;display:block}
+.menu .top.gf-bar{justify-content:flex-start;margin:calc(-1 * max(10px,env(safe-area-inset-top))) calc(-1 * max(16px,env(safe-area-inset-right))) 10px calc(-1 * max(16px,env(safe-area-inset-left)))}
+.menu .top.gf-bar .gf-btn{background:#ffffff1f}
+.gf-spacer{flex:none;width:44px;height:44px}
+@media (min-width:480px){.gf-spacer{width:118px}}
+.bar.gf-bar h1{font:700 clamp(17px,4.7vw,21px)/1.05 var(--gf-display)}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="bar gf-bar">
+    <a class="pill gf-btn gf-back" id="homeLink" href="#home" aria-label="Back to Trottville home">Trottville</a>
+    <button class="pill gf-btn gf-back" id="worldBack" type="button" aria-label="Back to Trottville" hidden>Trottville</button>
+    <h1>Hay of the Land</h1>
+    <button class="pill gf-btn gf-ico gf-menu" id="menuBtn" type="button" aria-label="Game menu">☰</button>
+  </header>
+  <section class="status" aria-label="Scores">
+    <div class="players" id="players"></div>
+    <div class="ribbons" id="ribbons"></div>
+  </section>
+  <div class="boardwrap">
+    <svg id="board" role="application" aria-label="The countryside board. Drag to move, pinch to zoom."></svg>
+    <div class="turnflag" id="turnflag"></div>
+    <div class="zoom"><button class="zbtn" id="zin" type="button" aria-label="Zoom in">+</button><button class="zbtn" id="zout" type="button" aria-label="Zoom out">−</button><button class="zbtn" id="zfit" type="button" aria-label="Show the whole countryside">⤢</button></div>
+  </div>
+  <footer class="tray">
+    <button class="hand" id="hand" type="button" aria-label="Your tile. Tap to turn it"><svg viewBox="-4 -4 108 108" id="handSvg"></svg><span class="rot" aria-hidden="true">↻</span></button>
+    <div class="info"><b id="handName">—</b><small id="handHint">Tap a glowing spot</small></div>
+    <button class="btn primary" id="placeBtn" type="button" disabled>Place</button>
+  </footer>
+</div>
+
+<div class="menu" id="menu">
+  <div class="top gf-bar"><a class="pill gf-btn gf-back" id="menuHome" href="#home" aria-label="Back to Trottville home">Trottville</a><button class="pill gf-btn gf-back" id="menuWorld" type="button" aria-label="Back to Trottville" hidden>Trottville</button><span class="gf-title">Hay of the Land</span><span class="gf-spacer" aria-hidden="true"></span></div>
+  <svg class="hero" id="hero" viewBox="0 0 320 132" aria-hidden="true"></svg>
+  <h1>Hay of the Land</h1>
+  <p class="tag">Lay tiles, grow the countryside. Close trails and brooks, keep your horses happy, and race for ribbons.</p>
+  <div class="mcard">
+    <h2>Play a game</h2>
+    <p>You against Trottville neighbours. About 10 minutes.</p>
+    <div class="seg" id="seg" role="group" aria-label="Opponents">
+      <button type="button" data-n="0" aria-pressed="false"><span class="dots">🟠</span>Just me</button>
+      <button type="button" data-n="1" aria-pressed="true"><span class="dots">🟠🔵</span>1 rival</button>
+      <button type="button" data-n="2" aria-pressed="false"><span class="dots">🟠🔵🟣</span>2 rivals</button>
+      <button type="button" data-n="3" aria-pressed="false"><span class="dots">🟠🔵🟣🟡</span>3 rivals</button>
+    </div>
+    <button class="btn primary" id="startBtn" type="button" style="width:100%">Start</button>
+  </div>
+  <div class="mcard">
+    <h2>🌼 Daily Meadow</h2>
+    <p id="dailyText">Solo. Everyone gets the same 30 tiles today. Beat your best!</p>
+    <button class="btn gold" id="dailyBtn" type="button" style="width:100%">Play today’s meadow</button>
+  </div>
+  <div class="mcard" style="background:transparent;box-shadow:none;padding:0">
+    <button class="btn secondary" id="howBtn" type="button" style="width:100%">How to play</button>
+    <div class="stats" id="stats"></div>
+  </div>
+</div>
+
+<div class="sheet" id="howSheet" hidden><div class="card" role="dialog" aria-modal="true" aria-labelledby="howTitle">
+  <h2 id="howTitle">How to play</h2>
+  <p>Grow one shared countryside. Each turn you get one tile.</p>
+  <div id="howRows"></div>
+  <div class="stack"><button class="btn primary" type="button" data-close>Got it</button></div>
+</div></div>
+
+<div class="sheet" id="pauseSheet" hidden><div class="card" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+  <h2 id="pauseTitle">Paused</h2>
+  <p id="pauseText">Your meadow is waiting.</p>
+  <div class="stack">
+    <button class="btn primary" type="button" data-close>Keep playing</button>
+    <button class="btn secondary" type="button" id="pHow">How to play</button>
+    <button class="btn secondary" type="button" id="pLeave">Leave this game</button>
+  </div>
+</div></div>
+
+<div class="sheet" id="leaveSheet" hidden><div class="card" role="dialog" aria-modal="true" aria-labelledby="leaveTitle">
+  <h2 id="leaveTitle">Leave this game?</h2>
+  <p>Unfinished meadows don’t earn Trotties. Finish it to collect!</p>
+  <div class="stack">
+    <button class="btn primary" type="button" data-close>Keep playing</button>
+    <button class="btn secondary" type="button" id="leaveYes">Leave</button>
+  </div>
+</div></div>
+
+<div class="sheet" id="endSheet" hidden><div class="card" role="dialog" aria-modal="true" aria-labelledby="endTitle" id="endCard"></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="module">
+import * as H from './board-hayland.mjs';
+import {queueCoins,showCollect} from './coin-collect.js';
+
+const $=id=>document.getElementById(id);
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const IN_WORLD=new URLSearchParams(location.search).get('in')==='world'&&parent!==window;
+const BOTS=[{name:'Clover',style:'greedy'},{name:'Biscuit',style:'rival'},{name:'Pip',style:'casual'}];
+const STORE='trottville-hayland-v1';
+const loadStats=()=>{try{return JSON.parse(localStorage.getItem(STORE))||{};}catch{return {};}};
+const saveStats=s=>{try{localStorage.setItem(STORE,JSON.stringify(s));}catch{}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// ---------- tile art (100×100 units) ----------
+const MID=[[50,0],[100,50],[50,100],[0,50]];
+const COATS=[['#8a4b2a','#3b2418'],['#b9692f','#6e3517'],['#e3c27a','#fff3d0'],['#ece6da','#9a9187'],['#4a3328','#1f140f'],['#a8a39b','#4b4640']];
+function hashXY(x,y){return H.hashSeed(x*7919+':'+y*104729);}
+function kindDirs(edges,k){const d=[];for(let i=0;i<4;i++)if(edges[i]===k)d.push(i);return d;}
+function endPoint(edges,d,k){const other=k==='t'?'b':'t',o=kindDirs(edges,other).length;const [mx,my]=MID[d];return o>=2?[mx+(50-mx)*.42,my+(50-my)*.42]:[50,50];}
+function kindPath(dirs,end){const P=d=>MID[d].join(' ');
+  if(dirs.length===1)return `M${P(dirs[0])}L${end.join(' ')}`;
+  if(dirs.length===2){const [a,b]=dirs;return (a+2)%4===b?`M${P(a)}L${P(b)}`:`M${P(a)}Q50 50 ${P(b)}`;}
+  return dirs.map(d=>`M${P(d)}L50 50`).join('');}
+function strip(edges,k){const dirs=kindDirs(edges,k);if(!dirs.length)return '';const end=dirs.length===1?endPoint(edges,dirs[0],k):null,d=kindPath(dirs,end);
+  const [w,edge,fill,hi]=k==='t'?[26,'#c79a55','#ecd29a','#f6e4bb']:[22,'#3a8cc4','#62b9e8','#c3e9fb'];
+  const cap=end?`<circle cx="${end[0]}" cy="${end[1]}" r="${w/2+3}" fill="${edge}"/><circle cx="${end[0]}" cy="${end[1]}" r="${w/2}" fill="${fill}"/>`:'';
+  const hub=dirs.length>2?`<circle cx="50" cy="50" r="${w/2+3}" fill="${edge}"/><circle cx="50" cy="50" r="${w/2}" fill="${fill}"/>`:'';
+  const detail=k==='t'?`<path d="${d}" fill="none" stroke="${hi}" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>`:`<path d="${d}" fill="none" stroke="${hi}" stroke-width="3.5" stroke-dasharray="10 12" stroke-linecap="round"/>`;
+  return `<path d="${d}" fill="none" stroke="${edge}" stroke-width="${w+6}"/>${hub}${cap}<path d="${d}" fill="none" stroke="${fill}" stroke-width="${w}"/>${dirs.length>2?`<circle cx="50" cy="50" r="${w/2}" fill="${fill}"/>`:''}${end?`<circle cx="${end[0]}" cy="${end[1]}" r="${w/2}" fill="${fill}"/>`:''}${detail}`;}
+const BARN=(x,y)=>`<g transform="translate(${x} ${y})"><ellipse cx="1" cy="15" rx="18" ry="4.5" fill="#00000026"/><rect x="-14" y="-4" width="28" height="19" rx="2" fill="#cf4a32"/><path d="M-17 -2 0 -17 17 -2Z" fill="#8e3a2a"/><path d="M-14.5 -3.5 0 -15.5 14.5 -3.5" fill="none" stroke="#fff6e6" stroke-width="2"/><rect x="-5.5" y="3" width="11" height="12" fill="#fff6e6"/><path d="M-5.5 3 5.5 15M5.5 3-5.5 15" stroke="#cf4a32" stroke-width="1.8"/><circle cx="0" cy="-7" r="2.6" fill="#fff6e6"/></g>`;
+const POND=(x,y,k=1)=>`<g transform="translate(${x} ${y}) scale(${k})"><ellipse rx="17" ry="12.5" fill="#3a8cc4"/><ellipse rx="14" ry="10" fill="#62b9e8"/><ellipse cx="-4" cy="-3" rx="5" ry="2" fill="#d9f2ff"/><circle cx="7" cy="4" r="3.2" fill="#4f9a3d"/><circle cx="7.5" cy="3.5" r="1" fill="#f7a8c4"/></g>`;
+function HORSE(x,y,h){const [c,m]=COATS[h%COATS.length],flip=(h>>3)&1?-1:1;
+  return `<g transform="translate(${x} ${y}) scale(${flip} 1)"><ellipse cx="0" cy="17" rx="17" ry="4.5" fill="#00000024"/>
+  <path d="M-14 1q-6 3-5 13" fill="none" stroke="${m}" stroke-width="4" stroke-linecap="round"/>
+  <g fill="${c}" stroke="#00000033" stroke-width=".8"><rect x="-11" y="5" width="4" height="12" rx="2"/><rect x="-5" y="5" width="4" height="12" rx="2"/><rect x="3" y="5" width="4" height="12" rx="2"/><rect x="8.5" y="5" width="4" height="12" rx="2"/>
+  <ellipse cx="0" cy="3" rx="14" ry="8.5"/><path d="M6 1 11-14 19-11 13 5Z"/><ellipse cx="17" cy="-14" rx="8" ry="5.6" transform="rotate(18 17 -14)"/><path d="M12-18 13-25 17-19Z"/></g>
+  <ellipse cx="22.5" cy="-11.5" rx="3.6" ry="3" fill="#00000022"/>
+  <path d="M12-18q-3 9-6 18" fill="none" stroke="${m}" stroke-width="4" stroke-linecap="round"/><circle cx="17.5" cy="-15.5" r="1.4" fill="#1d1410"/></g>`;}
+const APPLE=(x,y)=>`<g transform="translate(${x} ${y})"><ellipse cx="0" cy="17" rx="15" ry="4" fill="#00000024"/><rect x="-3" y="2" width="6" height="15" rx="2" fill="#7b4a2a"/><circle cx="-8" cy="-1" r="10" fill="#3d8a37"/><circle cx="8" cy="-1" r="10" fill="#3d8a37"/><circle cx="0" cy="-9" r="12" fill="#4fa443"/><circle cx="-4" cy="-13" r="5" fill="#6cc05c"/><g fill="#e2382f"><circle cx="-8" cy="1" r="2.6"/><circle cx="6" cy="-8" r="2.6"/><circle cx="9" cy="3" r="2.6"/><circle cx="-2" cy="-3" r="2.6"/></g></g>`;
+const FENCE=(h)=>{const y=70+(h%10),x=18+(h%30);return `<g transform="translate(${x} ${y})"><g fill="#a77443"><rect x="0" y="-12" width="4" height="15" rx="1"/><rect x="24" y="-12" width="4" height="15" rx="1"/><rect x="48" y="-12" width="4" height="15" rx="1"/></g><g fill="#d2a06a"><rect x="-2" y="-10" width="56" height="3.5" rx="1.5"/><rect x="-2" y="-4" width="56" height="3.5" rx="1.5"/></g></g>`;};
+function BRIDGE(edges){const ns=edges[0]==='t';const deck=ns?`<rect x="34" y="27" width="32" height="46" rx="3"/>`:`<rect x="27" y="34" width="46" height="32" rx="3"/>`;
+  let planks='';for(let i=0;i<6;i++){const o=30+i*7.5;planks+=ns?`<path d="M35 ${o}h30"/>`:`<path d="M${o} 35v30"/>`;}
+  const rails=ns?`<path d="M34 27v46M66 27v46"/>`:`<path d="M27 34h46M27 66h46"/>`;
+  return `<g fill="#b98048">${deck}</g><g stroke="#8a5a2c" stroke-width="1.5">${planks}</g><g stroke="#6d4421" stroke-width="4" stroke-linecap="round">${rails}</g>`;}
+const GATE=`<g><rect x="31" y="34" width="5" height="22" rx="2" fill="#7b4a2a"/><rect x="64" y="34" width="5" height="22" rx="2" fill="#7b4a2a"/><path d="M27 37Q50 22 73 37" fill="none" stroke="#2f6b3a" stroke-width="7" stroke-linecap="round"/><circle cx="50" cy="29" r="5" fill="#f2b632" stroke="#fff" stroke-width="1.5"/></g>`;
+function tileSVG(edges,feature,h=0,owner=null){
+  let s=`<rect width="100" height="100" fill="#93cc6c"/><path d="M0 0h100v100H0z" fill="none" stroke="#7fbb5b" stroke-width="2"/>`;
+  for(let i=0;i<6;i++){const a=H.hashSeed(h+':'+i),x=8+a%84,y=8+(a>>>8)%84;s+=i<4?`<path d="M${x} ${y}l2-6M${x+3} ${y}l1-7M${x+6} ${y}l-1-5" stroke="#6eae4f" stroke-width="2" stroke-linecap="round"/>`:`<circle cx="${x}" cy="${y}" r="2.6" fill="${i===4?'#fff6a8':'#f6b7d2'}"/>`;}
+  s+=strip(edges,'b')+strip(edges,'t');
+  if(feature==='bridge')s+=BRIDGE(edges);
+  const dead=k=>{const d=kindDirs(edges,k);return d.length===1?endPoint(edges,d[0],k):null;};
+  if(feature==='barn'){const p=dead('t')||[50,50];s+=BARN(p[0],p[1]-4);}
+  if(feature==='pond'){const p=dead('b')||[50,50];s+=POND(p[0],p[1],p[0]===50&&p[1]===50?1.45:1);}
+  if(feature==='horse')s+=HORSE(50,52,h);
+  if(feature==='apple')s+=APPLE(50,50);
+  if(!feature&&edges==='gggg')s+=FENCE(h);
+  if(H.START.edges===edges&&feature==='pond'&&owner===-1)s+=GATE;
+  if(owner!=null&&owner>=0)s+=`<circle cx="13" cy="13" r="8" fill="${state.players[owner].color}" stroke="#fff" stroke-width="3"/>`;
+  return s;}
+
+// ---------- state ----------
+let state=null,mode={n:1,daily:false},sel=null,handR=0,busy=false,view={tx:0,ty:0,k:.9},activeMs=0,lastAct=0,newKey=null,ending=false,lastGame=null;
+const svg=$('board');
+svg.innerHTML=`<g id="world"><g id="soil"></g><g id="tiles"></g><g id="fx"></g><g id="spots"></g><g id="ghost"></g></g>`;
+const L={world:$('world'),soil:$('soil'),tiles:$('tiles'),fx:$('fx'),spots:$('spots'),ghost:$('ghost')};
+const isHuman=()=>state&&!state.over&&!state.players[state.cur].bot;
+function act(){const now=performance.now();if(lastAct)activeMs+=Math.min(45000,now-lastAct);lastAct=now;}
+
+function startGame(daily){
+  const players=[{name:'You',bot:false}];
+  if(!daily)for(let i=0;i<mode.n;i++)players.push({...BOTS[i],bot:true});
+  const seed=daily?H.dailySeed():(Math.random()*2**32)>>>0;
+  state=H.newGame({players,seed,daily});mode.daily=daily;sel=null;handR=0;busy=false;ending=false;activeMs=0;lastAct=performance.now();newKey=null;
+  lastGame={daily,n:mode.n};
+  $('menu').hidden=true;closeSheets();
+  renderAll();requestAnimationFrame(()=>{fit(false);turn();});
+}
+
+// ---------- rendering ----------
+function renderBoard(){let soil='',tiles='';
+  for(const [k,t] of Object.entries(state.board)){const [x,y]=H.unkey(k);
+    soil+=`<rect x="${x*100-1}" y="${y*100+7}" width="102" height="100" rx="5" fill="#6c8b3e"/>`;
+    tiles+=`<g transform="translate(${x*100} ${y*100})"><g class="${k===newKey?'drop':''}">${tileSVG(t.edges,t.feature,hashXY(x,y),t.owner)}</g></g>`;}
+  L.soil.innerHTML=soil;L.tiles.innerHTML=tiles;}
+function renderSpots(){if(!isHuman()||busy||!state.current){L.spots.innerHTML='';return;}
+  const cur=H.rotate(state.current.edges,handR);let s='';
+  for(const sp of H.legalSpots(state.board,state.current)){if(sel&&sel.x===sp.x&&sel.y===sp.y)continue;
+    const fit=H.fits(state.board,cur,sp.x,sp.y);
+    s+=`<g class="spot ${fit?'fit':''}" data-spot="${sp.x},${sp.y}" transform="translate(${sp.x*100} ${sp.y*100})"><rect x="7" y="7" width="86" height="86" rx="16"/><path d="M50 36v28M36 50h28"/></g>`;}
+  L.spots.innerHTML=s;}
+function renderGhost(spin){if(!sel||!state.current){L.ghost.innerHTML='';return;}
+  const t=state.current,e=H.rotate(t.edges,sel.r),c=state.players[state.cur].color,pv=H.preview(state,sel.x,sel.y,sel.r),me=pv?pv.pts[state.cur]:0;
+  L.ghost.innerHTML=`<g transform="translate(${sel.x*100} ${sel.y*100})" data-ghost="1"><g class="ghost${spin?' spin':''}">${tileSVG(e,t.feature,hashXY(sel.x,sel.y),null)}
+    <rect x="2" y="2" width="96" height="96" rx="6" fill="none" stroke="${c}" stroke-width="6"/><circle cx="88" cy="88" r="13" fill="${c}" stroke="#fff" stroke-width="3"/><path d="M82 87a6 6 0 1 1 3 5.3" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M80 92l2-6 4 4z" fill="#fff"/></g>
+    ${me>0?`<g class="tag" style="--c:${c}" transform="translate(50 -16)"><rect x="-26" y="-17" width="52" height="30" rx="15"/><text y="7">+${me}</text></g>`:''}</g>`;}
+function renderHand(){const t=state?.current,svgH=$('handSvg');
+  document.querySelector('.hand .rot').hidden=!t;
+  if(!t){svgH.innerHTML='';$('handName').textContent=state?.over?'All laid!':'—';$('handHint').textContent='';$('placeBtn').disabled=true;return;}
+  const e=H.rotate(t.edges,sel?sel.r:handR);svgH.innerHTML=tileSVG(e,t.feature,7,null);
+  const human=isHuman()&&!busy;$('hand').disabled=!human;
+  $('handName').textContent=human?t.name:`${state.players[state.cur].name} is thinking…`;
+  $('handHint').textContent=human?(sel?'Tap the tile to turn it · Place when happy':'Tap a glowing spot'):(t.name);
+  const pv=sel&&human?H.preview(state,sel.x,sel.y,sel.r):null;
+  $('placeBtn').disabled=!pv;$('placeBtn').textContent=pv?(pv.pts[state.cur]>0?`Place +${pv.pts[state.cur]}`:'Place'):'Place';}
+function renderStatus(bumps=[]){const tt=H.totals(state);
+  $('players').innerHTML=state.players.map((p,i)=>`<div class="pl ${i===state.cur&&!state.over?'on':''} ${bumps.includes(i)?'bump':''}" style="--c:${p.color}"><i></i><span>${esc(p.name)}</span><b>${tt[i]}</b></div>`).join('');
+  $('ribbons').innerHTML=state.ribbons.map(r=>{const R=H.RIBBONS[r.id],c=r.winner>=0?state.players[r.winner].color:'';
+    return `<button class="rb ${r.winner>=0?'won':''}" type="button" data-rb="${r.id}" style="--c:${c}" aria-label="${esc(R.name)}: ${esc(R.text)}"><span>${R.icon}</span><em>${esc(R.name)}</em></button>`;}).join('');
+    const p=state.players[state.cur];$('turnflag').style.setProperty('--c',p.color);
+  $('turnflag').innerHTML=state.over?'Grazing time…':(state.players.length===1?(state.daily?'🌼 Daily Meadow':'Your countryside'):`<i></i>${p.bot?esc(p.name)+'’s turn':'Your turn'}`)+` · ${state.limit-state.placed} left`;}
+function renderAll(spin){renderBoard();renderSpots();renderGhost(spin);renderHand();renderStatus();applyView();}
+
+// ---------- view: pan + pinch ----------
+function applyView(){L.world.setAttribute('transform',`translate(${view.tx} ${view.ty}) scale(${view.k})`);}
+const clampK=k=>Math.max(.4,Math.min(1.6,k));
+function bounds(){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const cells=[...Object.keys(state.board).map(H.unkey),...(isHuman()?H.frontier(state.board):[])];
+  for(const [x,y] of cells){x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}return {x0,y0,x1:x1+1,y1:y1+1};}
+let anim=null;
+function animateTo(target){cancelAnimationFrame(anim);if(REDUCED){view=target;applyView();return;}const from={...view},t0=performance.now();
+  const step=now=>{const u=Math.min(1,(now-t0)/380),e=1-(1-u)**3;view={tx:from.tx+(target.tx-from.tx)*e,ty:from.ty+(target.ty-from.ty)*e,k:from.k+(target.k-from.k)*e};applyView();if(u<1)anim=requestAnimationFrame(step);};anim=requestAnimationFrame(step);}
+function fit(smooth=true){const r=svg.getBoundingClientRect(),b=bounds(),pad=30;
+  const k=clampK(Math.min(1.05,(r.width-pad*2)/((b.x1-b.x0)*100),(r.height-pad*2)/((b.y1-b.y0)*100)));
+  const t={k,tx:r.width/2-(b.x0+b.x1)/2*100*k,ty:r.height/2-(b.y0+b.y1)/2*100*k};smooth?animateTo(t):(view=t,applyView());}
+function ensureVisible(x,y){const r=svg.getBoundingClientRect(),k=view.k,sx=view.tx+x*100*k,sy=view.ty+y*100*k,m=24;
+  if(sx>=m&&sy>=m&&sx+100*k<=r.width-m&&sy+100*k<=r.height-m)return;
+  animateTo({k,tx:r.width/2-(x+.5)*100*k,ty:r.height/2-(y+.5)*100*k});}
+function zoomAt(f,cx,cy){const r=svg.getBoundingClientRect();cx??=r.width/2;cy??=r.height/2;const k=clampK(view.k*f),wx=(cx-view.tx)/view.k,wy=(cy-view.ty)/view.k;view={k,tx:cx-wx*k,ty:cy-wy*k};applyView();}
+const ptrs=new Map();let g=null;
+const local=e=>{const r=svg.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};};
+svg.addEventListener('pointerdown',e=>{cancelAnimationFrame(anim);try{svg.setPointerCapture(e.pointerId);}catch{}const p=local(e);ptrs.set(e.pointerId,p);
+  if(ptrs.size===1)g={type:'pan',sx:p.x,sy:p.y,v:{...view},moved:false,target:e.target};
+  else if(ptrs.size===2){const [a,b]=[...ptrs.values()];g={type:'pinch',d:Math.hypot(a.x-b.x,a.y-b.y)||1,m:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},v:{...view},moved:true};}});
+svg.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId)||!g)return;const p=local(e);ptrs.set(e.pointerId,p);
+  if(g.type==='pan'&&ptrs.size===1){const dx=p.x-g.sx,dy=p.y-g.sy;if(!g.moved&&Math.hypot(dx,dy)>8)g.moved=true;if(g.moved){view={...g.v,tx:g.v.tx+dx,ty:g.v.ty+dy};applyView();}}
+  else if(g.type==='pinch'&&ptrs.size>=2){const [a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y),m={x:(a.x+b.x)/2,y:(a.y+b.y)/2},k=clampK(g.v.k*d/g.d),wx=(g.m.x-g.v.tx)/g.v.k,wy=(g.m.y-g.v.ty)/g.v.k;
+    view={k,tx:m.x-wx*k,ty:m.y-wy*k};applyView();}});
+function endPtr(e){if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);
+  if(g?.type==='pan'&&!g.moved&&e.type==='pointerup')tapBoard(g.target);
+  if(ptrs.size===1){const [p]=[...ptrs.values()];g={type:'pan',sx:p.x,sy:p.y,v:{...view},moved:true};}else if(!ptrs.size)g=null;}
+svg.addEventListener('pointerup',endPtr);svg.addEventListener('pointercancel',endPtr);
+svg.addEventListener('wheel',e=>{e.preventDefault();const p=local(e);zoomAt(Math.exp(-e.deltaY*.0015),p.x,p.y);},{passive:false});
+$('zin').onclick=()=>zoomAt(1.25);$('zout').onclick=()=>zoomAt(.8);$('zfit').onclick=()=>fit();
+addEventListener('resize',()=>state&&applyView());
+
+// ---------- the player's turn ----------
+function tapBoard(target){if(!isHuman()||busy)return;const el=target.closest?.('[data-spot],[data-ghost]');if(!el)return;act();
+  if(el.dataset.ghost){turnTile();return;}
+  const [x,y]=el.dataset.spot.split(',').map(Number),sp=H.legalSpots(state.board,state.current).find(s=>s.x===x&&s.y===y);if(!sp)return;
+  const want=H.rotate(state.current.edges,handR),r=sp.rots.find(r=>H.rotate(state.current.edges,r)===want)??sp.rots[0];
+  sel={x,y,r};handR=r;renderSpots();renderGhost(false);renderHand();ensureVisible(x,y);}
+function turnTile(){if(!isHuman()||busy)return;act();const t=state.current;
+  if(sel){const sp=H.legalSpots(state.board,t).find(s=>s.x===sel.x&&s.y===sel.y);if(!sp)return;
+    if(sp.rots.length===1){toast(H.rotationsOf(t.edges).length===1?'This tile looks the same every way round':'Only one way fits here');return;}
+    const i=sp.rots.indexOf(sel.r);sel.r=sp.rots[(i+1)%sp.rots.length];handR=sel.r;renderGhost(true);renderHand();}
+  else{const rs=H.rotationsOf(t.edges);handR=rs[(rs.indexOf(handR)+1)%rs.length]??0;renderHand();renderSpots();}}
+$('hand').onclick=turnTile;
+$('placeBtn').onclick=()=>{if(!sel||!isHuman()||busy)return;act();commit(sel.x,sel.y,sel.r);};
+addEventListener('keydown',e=>{if(!state||$('menu').hidden===false||document.querySelector('.sheet:not([hidden])'))return;
+  if(e.key==='r'||e.key==='R'){turnTile();}else if(e.key==='Enter'&&sel&&!$('placeBtn').disabled){e.preventDefault();$('placeBtn').click();}
+  else if(e.key==='Escape')openSheet('pauseSheet');});
+
+// Place (anyone), animate, then carry on when the drop animation has really finished.
+function commit(x,y,r){busy=true;const name=state.players[state.cur].name,tile=state.current.name,before=H.totals(state);
+  const res=H.place(state,x,y,r);sel=null;handR=0;newKey=H.key(x,y);
+  renderAll();newKey=null;ensureVisible(x,y);
+  const after=H.totals(state),bumps=after.map((v,i)=>v>before[i]?i:-1).filter(i=>i>=0);renderStatus(bumps);
+  celebrate(res,name,tile,after.map((v,i)=>v-before[i]));
+  afterAnim(L.tiles.querySelector('.drop'),()=>{busy=false;turn();});}
+function afterAnim(el,fn){if(REDUCED||!el){setTimeout(fn,REDUCED?380:0);return;}let done=false;const go=()=>{if(!done){done=true;fn();}};el.addEventListener('animationend',go,{once:true});setTimeout(go,1200);}
+function celebrate(res,name,tile,gain){const msgs=[];const p=res.player,pc=state.players[p].color;
+  for(const e of res.events){
+    if(e.kind==='close'){const who=e.winners.map(w=>state.players[w]);
+      let fx='';for(const k of e.keys){const [x,y]=H.unkey(k);fx+=`<rect class="glow" x="${x*100+4}" y="${y*100+4}" width="92" height="92" rx="12"/>`;}
+      const [cx,cy]=H.unkey(e.keys[Math.floor(e.keys.length/2)]);
+      fx+=`<text class="float" x="${cx*100+50}" y="${cy*100+50}" fill="${who[0]?.color||pc}">+${e.pts}</text>`;spawnFx(fx);
+      msgs.push(`${e.type==='t'?'🛤 Trail':'💧 Brook'} closed! +${e.pts} to ${who.map(w=>w.name==='You'?'you':w.name).join(' & ')}`);}
+    if(e.kind==='ribbon'){const R=H.RIBBONS[e.id],w=state.players[e.player];msgs.push(`🎀 ${R.name} ribbon → ${w.name==='You'?'you':w.name}! +${e.pts}`);}}
+  const own=res.events.find(e=>e.kind==='edges');
+  if(own?.pts>0&&!res.events.some(e=>e.kind==='close'))spawnFx(`<text class="float" x="${res.x*100+50}" y="${res.y*100+40}" fill="${pc}">+${own.pts}</text>`);
+  if(own?.matched===4)msgs.unshift('🧩 Snug fit!');
+  if(state.players[p].bot&&!msgs.length)msgs.push(`${name} laid ${/^[AEIOU]/.test(tile)?'an':'a'} ${tile.toLowerCase()}${gain[p]>0?` +${gain[p]}`:''}`);
+  if(msgs.length)toast(msgs.join('<br>'),msgs.length>1?2600:1700);}
+function spawnFx(markup){const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.innerHTML=markup;L.fx.append(g);
+  const last=g.lastElementChild;if(REDUCED||!last){setTimeout(()=>g.remove(),1400);return;}last.addEventListener('animationend',()=>g.remove(),{once:true});setTimeout(()=>g.remove(),2500);}
+
+function turn(){if(!state)return;if(state.over){endGame();return;}renderAll();
+  if(state.players[state.cur].bot){botTurn();return;}}
+function botTurn(){busy=true;renderHand();renderSpots();const s=state,m=H.botMove(s);if(!m){busy=false;return;}
+  ensureVisible(m.x,m.y);const t=s.current,c=s.players[s.cur].color;
+  L.ghost.innerHTML=`<g transform="translate(${m.x*100} ${m.y*100})"><g class="think">${tileSVG(H.rotate(t.edges,m.r),t.feature,hashXY(m.x,m.y),null)}<rect x="2" y="2" width="96" height="96" rx="6" fill="none" stroke="${c}" stroke-width="6"/></g></g>`;
+  afterAnim(L.ghost.querySelector('.think'),()=>{if(state!==s||ending)return;L.ghost.innerHTML='';commit(m.x,m.y,m.r);});}
+
+// ---------- end of game ----------
+function endGame(){if(ending)return;ending=true;busy=true;act();renderAll();fit();
+  let fx='';for(const h of state.horses||[])fx+=`<text class="float" x="${h.x*100+50}" y="${h.y*100+30}" fill="${state.players[h.owner].color}">🐴+${h.pts}</text>`;
+  renderStatus([...new Set((state.horses||[]).map(h=>h.owner))]);
+  if(fx){const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.innerHTML=fx;L.fx.append(g);afterAnim(g.firstElementChild,()=>{g.remove();showEnd();});}else showEnd();}
+function showEnd(){const s=state,tt=H.totals(s),win=H.winners(s),youWon=win.includes(0),solo=s.players.length===1;
+  const stats=loadStats();stats.played=(stats.played||0)+1;if(!solo&&youWon&&win.length===1)stats.wins=(stats.wins||0)+1;
+  let isBest=false;
+  if(s.daily){const dk=H.dayKey();stats.daily=stats.daily||{};const prev=stats.daily[dk];isBest=prev==null||tt[0]>prev;if(isBest)stats.daily[dk]=tt[0];
+    const keys=Object.keys(stats.daily).sort();while(keys.length>30)delete stats.daily[keys.shift()];}
+  else if(solo){isBest=!stats.soloBest||tt[0]>stats.soloBest;if(isBest)stats.soloBest=tt[0];}
+  stats.best=Math.max(stats.best||0,tt[0]);saveStats(stats);
+  // Trotties: ~10 a minute of real play (idle gaps capped), +15 for winning, +20 for a daily best, +10 for a solo best.
+  const mins=Math.min(20,activeMs/60000),base=Math.max(5,Math.round(mins*10)),lines=[`${Math.max(1,Math.round(mins))} min in the meadow · ${base} 🪙`];let coins=base;
+  if(!solo&&youWon){const b=win.length===1?15:8;coins+=b;lines.push(`${win.length===1?'Won':'Shared the win'} · ${b} 🪙`);}
+  if(s.daily&&isBest){coins+=20;lines.push('New Daily Meadow best · 20 🪙');}
+  else if(!s.daily&&solo&&isBest){coins+=10;lines.push('New solo best · 10 🪙');}
+  const collectId=queueCoins({from:'Hay of the Land',coins,lines});
+  const order=s.players.map((p,i)=>i).sort((a,b)=>tt[b]-tt[a]);
+  const title=solo?(isBest?'New best meadow!':'Lovely meadow!'):youWon?(win.length>1?'A shared win!':'You win!'):`${s.players[win[0]].name} wins!`;
+  const row=(lab,v)=>`<div><span>${lab}</span><b>${v}</b></div>`;
+  $('endCard').innerHTML=`<div class="winner"><h2 id="endTitle">${esc(title)}</h2><div class="big">${tt[0]}</div>
+    <p>${s.daily?`Daily Meadow · ${H.dayKey()} · best ${stats.daily[H.dayKey()]}`:solo?`Solo meadow · best ${stats.soloBest}`:'Your score'}</p></div>
+    ${order.map(i=>{const p=s.players[i],sc=s.score[i];return `<div class="res" style="--c:${p.color}"><header>${win.includes(i)&&!solo?'<span class="crown" style="flex:none">👑</span>':''}<span>${esc(p.name)}</span><b>${tt[i]}</b></header>
+      <div class="bd">${row('🧩 Edges',sc.edges)}${row('🛤 Trails',sc.trails)}${row('💧 Brooks',sc.brooks)}${row('🚪 Gates',sc.gates)}${row('🐴 Horses',sc.horses)}${row('🎀 Ribbons',sc.ribbons)}</div></div>`;}).join('')}
+    <div class="stack">${collectId?`<button class="tc-collect" id="collect" type="button">Collect ${coins} Trotties</button>`:''}
+    <button class="btn primary" id="again" type="button">${s.daily?'Play today’s meadow again':'Play again'}</button>
+    <button class="btn secondary" id="toMenu" type="button">Main menu</button>
+    <button class="btn secondary" id="peek" type="button">Look at the countryside</button></div>`;
+  openSheet('endSheet');$('turnflag').textContent='Final scores · tap ☰';
+  $('collect')?.addEventListener('click',e=>{e.currentTarget.remove();showCollect({title:'Meadow rewards',ids:[collectId]});});
+  $('again').onclick=()=>{closeSheets();startGame(s.daily);};
+  $('toMenu').onclick=()=>{closeSheets();showMenu();};
+  $('peek').onclick=()=>{closeSheets();toast('Tap ☰ for the scores again',2000);};}
+
+// ---------- sheets, menu, toast ----------
+function openSheet(id){for(const s of document.querySelectorAll('.sheet'))s.hidden=s.id!==id;$(id).hidden=false;$(id).querySelector('button')?.focus({preventScroll:true});}
+function closeSheets(){for(const s of document.querySelectorAll('.sheet'))s.hidden=true;}
+document.addEventListener('click',e=>{const c=e.target.closest('[data-close]');if(c){c.closest('.sheet').hidden=true;if(c.closest('#howSheet')&&state&&!state.over&&$('menu').hidden&&pausedFromGame){pausedFromGame=false;}}
+  if(e.target.classList?.contains('sheet')&&e.target.id!=='endSheet')e.target.hidden=true;
+  const rb=e.target.closest('[data-rb]');if(rb){const R=H.RIBBONS[rb.dataset.rb],r=state.ribbons.find(x=>x.id===rb.dataset.rb);toast(`${R.icon} <b>${esc(R.name)}</b>: ${esc(R.text)}. +${H.RIBBON_PTS}${r.winner>=0?` · won by ${esc(state.players[r.winner].name)}`:' · still up for grabs'}`,2800);}});
+let pausedFromGame=false,toastT=0;
+function toast(html,ms=1800){const t=$('toast');t.innerHTML=html;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),ms);}
+$('menuBtn').onclick=()=>{if(state?.over&&ending){openSheet('endSheet');return;}$('pauseText').textContent=state?`${state.limit-state.placed} tiles left · ${H.totals(state)[0]} points so far`:'';openSheet('pauseSheet');};
+$('pHow').onclick=()=>{pausedFromGame=true;openSheet('howSheet');};
+$('pLeave').onclick=()=>openSheet('leaveSheet');
+let leaveTo=null;
+$('leaveYes').onclick=()=>{closeSheets();state=null;ending=false;if(leaveTo){const f=leaveTo;leaveTo=null;f();}else showMenu();};
+function guardLeave(fn){if(state&&!state.over){leaveTo=fn;openSheet('leaveSheet');}else fn();}
+const goHome=()=>{location.href='/#home';};
+const goWorld=()=>parent.postMessage('trottville:close-board',location.origin);
+if(IN_WORLD){$('homeLink').hidden=true;$('worldBack').hidden=false;$('menuHome').hidden=true;$('menuWorld').hidden=false;}
+$('worldBack').onclick=()=>guardLeave(goWorld);$('menuWorld').onclick=goWorld;
+$('homeLink').addEventListener('click',e=>{if(state&&!state.over){e.preventDefault();guardLeave(goHome);}});
+$('howBtn').onclick=()=>openSheet('howSheet');
+for(const b of $('seg').querySelectorAll('button'))b.onclick=()=>{mode.n=Number(b.dataset.n);for(const x of $('seg').querySelectorAll('button'))x.setAttribute('aria-pressed',String(x===b));};
+$('startBtn').onclick=()=>startGame(false);$('dailyBtn').onclick=()=>startGame(true);
+function showMenu(){state=null;ending=false;$('menu').hidden=false;const st=loadStats(),d=st.daily?.[H.dayKey()];
+  $('dailyText').textContent=`Solo. Everyone gets the same 30 tiles today.${d!=null?` Your best today: ${d}.`:' Beat your best!'}`;
+  $('stats').textContent=st.played?`Games ${st.played} · Wins ${st.wins||0} · Best score ${st.best||0}`:'New here? Read How to play — it takes a minute.';}
+
+// ---------- illustrations ----------
+function mini(cells,size,extra=''){const xs=cells.map(c=>c[0]),ys=cells.map(c=>c[1]),w=Math.max(...xs)+1,h=Math.max(...ys)+1;
+  return `<svg width="${size*w}" height="${size*h}" viewBox="-3 -3 ${w*100+6} ${h*100+12}" aria-hidden="true">${cells.map(([x,y])=>`<rect x="${x*100-1}" y="${y*100+7}" width="102" height="100" rx="5" fill="#6c8b3e"/>`).join('')}${cells.map(([x,y,e,f,o])=>`<g transform="translate(${x*100} ${y*100})">${tileSVG(e,f,x*31+y*7+3,o)}</g>`).join('')}${extra}</svg>`;}
+function howTo(){state=state||{players:[{color:H.COLORS[0]},{color:H.COLORS[1]}]};const fake=state;
+  const tick=(x,y,ok)=>`<g transform="translate(${x} ${y})"><circle r="22" fill="${ok?'#2f6b3a':'#c8452f'}" stroke="#fff" stroke-width="5"/><path d="${ok?'M-10 0l7 7 13-14':'M-9-9 9 9M9-9-9 9'}" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/></g>`;
+  const rows=[
+    ['Match every edge',`Lay your tile touching the land. Every edge it touches must match: meadow to meadow, trail to trail, brook to brook. Tap the tile to turn it.`,mini([[0,0,'gtgt',null],[1,0,'gggt','barn']],56,tick(100,50,true))+' '+mini([[0,0,'gtgt',null],[1,0,'gggb','pond']],56,tick(100,50,false))],
+    ['Snug fits pay',`+1 for each matching edge after the first. Fill a gap that touches 4 tiles for +3.`,mini([[1,0,'gggg',null],[0,1,'gggg','apple'],[1,1,'gggg','horse'],[2,1,'gggg',null],[1,2,'gggg',null]],30,`<rect x="103" y="103" width="94" height="94" rx="8" fill="none" stroke="#e0703a" stroke-width="8"/><g class="tag" style="--c:#e0703a" transform="translate(150 112)"><rect x="-30" y="-20" width="60" height="36" rx="18"/><text y="8" style="font-size:28px">+3</text></g>`)],
+    ['Close it off',`A trail or brook with no loose ends scores: trails 2 a tile + 2 a barn, brooks 2 a tile + 2 a pond. Whoever laid the most of its tiles takes it (ties share). The closer gets +2.`,mini([[0,0,'gtgg','barn',0],[1,0,'gtgt',null,1],[2,0,'gggt','barn',0]],40)],
+    ['Horses graze',`At the end each horse scores +1 for every tile around it, and +2 more for each apple tree. Apples help anyone’s horse!`,mini([[0,0,'gggg','apple'],[1,0,'gggg',null],[2,0,'gggg','apple'],[0,1,'gggg',null],[1,1,'gggg','horse',0],[2,1,'gtgg','barn']],34)],
+    ['Race for ribbons',`Each game shows 3 ribbons at the top (tap one to read it). The first to earn a ribbon takes its +5.`,`<div style="font-size:34px;line-height:1">🎀</div>`],
+    ['Game end',`When the tiles run out, the highest total wins. Solo? Play the Daily Meadow — the same tiles for everyone today — and beat your best.`,`<div style="font-size:34px;line-height:1">🏆</div>`]];
+  $('howRows').innerHTML=rows.map(([t,p,a])=>`<div class="howrow"><div style="flex:none;display:flex;gap:18px;align-items:center;justify-content:center">${a}</div><p><b>${t}</b>${p}</p></div>`).join('');
+  if(fake.players.length===2&&!fake.board)state=null;}
+function hero(){state={players:[{color:H.COLORS[0]},{color:H.COLORS[1]}]};
+  const cells=[[0,0,'gggg','apple'],[1,0,'gtgg','barn',0],[2,0,'gtgt',null],[3,0,'gggt','barn',0],[0,1,'gggg','horse',1],[1,1,'gbgg','pond'],[2,1,'gbgb',null],[3,1,'gggb','pond']];
+  $('hero').innerHTML=`<g transform="translate(14 4) scale(.72)">${cells.map(([x,y])=>`<rect x="${x*100-1}" y="${y*100+7}" width="102" height="100" rx="5" fill="#6c8b3e"/>`).join('')}${cells.map(([x,y,e,f,o],i)=>`<g transform="translate(${x*100} ${y*100})"><g class="drop" style="animation-delay:${i*70}ms">${tileSVG(e,f,x*13+y*5,o)}</g></g>`).join('')}</g>`;
+  state=null;}
+// The menu illustrations start once fonts and the page have actually loaded.
+const boot=()=>{hero();howTo();showMenu();};
+if(document.readyState==='complete')boot();else addEventListener('load',boot,{once:true});
+window.__hayland={get state(){return state;},H,startGame,commit,render:()=>{renderAll();fit(false);}};
+</script>
+<script type="module" src="pixel-icons.js"></script>
+</body>
+</html>

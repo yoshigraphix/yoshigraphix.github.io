@@ -1,0 +1,89 @@
+/* Friends: visit sheet, bell entries and thank-you pop-ups (friends.js). Sheets reuse ranch.css .rn-sheet. */
+.fr-sheet .rn-sheet-body{display:grid;gap:12px}
+.fr-wait{color:#6c6455;text-align:center;padding:24px 0}
+.fr-empty{text-align:center;padding:12px 4px 4px}.fr-empty h3{margin:4px 0;font:400 22px/1.2 Georgia,serif}.fr-big{font-size:44px}
+.fr-empty a.primary,.fr-bell-cta a.secondary{display:inline-grid;place-items:center;min-height:44px;padding:0 18px;border-radius:999px;text-decoration:none}
+.fr-code{display:grid;justify-items:center;gap:2px;background:#fff;border-radius:16px;padding:12px;box-shadow:inset 0 0 0 1px #eadfc6;text-align:center}
+.fr-code b{font:700 30px/1.1 ui-monospace,Menlo,monospace;letter-spacing:.18em;color:#2f6b4f}.fr-code small{color:#6c6455}
+.fr-add{display:grid;gap:6px}.fr-add label{font-weight:600}.fr-add>div{display:flex;gap:8px}
+.fr-add input{flex:1;min-width:0;min-height:44px;border-radius:12px;border:1px solid #d9cfb8;padding:0 12px;font:600 18px ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;background:#fff;color:inherit}
+.fr-add button{min-height:44px}.fr-msg{margin:0;color:#7a4a12}
+.fr-list{display:grid;gap:8px}
+.fr-row{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:8px 10px;box-shadow:inset 0 0 0 1px #eadfc6}
+.fr-row>div{flex:1;display:grid;min-width:0}.fr-row small{color:#6c6455}.fr-row button{min-height:44px}
+.fr-more{width:44px;border:0;border-radius:50%;background:#f3ecdd;font-size:20px;color:#6c6455;cursor:pointer}
+.fr-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#c9c1b0;flex:none}.fr-dot.on{background:#3fae5f;box-shadow:0 0 0 3px #3fae5f33}
+.fr-who{display:flex;align-items:center;gap:8px;margin:0}
+.fr-horses{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.fr-horse{display:grid;gap:4px;justify-items:center;text-align:center;background:#fff;border-radius:16px;padding:10px;box-shadow:inset 0 0 0 1px #eadfc6}
+.fr-horse img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;background:#eef0e4}
+.fr-horse small{color:#6c6455}.fr-horse button{min-height:44px;width:100%}
+.fr-done{color:#2f6b4f;font-weight:600;min-height:44px;display:grid;place-items:center}
+.fr-new{background:#fff6dc}.fr-thanked{color:#a0661b;font-weight:600;white-space:nowrap}
+.fr-bell-cta{display:flex;align-items:center;gap:10px;background:#eef5ea;border-radius:14px;padding:10px 12px;margin:8px 0}
+.fr-bell-cta>span{font-size:22px}.fr-bell-cta>div{flex:1;display:grid}.fr-bell-cta small{color:#6c6455}.fr-bell-cta button{min-height:40px}
+.fr-pop{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));z-index:2147483600;width:min(420px,calc(100% - 32px));transform:translate(-50%,-20px);opacity:0;transition:transform .3s cubic-bezier(.3,1.3,.5,1),opacity .2s;
+  background:#fffaf0;color:#263c33;border-radius:20px;box-shadow:0 10px 30px #0003;padding:12px 50px 12px 14px;display:grid;gap:10px;font:14px/1.4 system-ui,sans-serif}
+.fr-pop.in{transform:translate(-50%,0);opacity:1}
+.fr-pop-main{display:flex;align-items:center;gap:10px}.fr-pop-main>div{display:grid}.fr-pop-main small{color:#6c6455}.fr-pop-icon{font-size:28px}
+.fr-pop-go{min-height:44px;width:100%}
+.fr-pop-x{position:absolute;top:4px;right:4px;width:44px;height:44px;border:0;border-radius:50%;background:#efe7d6;font-size:20px;cursor:pointer;color:inherit}
+@media(prefers-reduced-motion:reduce){.fr-pop{transition:none}}
+/* v2: usernames, profiles, invites */
+.fr-code b{letter-spacing:.04em;font-size:26px}
+#fr-name-in,#fr-user-in{text-transform:none;letter-spacing:.02em}
+.fr-hint{margin:0;color:#6c6455;font-size:14px}.fr-hint.ok{color:#2f6b4f;font-weight:600}
+.fr-h{margin:6px 0 0;font:700 13px/1.2 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6c6455}
+.fr-wave{font-size:22px}
+.fr-name{all:unset;cursor:pointer;font-weight:700;text-decoration:underline;text-decoration-color:#cbbf9f;text-underline-offset:3px}
+.fr-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:12px;box-shadow:inset 0 0 0 1px #eadfc6}
+.fr-card>div:last-child{display:grid;gap:2px}.fr-card b{font-size:20px}.fr-card small{color:#6c6455;display:flex;align-items:center;gap:6px}
+.fr-badge{width:56px;height:56px;border-radius:50%;background:#2f6b4f;color:#fff;display:grid;place-content:center;text-align:center;font:800 22px/1 system-ui,sans-serif;flex:none}
+.fr-badge small{font:600 10px/1 system-ui,sans-serif;color:#d8eadf;text-transform:uppercase;letter-spacing:.06em}
+.fr-facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin:0}
+.fr-facts div{background:#fff;border-radius:12px;padding:8px 10px;box-shadow:inset 0 0 0 1px #eadfc6}
+.fr-facts dt{font-size:12px;color:#6c6455}.fr-facts dd{margin:0;font-weight:700;font-size:18px}
+.fr-ride{display:flex;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:8px;box-shadow:inset 0 0 0 1px #eadfc6}
+.fr-ride img{width:120px;aspect-ratio:32/22;object-fit:cover;border-radius:12px;background:#eef0e4;flex:none}
+.fr-ride>div{display:grid;gap:2px;min-width:0}.fr-ride small{color:#6c6455}.fr-ride b{font-size:18px}
+.fr-ride.fr-focus{flex-direction:column;text-align:center}.fr-ride.fr-focus img{width:100%}
+.fr-two{display:flex;gap:8px}.fr-two>*{flex:1;min-height:44px}
+.fr-sheet .full{width:100%;min-height:44px}
+.fr-races{display:grid;gap:8px}
+.fr-race{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 14px;border-radius:14px;border:2px solid #eadfc6;background:#fff;font:600 16px system-ui,sans-serif;color:inherit;cursor:pointer;text-align:left}
+.fr-race span{font-size:22px}.fr-race.on{border-color:#2f6b4f;background:#eef5ea}
+.fr-pick{cursor:pointer}.fr-pick input{width:22px;height:22px;accent-color:#2f6b4f;flex:none}
+/* Owner-only test friends switch (test-friends.js); players never get this markup. */
+.fr-test{display:grid;gap:4px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:#fff6d8;box-shadow:inset 0 0 0 1px #ecd48a}
+.fr-test b{color:#6b4e0c}.fr-test small{color:#6c6455}
+.fr-test div{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}.fr-test button{min-height:44px}
+/* Home (2026-11-10 UI pass): friend pop-ups rise from just above the bottom dock instead of covering the top bar
+   (horse name, Trotties, bell); Join / Accept land under the thumb. "Busy, ask me later" fits on one line. */
+body.home-3d .fr-pop{top:auto;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,20px)}
+body.home-3d .fr-pop.in{transform:translate(-50%,0)}
+.fr-pop .fr-two .fr-pop-go{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 8px}
+/* Friends sheet tidy (2026-11-10 UI pass): the name and its status sit together (the name button keeps a 44px tap
+   area through an invisible halo instead of a tall box that pushed the status line away); the username field uses
+   the normal UI font at 16px instead of a large monospace placeholder. */
+.fr-row .fr-name{position:relative;min-height:0;justify-self:start;line-height:1.3}
+.fr-row .fr-name::after{content:'';position:absolute;inset:-12px -8px -4px}
+.fr-row>div{gap:1px}
+.fr-add input{font:600 16px/1.2 system-ui,sans-serif;letter-spacing:.02em}
+.fr-add input::placeholder{font-weight:400;color:#9a917f}
+.fr-row .fr-more{flex:none;width:44px;height:44px;min-height:44px;font-size:18px}
+/* v124: barn wall, taming help, clubs */
+.fr-wall{display:grid;gap:6px;justify-items:center;margin:4px 0 12px;padding:10px;border-radius:14px;background:#f6f1e3}
+.fr-wall small{color:#6b5a3a}
+.fr-tame{display:block;color:#8a5a32;font-weight:600}
+.fr-social{margin:10px 0}
+.fr-motto{width:100%;min-height:44px;margin-top:6px;border-radius:12px;border:2px solid #e3d8bd;padding:0 10px;font:inherit;background:#fff}
+.fr-motto-line{font-style:italic;text-align:center;font-size:17px;margin:4px 0}
+.rn-badgewall.fr-mini{flex-wrap:nowrap;gap:3px}.rn-badgewall.fr-mini span{width:28px;height:28px;font-size:15px;border-width:2px}
+.fr-mini .px-ic{width:18px;height:18px}
+/* My valley (v142): your valley card, the Open switch and the friend-online pill setting. */
+.fr-valley{display:grid;gap:8px;background:#fff;border-radius:16px;padding:12px;box-shadow:inset 0 0 0 1px #eadfc6;margin-bottom:12px}
+.fr-valley-top{display:flex;align-items:center;gap:10px}.fr-valley-top small{display:block;color:#7a6a52}
+.fr-big-ic{font-size:1.8rem;line-height:1}
+.fr-valley .text-button{min-height:44px;justify-self:start}
+.fr-switch{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}
+.fr-switch input{width:22px;height:22px;flex:none;accent-color:#2f7d4f}

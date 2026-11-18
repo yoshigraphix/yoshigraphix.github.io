@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en" data-no-chip>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shoo-In · Trottville</title>
+<meta name="theme-color" content="#2f6b3a">
+<link rel="stylesheet" href="coin-collect.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800;900&display=swap">
+<style>
+/* Shoo-In: a two-player abstract strategy board game. Phone portrait first (375×812), fine on iPad/desktop. */
+:root{--cream:#fffdf4;--card:#fffaf0;--ink:#24402f;--green:#2f6b3a;--green2:#4f9a3c;--gold:#f2b632;--sun:#ff8a3d;--sunD:#b94f1a;--blue:#4d86e0;--blueD:#2b5aa8;
+  --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;--body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:radial-gradient(120% 70% at 50% 0%,#fff6dc 0%,#f6ecc8 55%,#e9dcae 100%) fixed;font-family:var(--body);color:var(--ink);-webkit-tap-highlight-color:transparent}
+body{overflow-x:hidden}
+button{font:inherit;color:inherit}
+.app{max-width:620px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+/* Top bar */
+.bar{width:100%;display:flex;align-items:center;gap:8px;min-height:48px}
+.bar h1{flex:1;margin:0;text-align:center;font:700 24px/1 var(--display);color:var(--green);letter-spacing:.3px}
+.bar h1 span{color:var(--sun)}
+.ibtn{min-width:44px;height:44px;border:0;border-radius:14px;background:#fffdf4;box-shadow:0 3px 0 #2f6b3a33;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;cursor:pointer;font:800 13px/1 var(--body);text-decoration:none;color:var(--ink)}
+.ibtn:active{transform:translateY(2px);box-shadow:0 1px 0 #2f6b3a33}
+.ibtn svg{width:20px;height:20px}
+.wallet{min-width:auto;padding:0 10px;font:800 14px/1 var(--body);gap:4px;pointer-events:none}
+/* Score pills */
+.scores{width:100%;display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin:6px 0 4px}
+.pill{display:flex;align-items:center;gap:8px;background:#fffdf4;border-radius:16px;padding:6px 10px;box-shadow:0 3px 0 #2f6b3a26;border:3px solid transparent;transition:border-color .25s,transform .25s;min-height:52px}
+.pill.p1{flex-direction:row-reverse;text-align:right}
+.pill.turn{border-color:var(--tc);transform:translateY(-1px)}
+.pill svg.face{width:34px;height:34px;flex:none}
+.pill .who{font:800 12px/1.15 var(--body);min-width:0}
+.pill .who b{display:block;font:700 15px/1.1 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pips{display:flex;gap:3px;margin-top:3px}.pill.p1 .pips{justify-content:flex-end}
+.pips i{width:12px;height:12px;border-radius:50%;background:#e8dfc4;box-shadow:inset 0 1px 0 #0001}
+.pips i.on{background:var(--tc);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--tc)}
+.sun{text-align:center;font:800 11px/1.1 var(--body);color:#7a5b2a;min-width:54px}
+.sun b{display:block;font:700 18px/1 var(--display);color:#c46a17}
+/* Board */
+.boardwrap{position:relative;width:min(calc(100vw - 20px),calc((100dvh - 236px) * 740 / 900),560px);aspect-ratio:740/900;margin:2px 0;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.boardwrap>svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+.cells{position:absolute;left:calc(20/740*100%);top:calc(100/900*100%);width:calc(700/740*100%);height:calc(700/900*100%);display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(7,1fr)}
+.cells button{all:unset;cursor:pointer;border-radius:10px}
+.cells button:focus-visible{outline:3px solid var(--blueD);outline-offset:-3px}
+.cells button[disabled]{cursor:default}
+.piece{transition:none}
+.piece .bob{transform-box:fill-box;transform-origin:50% 80%}
+.sel .bob{animation:bob .9s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-7px) scale(1.04)}}
+.dot{pointer-events:none}
+.dot circle.d{fill:#ffffffd0;stroke:#2f6b3a;stroke-width:4}
+.dot.shoo circle.d{fill:#fff3c4;stroke:#c98a12}
+.dot.win circle.d{fill:#ffe27a;stroke:#d08700;stroke-width:5}
+.dot.own circle.d{fill:#ffd9d2;stroke:#c2412b}
+.dot.pick circle.d{fill:#2f6b3a;stroke:#fff}
+.dot text{font:700 30px var(--display);fill:#fff;text-anchor:middle;dominant-baseline:central}
+.ghost{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:2 16;opacity:.9;pointer-events:none}
+.hintring{fill:none;stroke:#fff;stroke-width:7;stroke-dasharray:14 10;pointer-events:none}
+.flash{pointer-events:none}
+/* Status + actions */
+.status{min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;font:800 15px/1.25 var(--body);padding:4px 10px;color:var(--ink)}
+.status .think{display:inline-flex;gap:3px;margin-left:6px}
+.status .think i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:th 1s infinite}.status .think i:nth-child(2){animation-delay:.15s}.status .think i:nth-child(3){animation-delay:.3s}
+@keyframes th{50%{opacity:.2}}
+.actions{display:flex;gap:8px;justify-content:center;width:100%;flex-wrap:wrap}
+.btn{min-height:46px;border:0;border-radius:16px;padding:0 16px;font:800 15px/1 var(--body);background:#fffdf4;color:var(--ink);box-shadow:0 4px 0 #2f6b3a40;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #2f6b3a40}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn.primary{background:var(--green);color:#fff;box-shadow:0 4px 0 #1d4425}
+.btn.sun{background:var(--sun);color:#fff;box-shadow:0 4px 0 var(--sunD)}
+.btn.wide{width:100%}
+/* Sheets */
+.sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;background:#24402f66;padding:12px;opacity:0;pointer-events:none;transition:opacity .22s}
+.sheet.on{opacity:1;pointer-events:auto}
+.sheet .card{width:min(100%,480px);max-height:calc(100dvh - 24px);overflow:auto;background:var(--card);border-radius:24px;padding:18px 18px 16px;box-shadow:0 10px 30px #24402f55;transform:translateY(30px);transition:transform .28s cubic-bezier(.2,.9,.3,1.2)}
+.sheet.on .card{transform:none}
+@media (min-height:700px) and (min-width:600px){.sheet{align-items:center}}
+.card h2{margin:0 0 4px;font:700 26px/1.1 var(--display);color:var(--green);text-align:center}
+.card p.sub{margin:0 0 12px;text-align:center;font:700 14px/1.35 var(--body);color:#5b6b52}
+.rivals{display:grid;gap:8px;margin:8px 0 12px}
+.rival{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:18px;background:#fff;border:3px solid #eadfbf;cursor:pointer;min-height:64px}
+.rival:focus-visible{outline:3px solid var(--blueD)}
+.rival[aria-pressed=true]{border-color:var(--green);background:#f1f8e6}
+.rival svg{width:46px;height:46px;flex:none}
+.rival b{display:block;font:700 18px/1.1 var(--display)}
+.rival small{display:block;font:700 12.5px/1.3 var(--body);color:#5b6b52}
+.rival .lvl{margin-left:auto;font:800 11px/1 var(--body);padding:5px 8px;border-radius:99px;background:#eef5e4;color:var(--green);white-space:nowrap}
+.rival .lvl.h{background:#fde7dc;color:#b94f1a}.rival .lvl.m{background:#fff3c4;color:#8a5a00}.rival .lvl.f{background:#e3ecfb;color:var(--blueD)}
+.seg{display:flex;gap:6px;background:#efe6cb;border-radius:14px;padding:4px;margin:4px 0 12px}
+.seg button{flex:1;min-height:44px;border:0;border-radius:11px;background:transparent;font:800 14px/1 var(--body);cursor:pointer}
+.seg button[aria-pressed=true]{background:#fff;box-shadow:0 2px 0 #0001;color:var(--green)}
+.lbl{font:800 12px/1 var(--body);text-transform:uppercase;letter-spacing:.8px;color:#7a6a45;margin:6px 2px}
+.stack{display:grid;gap:8px}
+.statline{font:700 12.5px/1.4 var(--body);color:#5b6b52;text-align:center;margin-top:10px}
+.hero{display:block;width:100%;max-width:300px;height:auto;margin:0 auto 2px}
+/* How to play */
+.steps{display:grid;gap:10px;margin:8px 0 14px}
+.step{display:grid;grid-template-columns:118px 1fr;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:8px;border:2px solid #efe4c4}
+.step svg{width:118px;height:auto;display:block;border-radius:10px}
+.step b{display:block;font:700 17px/1.15 var(--display);color:var(--green);margin-bottom:2px}
+.step span{font:700 13.5px/1.35 var(--body)}
+/* Result */
+.rosette{display:block;width:120px;height:auto;margin:-6px auto 0}
+.res-rows{display:grid;gap:6px;margin:10px 0 12px}
+.res-rows div{display:flex;justify-content:space-between;background:#fff;border-radius:12px;padding:9px 12px;font:800 14px/1.2 var(--body)}
+.tc-collect{display:block;width:100%}
+/* Toast */
+#toast{position:fixed;left:50%;top:18%;transform:translate(-50%,-8px);z-index:30;max-width:88vw;text-align:center;background:#24402fee;color:#fff;border-radius:14px;padding:10px 16px;font:800 14.5px/1.3 var(--body);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.confetti{position:fixed;top:-20px;width:12px;height:18px;border-radius:3px;z-index:25;pointer-events:none}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-radius:14px;padding:6px 6px 6px 14px;font:800 14px/1.2 var(--body);min-height:52px}
+.toggle button{min-width:78px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (min-width:700px){.bar h1{font-size:30px}}
+/* ===== Trottville game family chrome: the same top bar, icons and buttons on every game page ===== */
+:root{--gf-display:'Fredoka','Trebuchet MS',system-ui,sans-serif;--gf-bar:#2f6b3a;
+  --gf-chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --gf-snd:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h4l5-4v14l-5-4H4z' fill='%23000'/%3E%3Cpath d='M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12'/%3E%3C/svg%3E");
+  --gf-mute:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h4l5-4v14l-5-4H4z' fill='%23000'/%3E%3Cpath d='M17 9.5l5 5M22 9.5l-5 5'/%3E%3C/svg%3E");
+  --gf-menu:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.8' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E")}
+.gf-bar{display:flex;align-items:center;gap:6px;min-height:52px;box-sizing:border-box;padding:max(4px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) 4px max(6px,env(safe-area-inset-left));background:var(--gf-bar);color:#fffdf4;box-shadow:0 2px 0 #1e4a27}
+.gf-bar h1,.gf-bar .gf-title{flex:1;min-width:0;margin:0;text-align:center;font:700 clamp(17px,4.7vw,21px)/1.05 var(--gf-display);letter-spacing:.2px;color:#fffdf4;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;text-wrap:balance;white-space:normal}
+.gf-bar h1 small,.gf-bar .gf-title small{display:none}
+.gf-btn{all:unset;box-sizing:border-box;flex:none;cursor:pointer;width:44px;height:44px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:#ffffff1f;color:#fffdf4;font:700 21px/1 var(--gf-display);text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:background-color .15s}
+.gf-btn:hover{background:#ffffff33}.gf-btn:active{background:#ffffff40}
+.gf-btn:focus-visible{outline:3px solid #f2b632;outline-offset:2px}
+.gf-btn[hidden]{display:none!important}
+.gf-btn.gf-ico{font-size:0}
+.gf-btn>svg{width:24px;height:24px;flex:none}
+.gf-btn.gf-ico::before,.gf-btn.gf-back::before{content:'';flex:none;width:24px;height:24px;background:currentColor;-webkit-mask:var(--gf-i) center/24px no-repeat;mask:var(--gf-i) center/24px no-repeat}
+/* Back: a chevron on phones, chevron + "Trottville" from 480px up. The text stays in the button for screen readers. */
+.gf-btn.gf-back{--gf-i:var(--gf-chev);font-size:0;padding:0}
+.gf-btn.gf-back svg{display:none}
+@media (min-width:480px){.gf-btn.gf-back{width:auto;padding:0 14px 0 8px;font:800 14px/1 system-ui,-apple-system,'Segoe UI',sans-serif}.gf-btn.gf-back *{font:inherit}}
+.gf-snd{--gf-i:var(--gf-snd)}.gf-snd[aria-label^="Sound off"]{--gf-i:var(--gf-mute)}
+.gf-menu{--gf-i:var(--gf-menu)}
+.gf-coins{flex:none;display:inline-flex;align-items:center;gap:5px;height:36px;box-sizing:border-box;padding:0 12px 0 9px;border-radius:999px;background:#00000029;color:#fffdf4;font:700 15px/1 var(--gf-display);font-variant-numeric:tabular-nums;box-shadow:none;min-width:0;pointer-events:none}
+.gf-coins b{font-weight:700}
+/* Line icons inside text buttons (Undo, Hint, Clear, Levels, Turn...) — one size, centred. */
+.gi{width:20px;height:20px;flex:none;display:block}
+.bar.gf-bar{width:calc(100% + 2 * max(10px,env(safe-area-inset-left)));margin:calc(-1 * max(8px,env(safe-area-inset-top))) calc(-1 * max(10px,env(safe-area-inset-left))) 6px}
+.gf-bar .gf-coins{min-width:0;height:36px;padding:0 12px 0 9px;box-shadow:none;border-radius:999px;background:#00000029;color:#fffdf4}
+.gf-bar h1 span{color:#ffc46b}
+.actions .btn .gi{margin-left:-2px}
+.sheet h2,.card h2{font-family:var(--gf-display)}
+</style>
+</head>
+<body>
+<!-- Shared drawings: every horse, foal, bale and tree on the board and in the guide. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="gGrass" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#a8db78"/><stop offset="1" stop-color="#86c35c"/></radialGradient>
+    <marker id="mArrowSun" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#e06a1f"/></marker>
+    <marker id="mArrowBlue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2b5aa8"/></marker>
+    <marker id="mArrowInk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4a2a"/></marker>
+    <symbol id="sHorse0" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="90" rx="34" ry="7" fill="#24402f" opacity=".18"/>
+      <circle cx="50" cy="52" r="44" fill="#ff8a3d" stroke="#b94f1a" stroke-width="4"/>
+      <circle cx="50" cy="52" r="37" fill="none" stroke="#ffd2a8" stroke-width="3" stroke-dasharray="4 7"/>
+      <path d="M27 30 L31 9 L42 24Z M73 30 L69 9 L58 24Z" fill="#c8743f" stroke="#7a3b1c" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M30 26 L32 15 L38 23Z M70 26 L68 15 L62 23Z" fill="#f2a58a"/>
+      <ellipse cx="50" cy="52" rx="25" ry="31" fill="#c8743f" stroke="#7a3b1c" stroke-width="3"/>
+      <path d="M50 26 L46 46 Q50 50 54 46Z" fill="#fff6e8"/>
+      <ellipse cx="50" cy="70" rx="17" ry="12.5" fill="#f0c9a4" stroke="#7a3b1c" stroke-width="2.5"/>
+      <ellipse cx="44" cy="71" rx="2.6" ry="3.4" fill="#6b3518"/><ellipse cx="56" cy="71" rx="2.6" ry="3.4" fill="#6b3518"/>
+      <circle cx="39" cy="47" r="5.5" fill="#2a1a10"/><circle cx="61" cy="47" r="5.5" fill="#2a1a10"/><circle cx="40.8" cy="45" r="1.9" fill="#fff"/><circle cx="62.8" cy="45" r="1.9" fill="#fff"/>
+      <path d="M34 27 Q42 15 50 22 Q58 13 67 26 Q58 24 54 31 Q50 25 45 31 Q40 25 34 27Z" fill="#6b3518"/>
+    </symbol>
+    <symbol id="sHorse1" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="90" rx="34" ry="7" fill="#24402f" opacity=".18"/>
+      <circle cx="50" cy="52" r="44" fill="#4d86e0" stroke="#2b5aa8" stroke-width="4"/>
+      <circle cx="50" cy="52" r="37" fill="none" stroke="#bcd3f7" stroke-width="3" stroke-dasharray="4 7"/>
+      <path d="M27 30 L31 9 L42 24Z M73 30 L69 9 L58 24Z" fill="#cfd6df" stroke="#4b5563" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M30 26 L32 15 L38 23Z M70 26 L68 15 L62 23Z" fill="#f1b7c4"/>
+      <ellipse cx="50" cy="52" rx="25" ry="31" fill="#d7dde6" stroke="#4b5563" stroke-width="3"/>
+      <circle cx="40" cy="60" r="3.2" fill="#aab4c2"/><circle cx="60" cy="58" r="2.6" fill="#aab4c2"/><circle cx="56" cy="38" r="2.4" fill="#aab4c2"/><circle cx="43" cy="37" r="2" fill="#aab4c2"/>
+      <ellipse cx="50" cy="70" rx="17" ry="12.5" fill="#8f99a8" stroke="#4b5563" stroke-width="2.5"/>
+      <ellipse cx="44" cy="71" rx="2.6" ry="3.4" fill="#2f3640"/><ellipse cx="56" cy="71" rx="2.6" ry="3.4" fill="#2f3640"/>
+      <circle cx="39" cy="47" r="5.5" fill="#1d2430"/><circle cx="61" cy="47" r="5.5" fill="#1d2430"/><circle cx="40.8" cy="45" r="1.9" fill="#fff"/><circle cx="62.8" cy="45" r="1.9" fill="#fff"/>
+      <path d="M34 27 Q42 15 50 22 Q58 13 67 26 Q58 24 54 31 Q50 25 45 31 Q40 25 34 27Z" fill="#4b5563"/>
+    </symbol>
+    <symbol id="sFoal" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="86" rx="26" ry="6" fill="#24402f" opacity=".16"/>
+      <circle cx="50" cy="54" r="33" fill="#fffdf4" stroke="#e2c58c" stroke-width="3.5"/>
+      <path d="M33 38 L35 20 L44 33Z M67 38 L65 20 L56 33Z" fill="#f3dfb8" stroke="#a8743a" stroke-width="2.5" stroke-linejoin="round"/>
+      <ellipse cx="50" cy="56" rx="19" ry="23" fill="#f3dfb8" stroke="#a8743a" stroke-width="2.5"/>
+      <circle cx="58" cy="44" r="5" fill="#c98a4b" opacity=".75"/><circle cx="41" cy="62" r="3.5" fill="#c98a4b" opacity=".75"/>
+      <ellipse cx="50" cy="69" rx="12" ry="8.5" fill="#f7c6b6" stroke="#a8743a" stroke-width="2"/>
+      <circle cx="46" cy="70" r="1.8" fill="#8a4b2a"/><circle cx="54" cy="70" r="1.8" fill="#8a4b2a"/>
+      <circle cx="42" cy="52" r="5.2" fill="#2a1a10"/><circle cx="58" cy="52" r="5.2" fill="#2a1a10"/><circle cx="43.8" cy="50" r="2" fill="#fff"/><circle cx="59.8" cy="50" r="2" fill="#fff"/>
+      <path d="M42 36 Q48 28 52 34 Q56 28 60 35 Q54 36 51 40 Q47 35 42 36Z" fill="#e9c27e"/>
+    </symbol>
+    <symbol id="sHay" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="86" rx="38" ry="7" fill="#24402f" opacity=".18"/>
+      <rect x="12" y="18" width="76" height="64" rx="14" fill="#f2c94c" stroke="#b98a22" stroke-width="4"/>
+      <path d="M20 32h60M20 46h60M20 60h60M20 72h60" stroke="#d9a930" stroke-width="3" stroke-linecap="round"/>
+      <path d="M36 18v64M64 18v64" stroke="#c0392b" stroke-width="5"/>
+      <path d="M14 26l-6-4M86 30l7-5M18 80l-7 5M84 76l8 4" stroke="#d9a930" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="sTree" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="88" rx="34" ry="7" fill="#24402f" opacity=".2"/>
+      <rect x="44" y="58" width="12" height="28" rx="4" fill="#8a5a33"/>
+      <circle cx="50" cy="42" r="32" fill="#3f8a32"/><circle cx="34" cy="50" r="18" fill="#4f9a3c"/><circle cx="64" cy="34" r="17" fill="#5aa845"/>
+      <circle cx="38" cy="34" r="5" fill="#e04b3a"/><circle cx="62" cy="52" r="5" fill="#e04b3a"/><circle cx="52" cy="24" r="4.5" fill="#e04b3a"/><circle cx="30" cy="56" r="4" fill="#e04b3a"/>
+    </symbol>
+    <symbol id="sBarn" viewBox="0 0 400 110">
+      <path d="M10 46 L200 4 L390 46Z" style="fill:var(--roof)" stroke="#5b2a1a" stroke-width="5" stroke-linejoin="round"/>
+      <rect x="22" y="44" width="356" height="64" style="fill:var(--wall)" stroke="#5b2a1a" stroke-width="5"/>
+      <path d="M22 60h356" stroke="#ffffff55" stroke-width="3"/>
+      <rect x="40" y="58" width="44" height="36" rx="4" fill="#fffdf4" stroke="#5b2a1a" stroke-width="4"/><path d="M40 58l44 36M84 58l-44 36" stroke="#5b2a1a" stroke-width="3"/>
+      <rect x="316" y="58" width="44" height="36" rx="4" fill="#fffdf4" stroke="#5b2a1a" stroke-width="4"/><path d="M316 58l44 36M360 58l-44 36" stroke="#5b2a1a" stroke-width="3"/>
+      <rect x="170" y="14" width="60" height="22" rx="6" fill="#fffdf4" stroke="#5b2a1a" stroke-width="3"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <div class="bar gf-bar">
+    <a class="ibtn gf-btn gf-back" id="back" href="#home" aria-label="Back to Trottville"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg><span id="backTxt">Trottville</span></a>
+    <h1>Shoo<span>-</span>In</h1>
+    <span class="ibtn wallet gf-coins" data-trottcoins title="Your Trotties"><span aria-hidden="true">🪙</span><b>0</b></span>
+    <button class="ibtn gf-btn" id="menuBtn" type="button" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+
+  <div class="scores">
+    <div class="pill p0" id="pill0" style="--tc:var(--sun)"><svg class="face" aria-hidden="true"><use href="#sHorse0"/></svg><div class="who"><b id="name0">You</b><span id="sub0">Sunrise Ranch</span><div class="pips" id="pips0"></div></div></div>
+    <div class="sun" aria-live="polite"><b id="movesLeft">30</b>to sunset</div>
+    <div class="pill p1" id="pill1" style="--tc:var(--blue)"><svg class="face" aria-hidden="true"><use href="#sHorse1"/></svg><div class="who"><b id="name1">Daisy</b><span id="sub1">Bluebell Ranch</span><div class="pips" id="pips1"></div></div></div>
+  </div>
+
+  <div class="boardwrap" id="wrap">
+    <svg id="board" viewBox="0 0 740 900" role="img" aria-label="Shoo-In meadow">
+      <g transform="translate(20 0)">
+        <g id="barnTop"></g>
+        <g id="barnBot"></g>
+        <rect x="-14" y="86" width="728" height="728" rx="22" fill="#7a4e2c"/>
+        <rect x="0" y="100" width="700" height="700" rx="10" fill="url(#gGrass)"/>
+        <g id="grass"></g>
+        <g id="fence"></g>
+        <g id="hilite"></g>
+        <g id="ghosts"></g>
+        <g id="pieces"></g>
+        <g id="dots"></g>
+        <g id="fx"></g>
+      </g>
+    </svg>
+    <div class="cells" id="cells"></div>
+  </div>
+
+  <div class="status" id="status" aria-live="polite">Choose a rival to begin</div>
+  <div class="actions">
+    <button class="btn" id="hintBtn" type="button"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>Hint</button>
+    <button class="btn" id="undoBtn" type="button"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Undo</button>
+    <button class="btn" id="helpBtn" type="button"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.8"/><path d="M12 17.3h.01" stroke-width="3"/></svg>How to play</button>
+  </div>
+</div>
+
+<!-- Start: pick a rival -->
+<div class="sheet" id="startSheet" role="dialog" aria-modal="true" aria-labelledby="startTitle"><div class="card">
+  <svg class="hero" viewBox="0 -6 300 126" aria-hidden="true">
+    <rect x="0" y="70" width="300" height="50" rx="20" fill="#9bd46f"/>
+    <use href="#sBarn" x="70" y="2" width="160" height="44" style="--roof:#c9442c;--wall:#e8603e"/>
+    <use href="#sHorse0" x="36" y="50" width="64" height="64"/><use href="#sFoal" x="112" y="62" width="46" height="46"/><use href="#sFoal" x="150" y="54" width="46" height="46"/><use href="#sHorse1" x="204" y="50" width="64" height="64"/>
+    <path d="M100 84 q12 -10 18 -2" stroke="#e06a1f" stroke-width="4" fill="none" stroke-linecap="round" marker-end="url(#mArrowSun)"/>
+  </svg>
+  <h2 id="startTitle">Shoo-In</h2>
+  <p class="sub">Shoo the skittish foals across the meadow and into your barn. First to 3 wins!</p>
+  <div class="lbl">Choose your rival</div>
+  <div class="rivals" id="rivals"></div>
+  <div class="lbl">Who moves first?</div>
+  <div class="seg" id="firstSeg"><button type="button" data-first="0" aria-pressed="true">You</button><button type="button" data-first="1" aria-pressed="false" id="firstRivalBtn">Rival</button></div>
+  <button class="btn primary wide" id="startBtn" type="button">Let's play!</button>
+  <div class="stack" style="margin-top:8px"><button class="btn wide" id="startHelp" type="button">How to play</button><button class="btn wide" id="startLeave" type="button">Back to Trottville</button></div>
+  <div class="statline" id="statline"></div>
+</div></div>
+
+<!-- How to play -->
+<div class="sheet" id="helpSheet" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><div class="card">
+  <h2 id="helpTitle">How to play</h2>
+  <p class="sub">Two ranches, five foals, one meadow. About 5 minutes.</p>
+  <div class="steps">
+    <div class="step"><svg viewBox="0 0 300 300" aria-hidden="true"><rect width="300" height="300" fill="#9bd46f"/><g id="hs1"></g></svg><div><b>1 · Move a horse</b><span>On your turn move one of your horses <b style="display:inline;font:inherit;color:#c46a17">1 or 2 squares</b> in a straight line, any of 8 ways, over empty grass.</span></div></div>
+    <div class="step"><svg viewBox="0 0 300 300" aria-hidden="true"><rect width="300" height="300" fill="#9bd46f"/><g id="hs2"></g></svg><div><b>2 · Shoo!</b><span>Every foal right next to where your horse lands <b style="display:inline;font:inherit;color:#c46a17">bolts straight away</b> until a horse, bale, tree or fence stops it.</span></div></div>
+    <div class="step"><svg viewBox="0 0 300 300" aria-hidden="true"><rect width="300" height="300" fill="#9bd46f"/><g id="hs3"></g></svg><div><b>3 · Trick shots</b><span>A foal running <b style="display:inline;font:inherit;color:#c46a17">diagonally bounces</b> off the first fence it hits and keeps going.</span></div></div>
+    <div class="step"><svg viewBox="0 0 300 300" aria-hidden="true"><rect width="300" height="300" fill="#9bd46f"/><g id="hs4"></g></svg><div><b>4 · Into the barn</b><span>Your barn is across the meadow. A foal that runs out through its <b style="display:inline;font:inherit;color:#c46a17">door</b> is home. Careful: foals can run into your rival's barn too!</span></div></div>
+  </div>
+  <p class="sub" style="margin-bottom:10px"><b>First barn to 3 foals wins.</b> At sunset (30 moves each) the most foals home wins; if level, the most foals on your barn's half.</p>
+  <p class="sub" style="font-size:12.5px;margin-bottom:12px">Tap a horse to see where it can go. A gold dot scores, a red one helps your rival. Dots that shoo a foal show a preview first: tap again to go.</p>
+  <button class="btn primary wide" id="helpClose" type="button">Got it</button>
+</div></div>
+
+<!-- Menu -->
+<div class="sheet" id="menuSheet" role="dialog" aria-modal="true" aria-labelledby="menuTitle"><div class="card">
+  <h2 id="menuTitle">Paused</h2>
+  <p class="sub" id="menuSub"></p>
+  <div class="stack">
+    <button class="btn primary wide" id="mResume" type="button">Keep playing</button>
+    <button class="btn wide" id="mHelp" type="button">How to play</button>
+    <div class="toggle"><span>Quick moves<br><small style="font-weight:700;color:#5b6b52">skip the shoo preview</small></span><button class="btn" id="mQuick" type="button" aria-pressed="false">Off</button></div>
+    <div class="toggle"><span>Sound</span><button class="btn" id="mSound" type="button" aria-pressed="false">Off</button></div>
+    <button class="btn wide" id="mNew" type="button">New match</button>
+  </div>
+</div></div>
+
+<!-- Leave / restart confirm -->
+<div class="sheet" id="askSheet" role="dialog" aria-modal="true" aria-labelledby="askTitle"><div class="card">
+  <h2 id="askTitle">Leave this match?</h2>
+  <p class="sub">Unfinished matches don't earn Trotties. Finish it and you'll be paid for your time.</p>
+  <div class="stack"><button class="btn primary wide" id="askStay" type="button">Keep playing</button><button class="btn wide" id="askGo" type="button">Leave</button></div>
+</div></div>
+
+<!-- Result -->
+<div class="sheet" id="doneSheet" role="dialog" aria-modal="true" aria-labelledby="doneTitle"><div class="card" id="doneCard"></div></div>
+
+<div id="toast" role="status"></div>
+
+<script type="module">
+import {queueCoins,showCollect,balance,paintCounters} from './coin-collect.js';
+import * as R from './board-shooin.mjs';
+const {N,EMPTY,H0,H1,FOAL,HAY,TREE}=R;
+
+// ---------- Small helpers ----------
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+const svgEl=(tag,attrs={},parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent?.append(e);return e;};
+const still=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+const dur=ms=>still()?0:ms;
+// Yield so the board paints before the rival thinks. Background/throttled panes may never fire a frame, so a
+// short fallback keeps the match going there (it never delays a visible page, where the frame comes first).
+const frame=()=>new Promise(r=>{let done=false;const go=()=>{if(!done){done=true;r();}};requestAnimationFrame(()=>requestAnimationFrame(go));setTimeout(go,120);});
+const cx=c=>c*100+50, cy=r=>100+r*100+50;
+const cellXY=i=>{const [r,c]=R.rc(i);return [cx(c),cy(r)];};
+const store={get(k){try{return localStorage.getItem(k);}catch{return null;}},set(k,v){try{localStorage.setItem(k,v);}catch{}}};
+const KEY='trottville-shooin-v1';
+let saved;try{saved=JSON.parse(store.get(KEY)||'{}')||{};}catch{saved={};}
+const save=()=>store.set(KEY,JSON.stringify(saved));
+saved.stats=saved.stats||{};
+let toastTimer=0;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),2200);}
+
+// ---------- Gentle sound (off by default) ----------
+let audio=null,soundOn=saved.sound===true;
+function tone(f,d=.12,type='sine',vol=.06,slide=0,delay=0){if(!soundOn)return;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();const t=audio.currentTime+delay,o=audio.createOscillator(),g=audio.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(f*slide,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g).connect(audio.destination);o.start(t);o.stop(t+d+.02);}catch{}}
+const sfx={clop(){tone(320,.07,'triangle',.05,.7);tone(260,.07,'triangle',.04,.7,.09);},
+  shoo(){tone(700,.16,'sine',.04,1.6);},
+  home(){[523,659,784].forEach((f,i)=>tone(f,.18,'triangle',.05,1,i*.09));},
+  oops(){tone(330,.22,'sine',.045,.7);},
+  win(){[523,659,784,1047].forEach((f,i)=>tone(f,.24,'triangle',.06,1,i*.12));},
+  tap(){tone(880,.04,'sine',.025);}};
+
+// ---------- Static board art ----------
+(function drawMeadow(){const g=$('grass');
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++)if((r+c)%2)svgEl('rect',{x:c*100,y:100+r*100,width:100,height:100,fill:'#000',opacity:.045},g);
+  // little flowers
+  const fl=[[0.2,1.3],[3.7,2.15],[5.3,4.8],[1.6,5.7],[6.2,0.6],[2.6,3.7],[4.4,0.3],[0.5,6.4]];
+  for(const [c,r] of fl){svgEl('circle',{cx:c*100+10,cy:100+r*100+12,r:5,fill:'#fff7d6'},g);svgEl('circle',{cx:c*100+10,cy:100+r*100+12,r:2.2,fill:'#f2b632'},g);}
+  // fence rails all round except the two barn doors (columns 2–4 of the top and bottom edges)
+  const f=$('fence'),rail=(x1,y1,x2,y2)=>{svgEl('line',{x1,y1,x2,y2,stroke:'#8a5a33','stroke-width':9,'stroke-linecap':'round'},f);svgEl('line',{x1,y1:y1-1.5,x2,y2:y2-1.5,stroke:'#c08a5a','stroke-width':3,'stroke-linecap':'round'},f);};
+  rail(-7,100,200,100);rail(500,100,707,100);rail(-7,800,200,800);rail(500,800,707,800);rail(-7,100,-7,800);rail(707,100,707,800);
+  for(const [x,y] of [[-7,100],[200,100],[500,100],[707,100],[-7,800],[200,800],[500,800],[707,800],[-7,450],[707,450],[-7,275],[707,275],[-7,625],[707,625]])svgEl('circle',{cx:x,cy:y,r:9,fill:'#6b4426',stroke:'#4a2e18','stroke-width':2},f);
+  // barns
+  const barn=(parent,flip,roof,wall,label)=>{const grp=svgEl('g',{transform:flip?'translate(700 900) rotate(180)':''},parent);
+    const u=svgEl('use',{href:'#sBarn',x:150,y:-12,width:400,height:110},grp);u.style.setProperty('--roof',roof);u.style.setProperty('--wall',wall);
+    svgEl('rect',{x:200,y:50,width:300,height:50,fill:'#4a2c18'},grp);
+    svgEl('path',{d:'M200 50 l-34 10 v36 l34 4z M500 50 l34 10 v36 l-34 4z',fill:wall,stroke:'#5b2a1a','stroke-width':4,'stroke-linejoin':'round'},grp);
+    svgEl('path',{d:'M206 96 h288',stroke:'#e9c27e','stroke-width':6,'stroke-dasharray':'10 8',opacity:.8},grp);
+    const t=svgEl('text',{x:flip?350:350,y:flip?900-24:24,'text-anchor':'middle',fill:'#fff','font-family':'Fredoka, sans-serif','font-weight':700,'font-size':20,stroke:'#5b2a1a','stroke-width':4,'paint-order':'stroke'},parent);t.textContent=label;
+    return {grp,t};};
+  window.__barns=[barn($('barnTop'),false,'#c9442c','#e8603e','YOUR BARN'),barn($('barnBot'),true,'#2b5aa8','#4d86e0','DAISY’S BARN')];
+})();
+
+// ---------- Game state ----------
+const params=new URLSearchParams(location.search);
+const inWorld=params.get('in')==='world'&&parent!==window;
+let cfg={level:saved.level||'easy',first:0,quick:saved.quick===true};
+let S=null,history=[],selected=null,preview=null,busy=false,stamps=[],humanMoves=0,hintsUsed=0,gameId=0,result=null;
+const isHuman=p=>cfg.level==='friend'||p===0;
+const names=()=>cfg.level==='friend'?['Sunrise','Bluebell']:['You',R.LEVELS[cfg.level].name];
+
+// ---------- Pieces ----------
+const pieceLayer=$('pieces');let els=new Map(); // cell index -> <g>
+function makePiece(kind,i){const g=svgEl('g',{class:'piece'}),b=svgEl('g',{class:'bob'},g);
+  const size=kind===FOAL?84:kind===TREE?96:92;svgEl('use',{href:{[H0]:'#sHorse0',[H1]:'#sHorse1',[FOAL]:'#sFoal',[HAY]:'#sHay',[TREE]:'#sTree'}[kind],x:-size/2,y:-size/2-4,width:size,height:size},b);
+  place(g,i);g.dataset.kind=kind;pieceLayer.append(g);return g;}
+function place(g,i){const [x,y]=cellXY(i);g.style.transform=`translate(${x}px,${y}px)`;g.dataset.cell=i;}
+function renderAll(){pieceLayer.textContent='';els=new Map();
+  for(let i=0;i<N*N;i++){const k=S.grid[i];if(k!==EMPTY)els.set(i,makePiece(k,i));}
+  renderBarnFoals();paintHud();}
+let barnFoals=[[],[]];
+function barnSlot(p,k){return p===0?[250+k*100,62]:[450-k*100,838];}
+function renderBarnFoals(){for(const list of barnFoals)for(const e of list)e.remove();barnFoals=[[],[]];
+  for(const p of [0,1])for(let k=0;k<S.barns[p];k++){const e=makePiece(FOAL,0);const [x,y]=barnSlot(p,k);e.style.transform=`translate(${x}px,${y}px) scale(.72)`;barnFoals[p].push(e);}}
+
+// ---------- HUD ----------
+function paintHud(){const [n0,n1]=names();$('name0').textContent=n0;$('name1').textContent=n1;
+  $('sub0').textContent=cfg.level==='friend'?'Ranch 1':'Sunrise Ranch';$('sub1').textContent=cfg.level==='friend'?'Ranch 2':R.LEVELS[cfg.level].label+' · Bluebell';
+  for(const p of [0,1]){$('pips'+p).innerHTML=Array.from({length:R.TO_WIN},(_,k)=>`<i class="${k<S.barns[p]?'on':''}"></i>`).join('');$('pill'+p).classList.toggle('turn',!S.over&&S.turn===p);}
+  const left=Math.ceil((S.maxPly-S.ply)/2);$('movesLeft').textContent=S.over?'—':left;
+  window.__barns[0].t.textContent=cfg.level==='friend'?'SUNRISE BARN':'YOUR BARN';window.__barns[1].t.textContent=cfg.level==='friend'?'BLUEBELL BARN':`${R.LEVELS[cfg.level].name.toUpperCase()}’S BARN`;
+  $('undoBtn').hidden=!(cfg.level==='easy'||cfg.level==='friend');
+  $('undoBtn').disabled=busy||history.length===0||S.over;
+  $('hintBtn').disabled=busy||S.over||!isHuman(S.turn);
+  paintCells();}
+function setStatus(html){$('status').innerHTML=html;}
+function turnStatus(){if(S.over)return;const [n0,n1]=names(),p=S.turn;
+  if(isHuman(p))setStatus(cfg.level==='friend'?`<span style="color:${p?'#2b5aa8':'#c4561a'}">${p?n1:n0}</span>, your move. Tap a horse.`:(selected===null?'Your move. Tap one of your orange horses.':'Tap a dot to move there.'));
+  else setStatus(`${n1} is thinking<span class="think"><i></i><i></i><i></i></span>`);}
+
+// ---------- Tap targets (one real button per square) ----------
+const cellBox=$('cells');const cellBtns=[];
+for(let i=0;i<N*N;i++){const b=document.createElement('button');b.type='button';const [r,c]=R.rc(i);b.dataset.i=i;b.addEventListener('click',()=>onCell(i));
+  b.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&selected!==null&&dotFor(i))showGhosts(selected,i);});
+  b.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&preview===null)clearGhosts();});
+  cellBox.append(b);cellBtns.push(b);}
+const label=i=>{const [r,c]=R.rc(i),k=S.grid[i],col='ABCDEFG'[c]+(N-r);return `${col}: `+({[EMPTY]:'grass',[H0]:cfg.level==='friend'?'Sunrise horse':'your horse',[H1]:cfg.level==='friend'?'Bluebell horse':'rival horse',[FOAL]:'foal',[HAY]:'hay bale',[TREE]:'apple tree'}[k])+(dotFor(i)?', move here':'');};
+function paintCells(){const can=!busy&&!S.over&&isHuman(S.turn);for(let i=0;i<N*N;i++){const b=cellBtns[i];b.disabled=!can;b.setAttribute('aria-label',label(i));}}
+
+// ---------- Selecting and moving ----------
+let legal=[];
+const dotFor=i=>legal.find(m=>m.from===selected&&m.to===i);
+function outcome(from,to){const g=S.grid.slice();g[to]=g[from];g[from]=EMPTY;return R.shoosFrom(g,to);}
+function select(i){selected=i;preview=null;clearGhosts();for(const [c,e] of els)e.classList.toggle('sel',c===i);drawDots();turnStatus();paintCells();}
+function deselect(){selected=null;preview=null;clearGhosts();for(const e of els.values())e.classList.remove('sel');drawDots();turnStatus();paintCells();}
+function drawDots(){const d=$('dots'),hl=$('hilite');d.textContent='';hl.querySelector('.selring')?.remove();if(selected===null)return;const me=S.turn;
+  {const [sx,sy]=cellXY(selected);hl.prepend(svgEl('rect',{class:'selring',x:sx-48,y:sy-48,width:96,height:96,rx:18,fill:'#fff6c8',opacity:.75,stroke:'#f2b632','stroke-width':5}));}
+  for(const m of legal.filter(m=>m.from===selected)){const sh=outcome(m.from,m.to),mine=sh.filter(s=>s.barn===me).length,theirs=sh.filter(s=>s.barn===1-me).length;
+    const cls=mine?'win':theirs?'own':sh.length?'shoo':'';const [x,y]=cellXY(m.to);const g=svgEl('g',{class:'dot '+cls+(preview===m.to?' pick':'')},d);
+    svgEl('circle',{class:'d',cx:x,cy:y,r:mine||theirs?20:15},g);
+    if(preview===m.to){const t=svgEl('text',{x,y},g);t.textContent='✓';}
+    else if(mine){const t=svgEl('text',{x,y:y+1,style:'fill:#8a4b00;font-size:24px'},g);t.textContent='★';}}}
+function showGhosts(from,to){clearGhosts();const gh=$('ghosts'),me=S.turn;
+  for(const s of outcome(from,to)){const pts=[cellXY(s.from),...s.path.map(cellXY)];
+    if(s.barn!==null)pts.push(exitPoint(s,pts));
+    if(pts.length<2)continue;const col=s.barn===me?'#e06a1f':s.barn!==null?'#c2412b':'#5b4a2a';
+    svgEl('polyline',{class:'ghost',points:pts.map(p=>p.join(',')).join(' '),stroke:col,'marker-end':`url(#${s.barn===me?'mArrowSun':'mArrowInk'})`},gh);}}
+// Where a foal leaves the meadow through a door: one more step in its last direction, at the barn's threshold.
+function exitPoint(s,pts){const last=pts.at(-1),prev=pts.length>1?pts.at(-2):null,dx=prev?last[0]-prev[0]:s.dc*100;return [last[0]+dx,s.barn===0?60:840];}
+function clearGhosts(){$('ghosts').textContent='';}
+
+function onCell(i){if(busy||S.over||!isHuman(S.turn))return;const me=S.turn===0?H0:H1;
+  if(S.grid[i]===me){if(selected===i)deselect();else{sfx.tap();select(i);}return;}
+  if(selected===null){if(S.grid[i]===(me===H0?H1:H0))toast(cfg.level==='friend'?'That horse belongs to the other ranch.':'That’s your rival’s horse. Yours are orange.');else if(S.grid[i]===FOAL)toast('Foals can’t be moved directly. Land a horse next to one to shoo it!');return;}
+  const m=dotFor(i);if(!m){deselect();return;}
+  const sh=outcome(m.from,m.to);
+  if(sh.length&&!cfg.quick&&preview!==i){preview=i;showGhosts(m.from,m.to);drawDots();setStatus(sh.some(s=>s.barn===S.turn)?'⭐ That scores! Tap ✓ again to go.':sh.some(s=>s.barn!==null)?'Careful: that sends a foal into your rival’s barn. Tap ✓ to go anyway.':'Arrows show where the foals will run. Tap ✓ to go.');return;}
+  play(m);}
+
+async function play(m){busy=true;clearHint();const before=S;if(isHuman(S.turn)&&(cfg.level==='easy'||cfg.level==='friend'))history.push({S,barnsBefore:S.barns.slice(),humanMoves});
+  if(isHuman(S.turn))humanMoves++;
+  selected=null;preview=null;clearGhosts();drawDots();for(const e of els.values())e.classList.remove('sel');
+  const {state,events}=R.applyMove(S,m);S=state;stamps.push(Date.now());paintHud();
+  await animateMove(before,events);
+  renderAll();
+  if(events.passed&&!S.over){const [n0,n1]=names();toast(`${S.turn===0?n1:n0} is boxed in and has to pass.`);}
+  busy=false;paintHud();
+  if(S.over){finish();return;}
+  next();}
+
+async function next(){turnStatus();paintHud();if(S.over)return;
+  if(!isHuman(S.turn)){busy=true;paintHud();const id=gameId;await frame();if(id!==gameId)return;
+    const t0=performance.now(),m=R.chooseMove(S,cfg.level,Math.random,{timeMs:650});if(id!==gameId)return;
+    const g=els.get(m.from);if(g&&!still()){g.classList.add('sel');await g.querySelector('.bob').animate([{transform:'none'},{transform:'translateY(-10px) scale(1.06)'},{transform:'none'}],{duration:420,easing:'ease-in-out'}).finished;g.classList.remove('sel');}
+    if(id!==gameId)return;busy=false;await play(m);}
+  else{legal=R.legalMoves(S);}}
+
+// ---------- Animation (each step starts when the previous one finishes) ----------
+async function animateMove(before,ev){const g=els.get(ev.move.from);const [x0,y0]=cellXY(ev.move.from),[x1,y1]=cellXY(ev.move.to);sfx.clop();
+  if(g){pieceLayer.append(g);const mx=(x0+x1)/2,my=(y0+y1)/2-36;
+    await g.animate([{transform:`translate(${x0}px,${y0}px)`},{transform:`translate(${mx}px,${my}px) scale(1.08)`,offset:.5},{transform:`translate(${x1}px,${y1}px)`}],{duration:dur(340),easing:'cubic-bezier(.4,0,.3,1)',fill:'forwards'}).finished;
+    place(g,ev.move.to);els.delete(ev.move.from);els.set(ev.move.to,g);}
+  if(!ev.shoos.length)return;
+  // puff where the horse lands
+  if(!still()){const [px,py]=[x1,y1];for(let k=0;k<6;k++){const a=k/6*Math.PI*2,c=svgEl('circle',{cx:px,cy:py+30,r:8,fill:'#fffdf4',opacity:.8},$('fx'));c.animate([{transform:'translate(0,0)',opacity:.8},{transform:`translate(${Math.cos(a)*40}px,${Math.sin(a)*18}px)`,opacity:0}],{duration:420,easing:'ease-out'}).finished.then(()=>c.remove());}}
+  sfx.shoo();
+  const barnsSoFar=before.barns.slice();
+  await Promise.all(ev.shoos.map(s=>{const f=els.get(s.from);if(!f)return Promise.resolve();
+    const pts=[cellXY(s.from),...s.path.map(cellXY)];let slot=null;
+    if(s.barn!==null){pts.push(exitPoint(s,pts));slot=barnSlot(s.barn,barnsSoFar[s.barn]++);}
+    const steps=pts.length-1,frames=pts.map(([x,y],k)=>({transform:`translate(${x}px,${y}px)`,offset:steps?k/steps*(slot?.82:1):0}));
+    if(slot)frames.push({transform:`translate(${slot[0]}px,${slot[1]}px) scale(.72)`,offset:1});
+    if(frames.length<2)return Promise.resolve();
+    return f.animate(frames,{duration:dur(140*steps+(slot?260:0)+60),easing:'ease-out',fill:'forwards'}).finished.then(()=>{if(s.barn!==null){if(s.barn===ev.player)sfx.home();else sfx.oops();celebrateBarn(s.barn);}});}));}
+function celebrateBarn(p){if(still())return;const [x,y]=barnSlot(p,1);for(let k=0;k<10;k++){const a=-Math.PI*(k/9)*(p===0?1:-1),s=svgEl('text',{x,y,'text-anchor':'middle','font-size':26},$('fx'));s.textContent=k%2?'✦':'❤';s.setAttribute('fill',k%2?'#f2b632':'#e8603e');
+  s.animate([{transform:'translate(0,0) scale(.4)',opacity:1},{transform:`translate(${Math.cos(a)*110}px,${Math.sin(a)*70}px) scale(1)`,opacity:0}],{duration:700,easing:'ease-out'}).finished.then(()=>s.remove());}}
+
+// ---------- Hint + undo ----------
+let hintEls=[];
+function clearHint(){for(const e of hintEls)e.remove();hintEls=[];}
+$('hintBtn').onclick=()=>{if(busy||S.over||!isHuman(S.turn))return;clearHint();hintsUsed++;const m=R.chooseMove(S,'medium',Math.random);if(!m)return;
+  select(m.from);const [x,y]=cellXY(m.to),[a,b]=cellXY(m.from);
+  const ring=svgEl('circle',{class:'hintring',cx:x,cy:y,r:42},$('hilite'));const ln=svgEl('line',{x1:a,y1:b,x2:x,y2:y,stroke:'#fffdf4','stroke-width':8,'stroke-linecap':'round','stroke-dasharray':'2 14',opacity:.9},$('hilite'));hintEls.push(ring,ln);
+  if(!still())ring.animate([{strokeDashoffset:0},{strokeDashoffset:48}],{duration:900,iterations:Infinity});
+  const sh=outcome(m.from,m.to);setStatus(sh.length?'Try this one: the arrows show the foals running.':'Try moving this horse into position.');if(sh.length){preview=null;showGhosts(m.from,m.to);}};
+$('undoBtn').onclick=()=>{if(busy||!history.length)return;const h=history.pop();S=h.S;humanMoves=h.humanMoves;clearHint();selected=null;preview=null;clearGhosts();drawDots();renderAll();legal=R.legalMoves(S);turnStatus();toast('Took back your last move.');};
+
+// ---------- Start / finish ----------
+function startGame(){gameId++;S=R.newGame({first:cfg.first});history=[];selected=null;preview=null;busy=false;drawDots();humanMoves=0;hintsUsed=0;result=null;stamps=[Date.now()];
+  clearHint();clearGhosts();$('dots').textContent='';$('fx').textContent='';renderAll();legal=R.legalMoves(S);closeSheets();next();}
+function finish(){stamps.push(Date.now());const me=cfg.level==='friend'?null:0,w=S.winner,[n0,n1]=names();
+  const res=w==='draw'?'draw':cfg.level==='friend'?'win':w===0?'win':'loss';
+  const ms=R.activeMs(stamps),mins=Math.max(1,Math.round(ms/60000)),reward=R.rewardFor({result:res,level:cfg.level,ms,moves:humanMoves});
+  const st=saved.stats[cfg.level]=saved.stats[cfg.level]||{w:0,l:0,d:0,best:0,streak:0};
+  let newBest=false;if(res==='win'&&cfg.level!=='friend'){st.w++;st.streak=(st.streak||0)+1;const mv=humanMoves;if(!st.best||mv<st.best){st.best=mv;newBest=true;}}else if(res==='loss'){st.l++;st.streak=0;}else if(res==='draw'){st.d++;st.streak=0;}else st.w++;
+  save();
+  const collectId=reward.coins>0?queueCoins({from:'Shoo-In',coins:reward.coins,lines:reward.lines}):null;
+  result={collectId,coins:reward.coins};
+  const why={barn:'Three foals home!',sunset:'The sun went down: most foals home.',half:'Sunset tie, decided by foals on each half.',draw:'Sunset, perfectly level.'}[S.reason];
+  const title=w==='draw'?'Dead heat!':cfg.level==='friend'?`${w===0?n0:n1} wins!`:w===0?'You win!':`${n1} wins`;
+  const ribbon=w==='draw'?'#9aa7b5':(cfg.level==='friend'?(w===0?'#ff8a3d':'#4d86e0'):w===0?'#2f6bd8':'#d9a520');
+  $('doneCard').innerHTML=`<svg class="rosette" viewBox="0 0 120 130" aria-hidden="true"><path d="M44 70 L30 126 L46 116 L56 128 L60 76Z M76 70 L90 126 L74 116 L64 128 L60 76Z" fill="${ribbon}" opacity=".85"/>
+    ${Array.from({length:14},(_,k)=>{const a=k/14*Math.PI*2;return `<circle cx="${60+Math.cos(a)*34}" cy="${52+Math.sin(a)*34}" r="13" fill="${ribbon}"/>`;}).join('')}
+    <circle cx="60" cy="52" r="30" fill="#fffdf4" stroke="${ribbon}" stroke-width="4"/><use href="${w===1&&cfg.level!=='friend'?'#sHorse1':w==='draw'?'#sFoal':w===1?'#sHorse1':'#sHorse0'}" x="34" y="26" width="52" height="52"/></svg>
+    <h2 id="doneTitle">${title}</h2><p class="sub">${why}</p>
+    <div class="res-rows"><div><span>Foals home</span><b>${n0} ${S.barns[0]} · ${S.barns[1]} ${n1}</b></div>
+    <div><span>${cfg.level==='friend'?'Moves played':'Your moves'}</span><b>${cfg.level==='friend'?S.ply:humanMoves}${newBest?' · new best!':''}</b></div>
+    <div><span>Time</span><b>${mins} min</b></div>
+    ${cfg.level!=='friend'?`<div><span>Record vs ${n1}</span><b>${st.w}W · ${st.l}L${st.d?' · '+st.d+'D':''}</b></div>`:''}</div>
+    ${collectId?`<button class="tc-collect" id="collect" type="button" style="margin:4px 0 10px">Collect ${reward.coins} Trotties</button>`:''}
+    <div class="stack"><button class="btn primary wide" id="again" type="button">Play again</button><button class="btn wide" id="change" type="button">Change rival</button><button class="btn wide" id="doneLeave" type="button">Back to Trottville</button></div>`;
+  $('collect')?.addEventListener('click',e=>{e.currentTarget.remove();showCollect({title:'Shoo-In rewards',ids:[result.collectId]});result.collectId=null;});
+  $('again').onclick=startGame;$('change').onclick=()=>openSheet('startSheet');$('doneLeave').onclick=()=>leave();
+  setStatus(title);paintHud();
+  if(res==='win'){sfx.win();confetti();}
+  // the last move's animation has already finished here, so the card opens straight away
+  openSheet('doneSheet');}
+function confetti(){if(still())return;const cols=['#ff8a3d','#4d86e0','#f2b632','#4f9a3c','#e8603e','#fffdf4'];
+  for(let k=0;k<36;k++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.background=cols[k%cols.length];document.body.append(c);
+    c.animate([{transform:`translateY(0) rotate(0)`},{transform:`translate(${(Math.random()-.5)*120}px,${innerHeight+40}px) rotate(${Math.random()*720}deg)`}],{duration:1600+Math.random()*1200,delay:Math.random()*400,easing:'cubic-bezier(.3,.6,.6,1)'}).finished.then(()=>c.remove());}}
+
+// ---------- Sheets ----------
+function openSheet(id){for(const s of document.querySelectorAll('.sheet'))if(s.id!==id)s.classList.remove('on');const s=$(id);s.classList.add('on');if(id==='startSheet')paintStart();
+  requestAnimationFrame(()=>s.querySelector('button')?.focus({preventScroll:true}));}
+function closeSheets(){for(const s of document.querySelectorAll('.sheet'))s.classList.remove('on');}
+const RIVALS=[['easy','e'],['medium','m'],['hard','h']];
+function paintStart(){const box=$('rivals');box.innerHTML=RIVALS.map(([lv,c])=>{const L=R.LEVELS[lv],st=saved.stats[lv];return `<button class="rival" type="button" data-lv="${lv}" aria-pressed="${cfg.level===lv}">
+    <svg aria-hidden="true"><use href="#sHorse1"/></svg><span><b>${L.name}</b><small>${L.blurb}${st?.w?` · ${st.w} win${st.w>1?'s':''}`:''}</small></span><span class="lvl ${c}">${L.label}</span></button>`;}).join('')+
+    `<button class="rival" type="button" data-lv="friend" aria-pressed="${cfg.level==='friend'}"><svg aria-hidden="true" viewBox="0 0 46 46"><use href="#sHorse0" x="0" y="6" width="30" height="30"/><use href="#sHorse1" x="16" y="10" width="30" height="30"/></svg><span><b>Pass &amp; play</b><small>Two players take turns on one phone</small></span><span class="lvl f">Friend</span></button>`;
+  for(const b of box.querySelectorAll('.rival'))b.onclick=()=>{cfg.level=b.dataset.lv;saved.level=cfg.level;save();paintStart();};
+  for(const b of $('firstSeg').querySelectorAll('button'))b.setAttribute('aria-pressed',String(Number(b.dataset.first)===cfg.first));
+  $('firstRivalBtn').textContent=cfg.level==='friend'?'Bluebell':R.LEVELS[cfg.level].name;$('firstSeg').querySelector('[data-first="0"]').textContent=cfg.level==='friend'?'Sunrise':'You';
+  const tot=['easy','medium','hard'].reduce((a,lv)=>a+(saved.stats[lv]?.w||0),0),best=['easy','medium','hard'].map(lv=>saved.stats[lv]?.best).filter(Boolean);
+  $('statline').textContent=tot?`${tot} win${tot>1?'s':''} so far${best.length?` · quickest win ${Math.min(...best)} moves`:''}. Win to earn Trotties: tougher rivals pay more.`:'Finish a match to earn Trotties: about 10 a minute, more against tougher rivals.';}
+for(const b of $('firstSeg').querySelectorAll('button'))b.onclick=()=>{cfg.first=Number(b.dataset.first);paintStart();};
+$('startBtn').onclick=startGame;
+$('startHelp').onclick=()=>{helpReturn='startSheet';openSheet('helpSheet');};
+let helpReturn=null;
+$('helpBtn').onclick=()=>{helpReturn=null;openSheet('helpSheet');};
+$('helpClose').onclick=()=>{saved.seenHelp=true;save();if(helpReturn)openSheet(helpReturn);else closeSheets();helpReturn=null;};
+$('menuBtn').onclick=()=>{$('menuSub').textContent=S&&!S.over?`${names()[0]} ${S.barns[0]} · ${S.barns[1]} ${names()[1]} · ${Math.ceil((S.maxPly-S.ply)/2)} moves to sunset`:'';paintToggles();openSheet('menuSheet');};
+$('mResume').onclick=closeSheets;
+$('mHelp').onclick=()=>{helpReturn='menuSheet';openSheet('helpSheet');};
+$('mNew').onclick=()=>{if(S&&!S.over&&humanMoves>0){askThen=()=>openSheet('startSheet');$('askTitle').textContent='Start a new match?';openSheet('askSheet');}else openSheet('startSheet');};
+function paintToggles(){$('mQuick').textContent=cfg.quick?'On':'Off';$('mQuick').setAttribute('aria-pressed',String(cfg.quick));$('mSound').textContent=soundOn?'On':'Off';$('mSound').setAttribute('aria-pressed',String(soundOn));}
+$('mQuick').onclick=()=>{cfg.quick=!cfg.quick;saved.quick=cfg.quick;save();paintToggles();};
+$('mSound').onclick=()=>{soundOn=!soundOn;saved.sound=soundOn;save();paintToggles();sfx.tap();};
+let askThen=null;
+$('askStay').onclick=closeSheets;$('askGo').onclick=()=>{const f=askThen;askThen=null;gameId++;busy=false;closeSheets();f?.();};
+for(const s of document.querySelectorAll('.sheet'))s.addEventListener('click',e=>{if(e.target===s&&(s.id==='helpSheet'||s.id==='menuSheet'||s.id==='askSheet'))$( s.id==='helpSheet'?'helpClose':s.id==='menuSheet'?'mResume':'askStay').click();});
+addEventListener('keydown',e=>{if(e.key!=='Escape')return;const open=document.querySelector('.sheet.on');
+  if(!open){$('menuBtn').click();return;}const close={helpSheet:'helpClose',menuSheet:'mResume',askSheet:'askStay'}[open.id];if(close)$(close).click();});
+
+// ---------- Way back to Trottville ----------
+const back=$('back');
+const leave=()=>{if(inWorld)parent.postMessage('trottville:close-board',location.origin);else location.href=back.href;};
+if(inWorld){back.removeAttribute('href');back.setAttribute('role','button');back.tabIndex=0;$('backTxt').textContent='Back to Trottville';}
+// 2026-11-15 playtest: the start sheet covers the back arrow, so it (and the end card) carry their own way out.
+$('startLeave').onclick=()=>leave();
+back.addEventListener('click',e=>{if(S&&!S.over&&humanMoves>0){e.preventDefault();askThen=leave;$('askTitle').textContent='Leave this match?';openSheet('askSheet');return;}if(inWorld){e.preventDefault();leave();}});
+
+// ---------- Guide illustrations ----------
+(function drawGuide(){const put=(g,sym,x,y,s=80)=>svgEl('use',{href:sym,x:x-s/2,y:y-s/2,width:s,height:s},g);
+  const grid=g=>{for(let r=0;r<3;r++)for(let c=0;c<3;c++)if((r+c)%2)svgEl('rect',{x:c*100,y:r*100,width:100,height:100,fill:'#000',opacity:.05},g);};
+  const arrow=(g,pts,col='#e06a1f',m='mArrowSun')=>svgEl('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',stroke:col,'stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':'2 16','marker-end':`url(#${m})`},g);
+  // 1: dots around a horse
+  let g=$('hs1');grid(g);put(g,'#sHorse0',150,150,84);for(const [dx,dy] of [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]]){svgEl('circle',{cx:150+dx*100,cy:150+dy*100,r:14,fill:'#fff',stroke:'#2f6b3a','stroke-width':4},g);}
+  svgEl('text',{x:150,y:285,'text-anchor':'middle','font-family':'Nunito','font-weight':900,'font-size':26,fill:'#2f6b3a'},g).textContent='…or 2 in a line';
+  // 2: horse lands, two foals bolt away
+  g=$('hs2');grid(g);put(g,'#sHorse0',150,250,84);arrow(g,[[150,330],[150,262]],'#24402f','mArrowInk');put(g,'#sFoal',150,150,70);put(g,'#sFoal',250,150,70);arrow(g,[[150,110],[150,20]]);arrow(g,[[270,130],[292,108]]);
+  // 3: diagonal bounce off the left fence
+  g=$('hs3');grid(g);svgEl('line',{x1:4,y1:0,x2:4,y2:300,stroke:'#8a5a33','stroke-width':9},g);put(g,'#sHorse0',150,250,80);put(g,'#sFoal',50,150,66);arrow(g,[[50,150],[8,108],[60,56],[110,8]]);
+  // 4: through the door into the barn
+  g=$('hs4');grid(g);svgEl('rect',{x:0,y:0,width:300,height:44,fill:'#e8603e'},g);svgEl('rect',{x:70,y:0,width:160,height:44,fill:'#4a2c18'},g);svgEl('text',{x:150,y:30,'text-anchor':'middle','font-family':'Fredoka','font-weight':700,'font-size':22,fill:'#fff'},g).textContent='DOOR';
+  put(g,'#sFoal',150,130,66);put(g,'#sHorse0',150,240,80);arrow(g,[[150,96],[150,40]]);
+})();
+
+// ---------- Boot ----------
+try{paintCounters(balance());}catch{}
+S=R.newGame({seed:1});renderAll();
+if(cfg.level&&!R.LEVELS[cfg.level]&&cfg.level!=='friend')cfg.level='easy';
+if(!saved.seenHelp){helpReturn='startSheet';openSheet('helpSheet');}else openSheet('startSheet');
+addEventListener('trottcoins:change',()=>{try{paintCounters(balance());}catch{}});
+// Test hook for automated checks (no effect on play).
+window.__shooin={get state(){return S;},play:m=>play(m),legal:()=>R.legalMoves(S),cfg};
+</script>
+<script type="module" src="pixel-icons.js"></script>
+</body>
+</html>

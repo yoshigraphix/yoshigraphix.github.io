@@ -1,0 +1,86 @@
+/* Trottville Quest Log: a stitched leather notebook with warm paper pages. Everything scoped under .ql- */
+.ql-root{position:fixed;inset:0;z-index:60;display:grid;place-items:center;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#3b2a1e}
+.ql-scrim{position:absolute;inset:0;background:rgba(32,22,14,.45)}
+.ql-book{position:relative;display:grid;grid-template-rows:auto auto minmax(0,1fr);grid-template-columns:minmax(0,1fr);width:min(720px,100vw);height:min(860px,100dvh);
+  background:#f7ecd4;background-image:repeating-linear-gradient(0deg,transparent 0 27px,rgba(150,110,70,.10) 27px 28px);
+  border:10px solid #8a5636;border-radius:18px;box-shadow:0 0 0 2px #6d4128,inset 0 0 0 2px #c79a6b,0 18px 50px rgba(0,0,0,.35);overflow:hidden}
+.ql-book::before{content:'';position:absolute;inset:6px;border:2px dashed rgba(138,86,54,.35);border-radius:10px;pointer-events:none}
+.ql-ribbon{position:absolute;top:-6px;right:84px;width:18px;height:70px;background:#c8463a;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);box-shadow:1px 0 0 #9d3027;pointer-events:none}
+@media (max-width:720px){.ql-book{width:100vw;height:100dvh;border-width:6px;border-radius:0}.ql-ribbon{right:78px}}
+.ql-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px 6px 20px}
+.ql-head h2{margin:0;font-size:1.35rem;letter-spacing:.02em;color:#5a3520}
+.ql-count{font-weight:600;color:#9a6a45;font-size:1rem}
+.ql-x{min-width:44px;min-height:44px;border:0;border-radius:50%;background:#ead7b5;color:#5a3520;font-size:1.6rem;line-height:1;cursor:pointer}
+.ql-x:hover,.ql-x:focus-visible{background:#dcc193;outline:2px solid #8a5636}
+.ql-tabs{display:flex;gap:6px;padding:4px 14px 8px;border-bottom:2px solid #d9bf94}
+.ql-tabs button{flex:1;min-height:44px;border:2px solid #c9a676;border-bottom-width:4px;border-radius:12px 12px 6px 6px;background:#efe0c2;color:#6d4128;font:inherit;font-weight:700;cursor:pointer}
+.ql-tabs button:hover{background:#e7d2ab}
+.ql-tabs button.is-on{background:#fff8e8;border-color:#8a5636;color:#3b2a1e}
+.ql-page{overflow:auto;padding:12px 16px 24px;-webkit-overflow-scrolling:touch}
+.ql-sub{margin:2px 4px 10px;color:#7a5638;font-weight:600}
+.ql-empty{text-align:center;padding:40px 16px;color:#7a5638}
+.ql-empty-big{font-size:1.2rem;font-weight:700;color:#5a3520}
+.ql-mark{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:5px;background:#f2b33d;color:#4a2b12;font-weight:900;box-shadow:0 2px 0 #b97f1e}
+/* Active */
+.ql-active{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.ql-card{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 12px;padding:12px;background:#fffaf0;border:2px solid #dcc193;border-radius:14px;box-shadow:0 3px 0 #e2cca4}
+.ql-card.is-ready{border-color:#6aa363;box-shadow:0 3px 0 #a8cc9d}
+.ql-card.is-hurry .ql-time{color:#b8352a;font-weight:800}
+.ql-card-icon{font-size:2rem;display:grid;place-items:center;width:52px;height:52px;background:#f3e3c3;border-radius:12px}
+.ql-card h3{margin:0 0 2px;font-size:1.05rem}
+.ql-card-num,.ql-qcard-num{margin:0;font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#a07550}
+.ql-todo{margin:2px 0 6px;line-height:1.35}
+.ql-meta{display:flex;flex-wrap:wrap;gap:6px 12px;margin:0;font-size:.9rem;font-weight:600;color:#6d4128}
+.ql-tag{background:#eadcbf;border-radius:999px;padding:1px 8px}
+.ql-bar{height:8px;background:#ead7b5;border-radius:99px;overflow:hidden;margin:0 0 6px}
+.ql-bar i{display:block;height:100%;background:#6aa363;border-radius:99px}
+.ql-pin{grid-column:1/-1;justify-self:end;min-height:44px;padding:0 16px;border:2px solid #3f7fb8;border-radius:12px;background:#e8f2fb;color:#1f4f7a;font:inherit;font-weight:700;cursor:pointer}
+.ql-pin:hover,.ql-pin:focus-visible{background:#d3e6f7}
+/* Done grid: 200 collectable tiles */
+.ql-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.ql-tile{position:relative;aspect-ratio:1;display:grid;place-items:center;border-radius:10px;background:#efe2c6;border:2px dashed #cdb184;color:#b49670;overflow:hidden}
+.ql-tile-n{position:absolute;top:3px;left:5px;font-size:.66rem;font-weight:800}
+.ql-tile-icon{font-size:1.5rem;font-weight:800}
+.ql-tile-t{position:absolute;inset:auto 2px 3px;font-size:.58rem;line-height:1.05;text-align:center;font-weight:700;color:#5a3520;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ql-tile.is-done{background:#fff8e6;border:2px solid #c99a5c;color:#8a5636;box-shadow:0 2px 0 #dcc193}
+.ql-tile.is-done .ql-tile-icon{font-size:1.35rem;margin-top:-10px}
+.ql-tile.is-active{border-style:solid;border-color:#3f7fb8;color:#3f7fb8;background:#eef5fb}
+.ql-tile.is-failed-today{border-color:#c98c6a;color:#c98c6a}
+/* Badges */
+.ql-badges{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.ql-badge{text-align:center;padding:12px 10px;border-radius:14px;background:#ece0c8;border:2px solid #d6c09a;color:#9d8a6e;filter:grayscale(1);opacity:.85}
+.ql-badge h3{margin:4px 0 2px;font-size:.95rem}
+.ql-badge p{margin:0;font-size:.8rem;line-height:1.3}
+.ql-badge-icon{display:inline-grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#ddd0b6;font-size:1.8rem}
+.ql-badge-count{margin-top:6px!important;font-weight:800}
+.ql-badge.is-earned{filter:none;opacity:1;background:#fff6dc;border-color:#d9a640;color:#5a3520;box-shadow:0 3px 0 #e8c77c}
+.ql-badge.is-earned .ql-badge-icon{background:radial-gradient(circle at 35% 30%,#fff6c8,#f2c24e 60%,#d39a26);box-shadow:0 0 0 3px #fff2c4,0 0 14px rgba(242,180,60,.7)}
+.ql-badge.is-big{grid-column:1/-1}
+.ql-badge.is-big .ql-badge-icon{width:76px;height:76px;font-size:2.5rem}
+/* Talk dialog body */
+.ql-talk{display:grid;gap:10px;color:#3b2a1e;font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+.ql-bubble{position:relative;background:#fffaf0;border:2px solid #dcc193;border-radius:16px;padding:10px 14px}
+.ql-bubble::after{content:'';position:absolute;left:22px;bottom:-11px;width:18px;height:18px;background:#fffaf0;border-right:2px solid #dcc193;border-bottom:2px solid #dcc193;transform:rotate(45deg)}
+.ql-bubble p{margin:4px 0;line-height:1.4}
+.ql-who{font-weight:800;color:#8a5636;margin:0 0 2px!important}
+.ql-qcard{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;margin-top:6px;padding:10px 12px;background:#f7ecd4;border:2px dashed #c9a676;border-radius:12px}
+.ql-qcard.is-done{border-style:solid;border-color:#6aa363;background:#f0f7ea}
+.ql-qcard h3{margin:0 0 4px;font-size:1rem}
+.ql-qcard-icon{font-size:1.9rem;text-align:center}
+.ql-paid{margin:0;text-align:center;font-weight:800;font-size:1.1rem;color:#7a5a12}
+.ql-actions{display:flex;gap:8px;flex-wrap:wrap}
+.ql-btn{flex:1;min-height:44px;padding:0 16px;border:2px solid #b08453;border-radius:12px;background:#f3e3c3;color:#5a3520;font:inherit;font-weight:800;cursor:pointer}
+.ql-btn:hover,.ql-btn:focus-visible{background:#ead2a6}
+.ql-btn.is-main{background:#3f7fb8;border-color:#2c6699;color:#fff}
+.ql-btn.is-main:hover,.ql-btn.is-main:focus-visible{background:#2f6ea6}
+/* Badge celebration */
+.ql-toast{display:flex;align-items:center;gap:12px;padding:12px 16px;max-width:min(92vw,380px);background:#fff6dc;border:3px solid #d9a640;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.25);color:#3b2a1e;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;animation:ql-pop .5s ease-out}
+.ql-toast-icon{display:grid;place-items:center;flex:none;width:56px;height:56px;border-radius:50%;font-size:1.9rem;background:radial-gradient(circle at 35% 30%,#fff6c8,#f2c24e 60%,#d39a26);box-shadow:0 0 0 3px #fff2c4}
+.ql-toast p{margin:0}
+.ql-toast-kicker{font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#a07a1c}
+.ql-toast-name{font-weight:800;font-size:1.1rem}
+.ql-toast-about{font-size:.85rem;color:#6d4f2e}
+.ql-toast.is-big{border-color:#c8463a}
+.ql-toast.is-big .ql-toast-icon{width:72px;height:72px;font-size:2.4rem}
+@keyframes ql-pop{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ql-toast{animation:none}}

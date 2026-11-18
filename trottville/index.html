@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#304a3e"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="Trottville is a private prototype for a welcoming horse community. Care for your horses, share moments and explore together.">
+<title>Trottville · Your happy place, rediscovered</title>
+<link rel="manifest" href="horselandia.webmanifest"><link rel="icon" href="assets/horse-192.png" type="image/png"><link rel="apple-touch-icon" href="assets/horse-192.png"><link rel="stylesheet" href="horselandia.css?v=157"><link rel="stylesheet" href="world.css?v=157"><link rel="stylesheet" href="world-expansion.css?v=157"><link rel="stylesheet" href="hay-flinger.css?v=157"><link rel="stylesheet" href="coin-collect.css?v=157"><link rel="stylesheet" href="ranch.css?v=157"><link rel="stylesheet" href="stall.css?v=157"><link rel="stylesheet" href="friends.css?v=157"><link rel="modulepreload" href="vendor/three-0.180.0/three.core.js?v=157"><link rel="modulepreload" href="vendor/three-0.180.0/three.module.js?v=157"><link rel="modulepreload" href="home-horse.js?v=157">
+<script src="supabase-config.js?v=157" defer></script><script src="vendor/supabase-2.118.0.js?v=157" defer></script><script src="cloud.js?v=157" defer></script><script src="auth-panel.js?v=157" defer></script><script src="stable.js?v=157" defer></script><script src="backgrounds.js?v=157" defer></script><script src="world-shell.js?v=157" defer></script><script src="horselandia.js?v=157" defer></script><script type="module" src="pixel-icons.js?v=157"></script><script type="module" src="audio-ui.js?v=157"></script><script type="module" src="home-panels.js?v=157"></script><script type="module" src="play-log.js?v=157"></script>
+</head>
+<body>
+<div id="start" class="start" role="dialog" aria-modal="true" aria-labelledby="start-title">
+<div class="start-sky"></div><div class="start-hills"></div>
+<div class="start-card">
+<h1 id="start-title" class="start-word"><img src="assets/icons/wordmark.webp" alt="Trottville"></h1>
+<div class="start-trot" aria-hidden="true"><img src="assets/icons/horse-new.webp" alt="" draggable="false"></div>
+<div class="start-load"><div class="start-bar" role="progressbar" aria-label="Loading Trottville" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><p class="start-step" aria-live="polite">Opening the gate…</p></div>
+<div class="start-choices" hidden>
+<button type="button" class="start-play" data-start="play">Play</button>
+<button type="button" class="start-save" data-start="signin">Sign in to save</button>
+<p class="start-note">No account needed to play. Your horses stay on this phone until you sign in.</p>
+<button type="button" class="start-info-btn" data-start="info" aria-expanded="false" aria-controls="start-info">ⓘ What do guests miss?</button>
+</div>
+<div class="start-info" id="start-info" hidden>
+<h2>Guest or free account?</h2>
+<table class="start-table"><thead><tr><th scope="col"></th><th scope="col">Guest</th><th scope="col">Free account</th></tr></thead><tbody>
+<tr><th scope="row">Play every game, ride the whole world</th><td>✅</td><td>✅</td></tr>
+<tr><th scope="row">Earn Trotties, tame and train your horse</th><td>✅</td><td>✅</td></tr>
+<tr><th scope="row">Horses saved if you clear the browser or change phones</th><td>❌</td><td>✅</td></tr>
+<tr><th scope="row">Keep horses from the market</th><td>❌</td><td>✅</td></tr>
+<tr class="start-hot"><th scope="row">Friends: visit their barns, feed and tame their horses, race and trade together, join clubs</th><td>❌</td><td>✅</td></tr>
+<tr><th scope="row">Show your badges to friends</th><td>❌</td><td>✅</td></tr>
+</tbody></table>
+<div class="start-friends" aria-hidden="true"><span class="sf-barn">🏠</span><span class="sf-rider sf-a">🏇</span><span class="sf-carrot">🥕</span><span class="sf-rider sf-b">🏇</span><span class="sf-barn">🏠</span></div>
+<p class="start-free">Accounts are free. No card needed.</p>
+<div class="start-info-actions"><button type="button" class="start-save" data-start="signin">Create a free account</button><button type="button" class="start-play small" data-start="play">Play as a guest</button></div>
+</div>
+</div>
+</div>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar">
+<a class="brand" href="#home" aria-label="Trottville home"><span class="brand-word"><img src="assets/icons/wordmark.webp" alt="Trottville"><span class="brand-sub">A PLACE TO BELONG</span></span></a>
+<div class="side-label">YOUR LITTLE CORNER</div><nav id="desktop-nav" aria-label="Main navigation"></nav>
+<div class="sidebar-note"><span class="tiny-star">✳</span><h3>Old friends. New trails.</h3><p>That feeling of finding your people, all over again.</p><button class="text-button" data-action="about">About this place <span>↗</span></button></div>
+<div class="side-bottom"><span class="private-dot"></span> Private concept · Sample community<br><button class="text-button muted" data-route="offline">Install & offline guide ↗</button></div>
+</aside>
+<div class="app-shell"><header class="topbar"><div class="mobile-brand"><img class="mobile-word" src="assets/icons/wordmark.webp" alt="Trottville"></div><div class="breadcrumb">Your community <span>/</span> <b id="crumb">Home</b></div><div class="top-actions"><span id="connection" class="connection"><i></i> Online</span><button type="button" class="tc-counter" id="tc-counter" data-trottcoins aria-label="Your Trotties"><span aria-hidden="true">🪙</span><b>0</b></button><button type="button" class="bell friends-button" data-friends="open" aria-label="Friends"><img class="px-ic px-lg" src="assets/icons/friends.webp" alt="" aria-hidden="true" draggable="false"></button><button type="button" class="bell" id="bell" aria-label="Notifications"><img class="px-ic px-lg" src="assets/icons/bell.webp" alt="" aria-hidden="true" draggable="false"><i class="bell-dot" hidden></i></button><button class="install-button" data-action="install" aria-label="Install Trottville"><span data-icon="download"></span><span class="install-label">Get the app</span></button><button class="avatar user-avatar" data-action="account" aria-label="Your account"><img class="px-ic px-lg" src="assets/icons/rider.webp" alt="" aria-hidden="true" draggable="false"></button></div></header>
+<div id="offline-banner" class="offline-banner" hidden></div>
+<main id="main" tabindex="-1"></main>
+<footer class="page-footer">A little slower. A little closer. <span>Trottville · Private working concept</span></footer></div>
+<nav id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation"></nav>
+<dialog id="modal"><div id="modal-content"></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+</body></html>

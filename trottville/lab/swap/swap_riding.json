@@ -1,0 +1,30 @@
+{
+ "helmet": {
+  "tris": 3602,
+  "pushed_out": 637
+ },
+ "hair": {
+  "tris": 1750,
+  "pushed_out": 294
+ },
+ "gloves": {
+  "tris": 1330,
+  "pushed_out": 375
+ },
+ "jacket": {
+  "tris": 10055,
+  "pushed_out": 2451
+ },
+ "breeches": {
+  "tris": 1054,
+  "pushed_out": 422
+ },
+ "boots": {
+  "tris": 4242,
+  "pushed_out": 901
+ },
+ "body_mask": {
+  "hidden_faces": 21811,
+  "covered_verts": 15252
+ }
+}

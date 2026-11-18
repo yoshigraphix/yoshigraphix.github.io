@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rider Maker · Trottville</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+<style>
+:root{--bg:#f3efe6;--card:#fffaf0;--ink:#24382c;--soft:#6b7a6f;--line:#e2dccb;--accent:#2f5d46;--accent-ink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d241f;--card:#26302a;--ink:#eef2ea;--soft:#a9b5ac;--line:#3a463e;--accent:#7cc29a;--accent-ink:#13201a}}
+:root[data-theme="dark"]{--bg:#1d241f;--card:#26302a;--ink:#eef2ea;--soft:#a9b5ac;--line:#3a463e;--accent:#7cc29a;--accent-ink:#13201a}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Fredoka,system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:12px 16px 40px}
+h1{font-size:22px;margin:4px 0 2px}p.sub{margin:0 0 10px;color:var(--soft);font-size:14px}
+.wrap{display:grid;gap:12px}
+@media (min-width:860px){.wrap{grid-template-columns:1.1fr 1fr;align-items:start}#view{position:sticky;top:12px}}
+#view{position:relative;height:min(62svh,620px,130vw);border-radius:20px;overflow:hidden;background:linear-gradient(#e9eef0,#e2e6e4 62%,#ddd6c4 62%,#d8d0bc)}
+#view canvas{display:block;width:100%;height:100%;touch-action:none}
+#loading{position:absolute;inset:0;display:grid;place-items:center;font-weight:600;color:#24382c}#loading[hidden]{display:none}
+.cam{position:absolute;left:8px;right:8px;bottom:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px}
+.row{margin:0 0 14px}.row:last-child{margin:0}
+.lab{display:flex;justify-content:space-between;font-weight:600;font-size:15px;margin:0 0 6px}.lab b{color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+button.chip{min-height:44px;padding:0 14px;border-radius:22px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:600 15px Fredoka,system-ui,sans-serif;cursor:pointer}
+button.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.cam button.chip{background:rgba(255,250,240,.92);color:#24382c;border-color:rgba(0,0,0,.08)}
+.cam button.chip[aria-pressed="true"]{background:#2f5d46;color:#fff}
+.sw{width:44px;height:44px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1.5px var(--line);cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent)}
+input[type=range]{width:100%;height:44px;accent-color:var(--accent)}
+.ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--soft);margin-top:-6px}
+</style>
+</head>
+<body>
+<main>
+<h1>Rider Maker</h1>
+<p class="sub">One body, one skeleton. Age, colours and face are all live.</p>
+<div class="wrap">
+  <div id="view"><div id="loading">Loading the rider…</div>
+    <div class="cam" id="cam"></div></div>
+  <div class="panel">
+    <div class="row"><div class="lab">Age <b id="ageOut">14</b></div>
+      <input id="age" type="range" min="8" max="25" step="1" value="14" aria-label="Age">
+      <div class="ticks"><span>8</span><span>12</span><span>16</span><span>20</span><span>25</span></div></div>
+    <div class="row"><div class="lab">Skin</div><div class="chips" id="skin"></div></div>
+    <div class="row"><div class="lab">Hair</div><div class="chips" id="hair"></div></div>
+    <div class="row"><div class="lab">Eyes</div><div class="chips" id="eyes"></div></div>
+    <div class="row"><div class="lab">Eye size <b id="eyeOut"></b></div><input id="eyeSize" type="range" min="-1" max="1" step=".05" value="0" aria-label="Eye size"></div>
+    <div class="row"><div class="lab">Nose size <b id="noseOut"></b></div><input id="nose" type="range" min="-1" max="1" step=".05" value="0" aria-label="Nose size"></div>
+    <div class="row"><div class="lab">Mouth</div><div class="chips" id="mouth"></div></div>
+    <div class="row"><div class="lab">Pose</div><div class="chips" id="pose"></div></div>
+  </div>
+</div>
+</main>
+<script type="module">
+import * as T from './vendor/three-0.180.0/three.module.js';
+import {GLTFLoader} from './vendor/three-0.180.0/addons/loaders/GLTFLoader.js';
+const $=id=>document.getElementById(id);
+const MAN=await fetch('lab/maker/maker.json',{cache:'no-store'}).then(r=>r.json());
+
+// ---------- look state ----------
+const SKINS=['#f6d7c3','#efc09f','#d9a07a','#b97a52','#8d5638','#5e3a26'];
+const HAIRS=['#2a1d17','#5a3622','#8a5a35','#c08a4c','#e8c77d','#b8452f','#d9d4cf','#6a4fa0'];
+const EYES=['#5a3a22','#8a5a2b','#3b6fb0','#2f8a6a','#7a8a3a','#8a4fb0','#4a5560'];
+const MOUTHS=[['smile','Smile'],['grin','Grin'],['open','Happy'],['neutral','Calm'],['o','Oh!'],['pout','Pout']];
+const look={age:14,skin:SKINS[1],hair:HAIRS[2],eyes:EYES[0],eyeSize:0,nose:0,mouth:'smile'};
+
+// ---------- scene ----------
+const view=$('view'),renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setClearColor(0,0);
+renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));renderer.outputColorSpace=T.SRGBColorSpace;view.prepend(renderer.domElement);
+const scene=new T.Scene();const camera=new T.PerspectiveCamera(28,1,.05,50);
+scene.add(new T.HemisphereLight('#ffffff','#c9bfae',1.9));const key=new T.DirectionalLight('#fff6e8',1.9);key.position.set(1.5,3,4);scene.add(key);
+const rim=new T.DirectionalLight('#dbeaff',.8);rim.position.set(-3,3,-4);scene.add(rim);
+const floor=new T.Mesh(new T.CircleGeometry(3,48),new T.MeshStandardMaterial({color:'#d8d0bc',roughness:1}));floor.rotation.x=-Math.PI/2;scene.add(floor);
+let shot='full';
+function frameCamera(){const h=shot==='face'?heightAt(look.age):1.65;const tf=Math.tan(T.MathUtils.degToRad(camera.fov/2));
+  if(shot==='face'){const y=h*.9,d=.26/tf*Math.max(1,.8/camera.aspect);camera.position.set(0,y,d);camera.lookAt(0,y-.01,0);}
+  else{const d=(h*.6)/tf*Math.max(1,.55/camera.aspect)+.2;camera.position.set(0,h*.55,d);camera.lookAt(0,h*.5,0);}}
+function resize(){const w=view.clientWidth,h=view.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();frameCamera();}
+addEventListener('resize',resize);
+
+// ---------- age: one body, bones grow with it ----------
+const lerpTable=(tab,a)=>{for(let i=1;i<tab.length;i++)if(a<=tab[i][0]){const [a0,v0]=tab[i-1],[a1,v1]=tab[i];return v0+(v1-v0)*(a-a0)/(a1-a0);}return tab[tab.length-1][1];};
+const heightAt=a=>lerpTable([[8,1.28],[10,1.38],[12,1.50],[14,1.58],[16,1.62],[18,1.65],[25,1.65]],a);   // metres
+const headAt=a=>lerpTable([[8,.97],[12,.97],[16,.99],[20,1],[25,1]],a);                                  // head size vs adult (kids: big heads)
+const limbAt=a=>lerpTable([[8,.92],[12,.95],[16,.99],[18,1],[25,1]],a);                                  // arm length vs adult
+const legAt=a=>lerpTable([[8,.86],[10,.87],[12,.89],[14,.94],[16,.98],[18,1],[25,1]],a);                   // leg length vs adult (kids: short legs)
+const youngAt=a=>lerpTable([[8,1],[12,1],[13,.8],[14,.55],[15,.3],[16,.1],[17,0],[25,0]],a);                           // child body shape (flat chest, straight hips)
+
+// ---------- rig helpers (same conventions as the Rider Lab) ----------
+const loader=new GLTFLoader();const D=T.MathUtils.degToRad;
+function prepare(gltf){const root=gltf.scene;let skinned=null;root.traverse(o=>{if(o.isSkinnedMesh){skinned=skinned||o;o.frustumCulled=false;}});
+  const bones={};skinned.skeleton.bones.forEach(b=>bones[b.name.replace(/[._]?(L|R)$/,'.$1')]=b);
+  root.updateMatrixWorld(true);const rest={};
+  for(const [n,b] of Object.entries(bones)){const pw=new T.Quaternion();b.parent.getWorldQuaternion(pw);rest[n]={q:b.quaternion.clone(),C:pw,Ci:pw.clone().invert(),p:b.position.clone(),s:b.scale.clone()};}
+  skinned.material=Array.isArray(skinned.material)?skinned.material[0]:skinned.material;
+  return {root,skinned,bones,rest,geo:skinned.geometry};}
+const tmpQ=new T.Quaternion(),tmpE=new T.Euler();
+function applyPose(m,pose,lift=0){for(const [n,r] of Object.entries(m.rest)){const b=m.bones[n];const a=pose[n];
+    if(a){tmpE.set(D(a[0]||0),D(a[1]||0),D(a[2]||0),'ZXY');tmpQ.setFromEuler(tmpE);b.quaternion.copy(r.Ci).multiply(tmpQ).multiply(r.C).multiply(r.q);}else b.quaternion.copy(r.q);}
+  m.root.position.y=lift;}
+function applyAge(m,age){const leg=legAt(age),limb=limbAt(age);
+  // root scale so the whole figure still stands heightAt(age) tall with shorter legs and a bigger head (legs ≈ half, head ≈ 17% of the height)
+  let s=heightAt(age)/MAN.height;for(let i=0;i<3;i++)s=heightAt(age)/(MAN.height*(1-.5*(1-leg)+.17*(headAt(age)/s-1)));
+  const head=headAt(age)/s;
+  m.root.scale.setScalar(s);
+  const set=(n,x,y,z)=>{const b=m.bones[n];if(b)b.scale.set(m.rest[n].s.x*x,m.rest[n].s.y*y,m.rest[n].s.z*z);};
+  set('head',head,head,head);
+  for(const sd of ['L','R']){set('thigh.'+sd,1,leg,1);set('upper_arm.'+sd,1,limb,1);}
+  const u=m.uniforms;if(u)u.uYoung.value=youngAt(age);
+  const sk=m.skinned;if(sk.morphTargetDictionary&&'child' in sk.morphTargetDictionary)sk.morphTargetInfluences[sk.morphTargetDictionary.child]=youngAt(age);}
+
+// ---------- moves (degrees; same sign rules as the Rider Lab) ----------
+const s=Math.sin,c=Math.cos,P2=Math.PI*2,DOWN=8;   // the A-pose arms hang ~30° out; keep them clear of the hips
+const MOVES={
+  idle:{name:'Stand',len:3,f:t=>({chest:[s(t*P2/3)*2],'upper_arm.L':[0,0,-DOWN+s(t*2)*1.5],'upper_arm.R':[0,0,DOWN-s(t*2)*1.5],head:[0,s(t*1.3)*6,0]})},
+  walk:{name:'Walk',len:2,f:t=>{const a=s(t*P2);return {'thigh.L':[-a*25],'thigh.R':[a*25],'shin.L':[Math.max(0,-c(t*P2))*35],'shin.R':[Math.max(0,c(t*P2))*35],
+    'upper_arm.L':[a*20,0,-DOWN],'upper_arm.R':[-a*20,0,DOWN],'forearm.L':[-15],'forearm.R':[-15],chest:[0,a*6,0],hips:[0,-a*5,0]}},bob:t=>Math.abs(s(t*P2))*.02},
+  run:{name:'Run',len:1.2,f:t=>{const a=s(t*P2/1.2*1.5);return {'thigh.L':[-a*48],'thigh.R':[a*48],'shin.L':[40+Math.max(0,a)*55],'shin.R':[40+Math.max(0,-a)*55],
+    'upper_arm.L':[a*42,0,-DOWN+5],'upper_arm.R':[-a*42,0,DOWN-5],'forearm.L':[-85],'forearm.R':[-85],spine:[10],chest:[0,a*10,0]}},bob:t=>Math.abs(s(t*P2/1.2*1.5))*.06},
+  wave:{name:'Wave',len:2,f:t=>({'upper_arm.R':[0,0,-125],'forearm.R':[0,0,-25+s(t*P2*1.5)*28],'upper_arm.L':[0,0,-DOWN],head:[0,-10,8],chest:[0,0,4]})},
+  jump:{name:'Jump',len:1.6,f:t=>{const k=t/1.6;const cr=k<.3?Math.sin(k/.3*Math.PI/2):k<.4?1-(k-.3)/.1:k>.85?Math.sin((k-.85)/.15*Math.PI):0,air=k>.38&&k<.88;
+    return {'thigh.L':[-70*cr-(air?25:0)],'thigh.R':[-70*cr-(air?25:0)],'shin.L':[95*cr+(air?45:0)],'shin.R':[95*cr+(air?45:0)],'foot.L':[-25*cr],'foot.R':[-25*cr],
+      spine:[20*cr],'upper_arm.L':[air?-150:30*cr,0,air?20:-DOWN],'upper_arm.R':[air?-150:30*cr,0,air?-20:DOWN]}},
+    bob:t=>{const k=t/1.6;const cr=k<.3?Math.sin(k/.3*Math.PI/2):k<.4?1-(k-.3)/.1:k>.85?Math.sin((k-.85)/.15*Math.PI):0;return k>.38&&k<.88?Math.sin((k-.38)/.5*Math.PI)*.55:-cr*.18;}},
+  ride:{name:'Ride',len:2,f:t=>{const a=s(t*P2/2);return {'thigh.L':[-82,0,24],'thigh.R':[-82,0,-24],'shin.L':[78],'shin.R':[78],'foot.L':[-10],'foot.R':[-10],
+    spine:[8+a*4],'upper_arm.L':[-35,0,-10],'upper_arm.R':[-35,0,10],'forearm.L':[-55],'forearm.R':[-55]}},bob:t=>-.30+s(t*P2/2)*.02},
+};
+
+// ---------- face: drawn anime features, projected onto the front of the head ----------
+const faceCv=document.createElement('canvas');faceCv.width=faceCv.height=512;const fx=faceCv.getContext('2d');
+const faceTex=new T.CanvasTexture(faceCv);faceTex.colorSpace=T.SRGBColorSpace;faceTex.anisotropy=4;
+const shade=(hex,k)=>{const c0=new T.Color(hex);const h={};c0.getHSL(h);return '#'+new T.Color().setHSL(h.h,Math.min(1,h.s*(k<1?1.05:.9)),Math.max(0,Math.min(1,h.l*k))).getHexString();};
+function drawFace(){const g=fx,W=512,F=MAN.face;g.clearRect(0,0,W,W);
+  const young=youngAt(look.age),es=(1+look.eyeSize*.18)*(1+young*.08);
+  const ey=F.eyeY*W,ex=F.eyeX*W,ew=F.eyeW*W*es,eh=F.eyeH*W*es;
+  const brow=shade(look.hair,.7),lash='#2b1d18';
+  for(const side of [-1,1]){const cx=W/2+side*ex,cy=ey;
+    // white
+    g.fillStyle='#fffdf8';g.beginPath();g.ellipse(cx,cy,ew*.5,eh*.5,0,0,P2);g.fill();
+    // iris (gradient), pupil, highlights
+    const ir=ew*.40;const gr=g.createLinearGradient(cx,cy-eh*.45,cx,cy+eh*.45);gr.addColorStop(0,shade(look.eyes,.55));gr.addColorStop(.55,look.eyes);gr.addColorStop(1,shade(look.eyes,1.45));
+    g.save();g.beginPath();g.ellipse(cx,cy,ew*.5,eh*.5,0,0,P2);g.clip();
+    g.fillStyle=gr;g.beginPath();g.ellipse(cx+side*ew*.02,cy+eh*.04,ir,eh*.46,0,0,P2);g.fill();
+    g.fillStyle=shade(look.eyes,.35);g.beginPath();g.ellipse(cx+side*ew*.02,cy+eh*.08,ir*.48,eh*.24,0,0,P2);g.fill();
+    g.fillStyle='rgba(255,255,255,.95)';g.beginPath();g.ellipse(cx-side*ew*.12+ew*.0,cy-eh*.16,ir*.34,eh*.13,-.3,0,P2);g.fill();
+    g.beginPath();g.arc(cx+side*ew*.14,cy+eh*.2,ir*.13,0,P2);g.fill();
+    g.restore();
+    // upper lash line + small wing, thin lower line
+    g.strokeStyle=lash;g.lineCap='round';g.lineWidth=eh*.11;g.beginPath();g.ellipse(cx,cy+eh*.02,ew*.54,eh*.52,0,Math.PI*1.08,Math.PI*1.92);g.stroke();
+    g.beginPath();g.moveTo(cx+side*ew*.48,cy-eh*.22);g.lineTo(cx+side*ew*.64,cy-eh*.34);g.stroke();
+    g.lineWidth=eh*.035;g.globalAlpha=.55;g.beginPath();g.ellipse(cx,cy-eh*.02,ew*.44,eh*.5,0,Math.PI*.22,Math.PI*.78);g.stroke();g.globalAlpha=1;
+    // brow
+    g.strokeStyle=brow;g.lineWidth=eh*.075;g.beginPath();g.moveTo(cx-side*ew*.45,cy-eh*.86);g.quadraticCurveTo(cx,cy-eh*1.05,cx+side*ew*.48,cy-eh*.82);g.stroke();}
+  // blush
+  for(const side of [-1,1]){const cx=W/2+side*ex*1.05,cy=ey+eh*.95;const b=g.createRadialGradient(cx,cy,0,cx,cy,ew*.5);b.addColorStop(0,'rgba(240,120,110,.28)');b.addColorStop(1,'rgba(240,120,110,0)');g.fillStyle=b;g.beginPath();g.arc(cx,cy,ew*.5,0,P2);g.fill();}
+  // nose: small anime nose, a soft shadow + tip
+  const nk=1+look.nose*.55,ny=F.noseY*W;g.strokeStyle=shade(look.skin,.72);g.lineWidth=3.2*nk;g.lineCap='round';
+  g.beginPath();g.moveTo(W/2+4*nk,ny-12*nk);g.quadraticCurveTo(W/2+7*nk,ny,W/2,ny+3*nk);g.stroke();
+  // mouth
+  const my=F.mouthY*W,mw=F.mouthW*W,mc='#7a3a33';g.strokeStyle=mc;g.lineWidth=4;
+  const m=look.mouth;g.beginPath();
+  if(m==='smile'){g.moveTo(W/2-mw*.5,my-2);g.quadraticCurveTo(W/2,my+mw*.32,W/2+mw*.5,my-2);g.stroke();}
+  else if(m==='neutral'){g.moveTo(W/2-mw*.35,my);g.quadraticCurveTo(W/2,my+3,W/2+mw*.35,my);g.stroke();}
+  else if(m==='grin'){g.fillStyle='#fffaf5';g.moveTo(W/2-mw*.55,my-4);g.quadraticCurveTo(W/2,my+mw*.5,W/2+mw*.55,my-4);g.closePath();g.fill();g.stroke();}
+  else if(m==='open'){g.fillStyle='#8c3b36';g.moveTo(W/2-mw*.45,my-3);g.quadraticCurveTo(W/2,my+mw*.75,W/2+mw*.45,my-3);g.closePath();g.fill();
+    g.fillStyle='#e98a86';g.beginPath();g.ellipse(W/2,my+mw*.26,mw*.2,mw*.1,0,0,P2);g.fill();}
+  else if(m==='o'){g.fillStyle='#8c3b36';g.ellipse(W/2,my+4,mw*.16,mw*.2,0,0,P2);g.fill();}
+  else if(m==='pout'){g.moveTo(W/2-mw*.3,my+4);g.quadraticCurveTo(W/2,my-6,W/2+mw*.3,my+4);g.stroke();}
+  faceTex.needsUpdate=true;}
+
+// ---------- materials: recolour skin and hair from the baked texture, paint the face on top ----------
+// average top colour straight down the front of the chest (used to flatten baked shading on a child's top)
+function suitColour(m){const g=m.geo,P=g.attributes.position,U=g.attributes.uv,img=m.skinned.material.map.image;
+  const cv=document.createElement('canvas');cv.width=img.width;cv.height=img.height;const x=cv.getContext('2d');x.drawImage(img,0,0);const d=x.getImageData(0,0,cv.width,cv.height).data;
+  const B=MAN.body.chest,acc=[];for(let i=0;i<P.count;i++){const y=P.getY(i);if(y>B[0]&&y<B[1]&&Math.abs(P.getX(i))<.05&&P.getZ(i)>0){const px=Math.min(cv.width-1,Math.floor(U.getX(i)*cv.width)),py=Math.min(cv.height-1,Math.floor(U.getY(i)*cv.height));const o=(py*cv.width+px)*4;acc.push([d[o],d[o+1],d[o+2]]);}}
+  acc.sort((a,b)=>(a[0]+a[1]+a[2])-(b[0]+b[1]+b[2]));const md=acc[acc.length>>1]||[160,160,160];return new T.Color().setRGB(md[0]/255,md[1]/255,md[2]/255,T.SRGBColorSpace);}
+function bodyMaterial(m){const mat=m.skinned.material;const F=MAN.face,B=MAN.body;
+  const u={uNeckCut:{value:MAN.head.cut},uSkin:{value:new T.Color(look.skin)},uHairB:{value:new T.Color(look.hair)},uSkinRefL:{value:MAN.skinRefL},uFace:{value:faceTex},uFaceC:{value:new T.Vector3(...F.center)},uFaceS:{value:new T.Vector2(...F.size)},
+    uSuit:{value:suitColour(m)},uYoung:{value:0},uChest:{value:new T.Vector4(...B.chest)},uHips:{value:new T.Vector4(...B.hips)}};
+  m.uniforms=u;
+  mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,u);
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vBind;varying vec3 vBindN;uniform float uYoung;uniform vec4 uChest;uniform vec4 uHips;')
+      .replace('#include <beginnormal_vertex>',`#include <beginnormal_vertex>
+        // child chest: lay the normals flat too, so the light never draws a bust
+        float wcn=smoothstep(uChest.x,uChest.x+.03,position.y)*(1.-smoothstep(uChest.y-.03,uChest.y,position.y))*smoothstep(.0,.04,position.z)*(1.-smoothstep(.10,.14,abs(position.x)));
+        objectNormal=normalize(mix(objectNormal,normalize(vec3(objectNormal.x*.5,objectNormal.y*.3,1.)),uYoung*wcn*.85));`)
+      .replace('#include <begin_vertex>',`#include <begin_vertex>
+        vBind=position;vBindN=normal;`);
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vBind;varying vec3 vBindN;uniform vec3 uSkin;uniform vec3 uHairB;uniform float uSkinRefL;uniform float uNeckCut;uniform float uYoung;uniform vec4 uChest;uniform vec3 uSuit;uniform sampler2D uFace;uniform vec3 uFaceC;uniform vec2 uFaceS;')
+      .replace('#include <map_fragment>',`
+        if(vBind.y>uNeckCut)discard;
+        vec4 tx=texture2D(map,vMapUv);vec3 cc=tx.rgb;
+        float mx=max(cc.r,max(cc.g,cc.b)),mn=min(cc.r,min(cc.g,cc.b));float sat=(mx-mn)/max(mx,1e-3);
+        float isSkin=smoothstep(.10,.22,sat)*smoothstep(-.01,.02,cc.r-cc.g)*smoothstep(-.01,.02,cc.g-cc.b);
+        // child: blur the baked chest shading on the top
+        float wcf=smoothstep(uChest.x-.02,uChest.x+.02,vBind.y)*(1.-smoothstep(uChest.y-.02,uChest.y+.02,vBind.y))*(1.-smoothstep(.11,.14,abs(vBind.x)));
+        cc=mix(cc,uSuit,uYoung*wcf);isSkin*=1.-uYoung*wcf;
+        float L=dot(cc,vec3(.3,.59,.11));
+        cc=mix(cc,uSkin*clamp(L/uSkinRefL,.55,1.25),isSkin);
+        // the snug cap under the hair takes the hair colour, so gaps between locks never show grey
+        float onHead=max(smoothstep(uFaceC.y-.065,uFaceC.y-.045,vBind.y),(1.-smoothstep(-.04,-.01,vBind.z))*smoothstep(uFaceC.y-.125,uFaceC.y-.105,vBind.y));
+        onHead=max(onHead,smoothstep(.7,.85,L)*smoothstep(uFaceC.y-.105,uFaceC.y-.09,vBind.y));   // the white cap anywhere above the collar
+        cc=mix(cc,uHairB*.75,onHead*(1.-isSkin));
+        // face area: plain skin (hides the baked eyes) + drawn features
+        vec2 fp=(vBind.xy-uFaceC.xy)/uFaceS;float fr=length(fp*vec2(1.,fp.y>0.?1.3:1.));
+        float front=smoothstep(.15,.45,vBindN.z)*step(uFaceC.z,vBind.z);
+        float inFace=front*(1.-smoothstep(.42,.5,fr));
+        cc=mix(cc,uSkin,inFace);
+        vec4 ft=texture2D(uFace,fp+.5);cc=mix(cc,ft.rgb,ft.a*front*step(abs(fp.x),.5)*step(abs(fp.y),.5));
+        diffuseColor*=vec4(cc,1.);`);};
+  mat.needsUpdate=true;mat.roughness=.85;mat.metalness=0;mat.normalMap=null;}
+function texLum(m){const g=m.geo,U=g.attributes.uv,img=m.skinned.material.map.image;const cv=document.createElement('canvas');cv.width=img.width;cv.height=img.height;const x=cv.getContext('2d');x.drawImage(img,0,0);const d=x.getImageData(0,0,cv.width,cv.height).data;
+  const L=[];const lin=v=>{v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);};for(let i=0;i<U.count;i+=3){const px=Math.min(cv.width-1,Math.floor(U.getX(i)*cv.width)),py=Math.min(cv.height-1,Math.floor(U.getY(i)*cv.height));const o=(py*cv.width+px)*4;L.push(.3*lin(d[o])+.59*lin(d[o+1])+.11*lin(d[o+2]));}
+  L.sort((a,b)=>a-b);return L[L.length>>1]||.2;}
+function hairMaterial(m){const mat=m.skinned.material;const u={uHair:{value:new T.Color(look.hair)},uHairRefL:{value:texLum(m)}};m.uniforms=Object.assign(m.uniforms||{uYoung:{value:0}},u);
+  mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,u);
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uHair;uniform float uHairRefL;')
+      .replace('#include <map_fragment>',`vec4 tx=texture2D(map,vMapUv);float L=dot(tx.rgb,vec3(.3,.59,.11));diffuseColor*=vec4(uHair*clamp(pow(L/uHairRefL,.35),.7,1.2),1.);`);};
+  mat.needsUpdate=true;mat.roughness=.6;mat.normalMap=null;}
+
+
+// ---------- the head: a clean sphere with a small soft chin, riding on the head bone ----------
+function headGeometry(){const H=MAN.head,g=new T.SphereGeometry(1,56,40),p=g.attributes.position;
+  for(let i=0;i<p.count;i++){let x=p.getX(i),y=p.getY(i),z=p.getZ(i);
+    if(y<0){const t=-y,k=1-.40*Math.pow(t,1.7);x*=k;z*=1-.22*Math.pow(t,1.7);if(z>0)z+=.10*t*t;y*=.92;}else{const k=1-.09*y;x*=k;z*=1-.06*y;y*=.95;}   // the crown sits just inside the hair shell
+    p.setXYZ(i,x*H.r[0],y*H.r[1],z*H.r[2]);}
+  g.computeVertexNormals();return g;}
+function headMaterial(){const H=MAN.head,F=MAN.face;
+  const u={uSkin:{value:new T.Color(look.skin)},uHairB:{value:new T.Color(look.hair)},uFace:{value:faceTex},uFaceC:{value:new T.Vector2(...F.hc)},uFaceS:{value:F.hs},uHairline:{value:H.hairline}};
+  const mat=new T.MeshStandardMaterial({color:'#ffffff',roughness:.85,metalness:0});
+  mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,u);
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vL;varying vec3 vLN;').replace('#include <begin_vertex>','#include <begin_vertex>\nvL=position;vLN=normal;');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vL;varying vec3 vLN;uniform vec3 uSkin;uniform vec3 uHairB;uniform sampler2D uFace;uniform vec2 uFaceC;uniform float uFaceS;uniform float uHairline;')
+      .replace('#include <map_fragment>',`
+        vec3 cc=uSkin;
+        // scalp under the hair: hair colour above the hairline and all round the back
+        float scalp=max(smoothstep(uHairline-.004,uHairline+.004,vL.y),(1.-smoothstep(-.03,.0,vL.z))*smoothstep(-.06,-.04,vL.y));
+        scalp=max(scalp,smoothstep(.062,.085,abs(vL.x))*smoothstep(-.005,.03,vL.y));   // temples: side hair
+        cc=mix(cc,uHairB*.75,scalp);
+        vec2 fp=(vL.xy-uFaceC)/uFaceS;float front=smoothstep(.25,.55,normalize(vLN).z);
+        vec4 ft=texture2D(uFace,fp+.5);cc=mix(cc,ft.rgb,ft.a*front*step(abs(fp.x),.5)*step(abs(fp.y),.5)*(1.-scalp));
+        diffuseColor*=vec4(cc,1.);`);};
+  return {mat,u};}
+let headMesh=null,headU=null,neckMat=null;
+function attachHead(body){const b=body.bones.head;body.root.updateMatrixWorld(true);
+  const {mat,u}=headMaterial();headU=u;headMesh=new T.Mesh(headGeometry(),mat);
+  const c=new T.Vector3(...MAN.head.center);body.root.localToWorld(c);b.add(headMesh);headMesh.position.copy(b.worldToLocal(c));
+  const q=new T.Quaternion();b.getWorldQuaternion(q);const r=new T.Quaternion();body.root.getWorldQuaternion(r);headMesh.quaternion.copy(q.invert().multiply(r));
+  // a plain skin-coloured neck from inside the collar up into the head (on the neck bone, so it bends with it)
+  const nb=body.bones.neck||b,H=MAN.head,y0=H.cut-.06,y1=H.center[1]-.04;
+  neckMat=new T.MeshStandardMaterial({color:look.skin,roughness:.85,metalness:0});
+  const neck=new T.Mesh(new T.CylinderGeometry(.03,.036,y1-y0,20,1,true),neckMat);
+  const nc=new T.Vector3(0,(y0+y1)/2,H.center[2]-.025);body.root.localToWorld(nc);nb.add(neck);neck.position.copy(nb.worldToLocal(nc));
+  const q2=new T.Quaternion();nb.getWorldQuaternion(q2);neck.quaternion.copy(q2.invert().multiply(r));}
+
+// ---------- load ----------
+const load=f=>new Promise((res,rej)=>loader.load(f,g=>res(prepare(g)),undefined,rej));
+const parts=await Promise.all(MAN.parts.map(p=>load('lab/maker/'+p.file).then(m=>(m.kind=p.kind,m))));
+const holder=new T.Group();scene.add(holder);
+// child seat: pull the back of the hips/bottom in line with the small of the back (adds to the 'child' morph)
+function flattenSeat(m){const g=m.skinned.geometry,P=g.attributes.position,i=m.skinned.morphTargetDictionary?.child,MP=g.morphAttributes.position?.[i];if(MP==null)return;
+  const H=MAN.height;let zb=0;for(let k=0;k<P.count;k++){const y=P.getY(k);if(y>.58*H&&y<.62*H&&Math.abs(P.getX(k))<.06)zb=Math.min(zb,P.getZ(k)+MP.getZ(k));}
+  for(let k=0;k<P.count;k++){const y=P.getY(k),z=P.getZ(k)+MP.getZ(k);if(z>=zb)continue;
+    const hz=Math.min(1,Math.max(0,(y-.36*H)/(.05*H)))*Math.min(1,Math.max(0,(.62*H-y)/(.05*H)));if(!hz)continue;
+    MP.setZ(k,MP.getZ(k)+(zb-z)*.85*hz);}
+  MP.needsUpdate=true;}
+for(const m of parts){if(m.kind==='body'){flattenSeat(m);bodyMaterial(m);attachHead(m);}else if(m.kind==='hair')hairMaterial(m);holder.add(m.root);}
+drawFace();$('loading').hidden=true;resize();
+
+// ---------- UI ----------
+function chips(el,items,cur,on,swatch){el.innerHTML='';for(const [id,name] of items){const b=document.createElement('button');
+  if(swatch){b.className='sw';b.style.background=id;b.setAttribute('aria-label',name);}else{b.className='chip';b.textContent=name;}
+  b.setAttribute('aria-pressed',String(id===cur));b.onclick=()=>{for(const x of el.children)x.setAttribute('aria-pressed','false');b.setAttribute('aria-pressed','true');on(id);};el.appendChild(b);}}
+const refresh=()=>{for(const m of parts){applyAge(m,look.age);if(m.uniforms){if(m.uniforms.uSkin)m.uniforms.uSkin.value.set(look.skin);if(m.uniforms.uHair)m.uniforms.uHair.value.set(look.hair);if(m.uniforms.uHairB)m.uniforms.uHairB.value.set(look.hair);}}if(neckMat)neckMat.color.set(look.skin);if(headU){headU.uSkin.value.set(look.skin);headU.uHairB.value.set(look.hair);}drawFace();frameCamera();};
+chips($('skin'),SKINS.map((c0,i)=>[c0,'Skin '+(i+1)]),look.skin,v=>{look.skin=v;refresh();},true);
+chips($('hair'),HAIRS.map((c0,i)=>[c0,'Hair '+(i+1)]),look.hair,v=>{look.hair=v;refresh();},true);
+chips($('eyes'),EYES.map((c0,i)=>[c0,'Eyes '+(i+1)]),look.eyes,v=>{look.eyes=v;refresh();},true);
+chips($('mouth'),MOUTHS,look.mouth,v=>{look.mouth=v;refresh();});
+let move='idle',t0=performance.now();chips($('pose'),Object.entries(MOVES).map(([k,v])=>[k,v.name]),move,v=>{move=v;t0=performance.now();});
+let angle=0,spin=false;chips($('cam'),[['full','Full body'],['face','Face'],['0','Front'],['-0.75','¾'],['-1.57','Side'],['spin','Spin']].map(x=>x),'full',v=>{
+  if(v==='full'||v==='face'){shot=v;frameCamera();}else if(v==='spin')spin=true;else{spin=false;angle=+v;}});
+const pct=v=>(v>0?'+':'')+Math.round(v*100)+'%';
+$('age').oninput=e=>{look.age=+e.target.value;$('ageOut').textContent=look.age;refresh();};
+$('eyeSize').oninput=e=>{look.eyeSize=+e.target.value;$('eyeOut').textContent=pct(look.eyeSize);drawFace();};
+$('nose').oninput=e=>{look.nose=+e.target.value;$('noseOut').textContent=pct(look.nose);drawFace();};
+$('eyeOut').textContent=pct(0);$('noseOut').textContent=pct(0);
+// drag to turn
+let drag=null;renderer.domElement.addEventListener('pointerdown',e=>{drag={x:e.clientX,a:angle};spin=false;});
+addEventListener('pointermove',e=>{if(drag)angle=drag.a+(e.clientX-drag.x)*.012;});addEventListener('pointerup',()=>drag=null);
+refresh();
+
+// ---------- loop ----------
+let hold=null;
+renderer.setAnimationLoop(now=>{const M=MOVES[move];const t=hold!=null?hold:((now-t0)/1000)%M.len;const pose=M.f(t),lift=M.bob?M.bob(t):0;
+  for(const m of parts){applyPose(m,pose,lift*heightAt(look.age)/MAN.height);m.root.rotation.y=spin?now/1000*.7:angle;m.root.updateMatrixWorld(true);}
+  renderer.render(scene,camera);});
+window.__maker={look,refresh,drawFace,parts,T,camera,setMove:(k,t)=>{move=k;hold=t??null;},shot:v=>{shot=v;frameCamera();},angle:a=>{spin=false;angle=a;},ready:true};
+</script>
+</body>
+</html>

@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en" data-no-chip>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Trottville Horse Show</title>
+<link rel="stylesheet" href="coin-collect.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&display=swap">
+<style>
+/* Horse shows (note #18): show jumping in an arena or a wood, numbered jumps in order, judged on faults and time.
+   Same look and controls as the steeplechase (stick left, Jump right). Phone portrait first. */
+:root{--ink:#24402f;--card:#fffdf6;--edge:#2f6b3a;--gold:#f2b632;--sky:#9ad7f5;--navy:#1f2a44;
+  --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;--body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:light}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--sky);font-family:var(--body);color:var(--ink);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.hud{position:fixed;inset:0;pointer-events:none;padding:max(12px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.hud[hidden]{display:none}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.clock{background:#fffdf6e8;border-radius:16px;padding:8px 12px;box-shadow:0 3px 0 #1e3b2a33;min-width:118px}
+.clock b{display:block;font:700 28px/1 var(--display);font-variant-numeric:tabular-nums}
+.clock b.over{color:#b4462e}
+.clock small{display:block;font:800 12px/1.3 var(--body);margin-top:3px}
+.clock .pen{color:#b4462e}
+#map{width:84px;height:140px;border-radius:14px;background:#e9d6ac;box-shadow:0 3px 0 #1e3b2a33}
+.quit{all:unset;pointer-events:auto;margin-top:8px;display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border-radius:99px;background:#fffdf6d0;font:800 12px/1 var(--body);cursor:pointer}
+#toast{position:fixed;left:50%;top:30%;transform:translateX(-50%);max-width:86vw;text-align:center;background:#24402fe8;color:#fff;border-radius:14px;padding:10px 16px;font:800 15px/1.3 var(--body);opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.on{opacity:1}
+#count{position:fixed;left:0;right:0;top:38%;text-align:center;font:700 84px/1 var(--display);color:#fff;text-shadow:0 4px 0 #2b7fa8;pointer-events:none}
+.right{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.gauge{background:#fffdf6e8;border-radius:14px;padding:7px 10px;min-width:104px;box-shadow:0 3px 0 #1e3b2a33}
+.gauge b{font:700 22px/1 var(--display);font-variant-numeric:tabular-nums}.gauge b small{font:800 11px var(--body);margin-left:3px}
+.bar{height:7px;border-radius:9px;background:#24402f22;margin-top:5px;overflow:hidden}.bar i{display:block;height:100%;background:#4f9a3e;border-radius:9px}
+.bar.tired i{background:#d0703a}
+.gauge small.lbl{display:block;font:800 10px/1.4 var(--body);letter-spacing:.06em;opacity:.7;margin-top:4px}
+#jump{all:unset;pointer-events:auto;position:relative;width:104px;height:104px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  font:700 22px/1 var(--display);color:#fff;background:#9aa59c;box-shadow:0 5px 0 #5d6a60;-webkit-tap-highlight-color:transparent;touch-action:none}
+#jump svg{position:absolute;inset:-6px;width:116px;height:116px;transform:rotate(-90deg)}
+#jump circle{fill:none;stroke-width:6}#jump .track{stroke:#ffffff55}#jump .fill{stroke:var(--gold);stroke-linecap:round;transition:stroke .15s}
+#jump.ready{background:var(--edge);box-shadow:0 5px 0 #1f4a27}#jump.ready .fill{stroke:#ffe27a}
+#jump.unsure{background:#c9853c;box-shadow:0 5px 0 #8a5522}
+#jump span{position:relative;text-align:center}#jump span small{display:block;font:800 11px/1.2 var(--body);margin-top:3px}
+#stick{position:fixed;left:0;bottom:0;width:58%;height:48%;pointer-events:auto;touch-action:none}
+#knob{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid #ffffffa0;background:#ffffff26;pointer-events:none;display:none}
+#knob i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:#fffdf6;box-shadow:0 3px 0 #1e3b2a44}
+.hint{position:fixed;left:max(16px,env(safe-area-inset-left));bottom:max(20px,env(safe-area-inset-bottom));font:800 12px/1.35 var(--body);color:#fff;text-shadow:0 1px 2px #0006;max-width:46vw;pointer-events:none}
+.next{background:#fffdf6e8;border-radius:14px;padding:6px 10px;box-shadow:0 3px 0 #1e3b2a33;display:flex;align-items:center;gap:8px;align-self:flex-start;margin-top:2px;min-width:0}
+.next svg{width:30px;height:30px;flex:none;transition:transform .08s linear}.next b{display:block;font:800 13px/1.15 var(--body)}.next small{display:block;font:800 11px/1.2 var(--body);opacity:.7}
+.panel{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:linear-gradient(180deg,#9ad7f5cc,#f1e3c4ee);overflow:auto}
+.panel[hidden]{display:none}
+.card{width:min(440px,100%);background:var(--card);border-radius:22px;padding:18px;box-shadow:0 6px 0 #1e3b2a2a;box-sizing:border-box}
+.card h1{margin:0;font:700 28px/1.1 var(--display);color:var(--navy)}
+.card h2{margin:16px 0 8px;font:800 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.card p{margin:6px 0 0;font:600 14px/1.4 var(--body)}
+.eyebrow{font:800 11px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:#8a6a1f}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button,.btn{all:unset;box-sizing:border-box;min-height:44px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;border-radius:99px;cursor:pointer;
+  font:800 14px/1 var(--body);background:#eef3e6;color:var(--ink);-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s}
+.chips button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.chips button.locked{opacity:.6}
+.btn.primary{background:var(--navy);color:#fff;width:100%;margin-top:16px;font-size:16px;min-height:52px}
+.btn.primary[disabled]{background:#9aa59c;cursor:default}
+.btn.secondary{width:100%;margin-top:8px}
+.btn.buy{background:var(--gold);color:var(--ink);width:100%;margin-top:8px}
+.chips button:focus-visible,.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.reqs{list-style:none;margin:0;padding:0;display:grid;gap:6px;font:700 14px/1.35 var(--body)}
+.reqs li{display:flex;gap:8px;align-items:flex-start}.reqs li b{flex:none;width:20px;text-align:center}
+.reqs li.ok{opacity:.7}.reqs li small{display:block;font:600 12px/1.3 var(--body);opacity:.75}
+.stats{display:grid;grid-template-columns:auto 1fr auto;gap:5px 10px;align-items:center;font:800 13px/1.2 var(--body);margin-top:12px}
+.stats .bar{margin:0;height:9px}.stats .bar i{background:var(--navy)}
+.stats em{font-style:normal;font-variant-numeric:tabular-nums;opacity:.7}
+.result{font:700 46px/1 var(--display);color:var(--navy);margin:8px 0 2px;font-variant-numeric:tabular-nums}
+.stars{font-size:26px;letter-spacing:4px;color:var(--gold)}.stars i{font-style:normal;color:#d8d2c2}
+.rows{margin-top:10px;font:700 14px/1.6 var(--body)}.rows div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed #24402f22}
+.rows div.me{color:var(--navy);font-weight:800;background:#f2b63222}
+.rows span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ribbon{display:inline-grid;place-items:center;width:62px;height:62px;border-radius:50%;font:700 20px/1 var(--display);color:#fff;float:right;margin-left:10px;box-shadow:0 3px 0 #0002}
+.note-line{font-size:12px;color:#5d6b5f;margin:8px 0 0;line-height:1.4}
+/* ---- Trottville game family: same buttons, back key and HUD chips as the other game pages ---- */
+:root{--gf-chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --gf-x:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E")}
+.card{padding:16px 16px 18px}
+.card h1{font-size:27px}
+.card p.lede{font-size:14px;line-height:1.4}
+.card p.lede b{font-weight:800;white-space:nowrap}
+.card h2{margin:14px 0 7px}
+.btn{border-radius:14px}
+.btn.primary{border-radius:16px;box-shadow:0 4px 0 #0f1626;min-height:54px;font:700 18px/1 var(--display);letter-spacing:.2px}
+.btn.secondary{border-radius:16px;box-shadow:0 3px 0 #d6dcc9}
+.stats{gap:7px 10px}
+.stats .note.tack{display:block;justify-self:start;min-width:0;box-sizing:border-box;background:#fbefd9;color:#7a4320;border-radius:10px;padding:5px 9px;font:800 11.5px/1.3 var(--body);margin:2px 0 0}
+.stats .note.tack::before{content:'⚠ ';opacity:.8}
+/* Back to Trottville: the family back key, top-left (chevron on phones, chevron + label wider) */
+#home.gf-home{position:fixed;z-index:5;left:max(10px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));width:44px;min-height:44px;height:44px;margin:0;padding:0;border-radius:14px;background:#2f6b3a;color:#fffdf4;box-shadow:0 3px 0 #1f4a27;font-size:0;gap:4px}
+#home.gf-home::before{content:'';width:24px;height:24px;background:currentColor;-webkit-mask:var(--gf-chev) center/24px no-repeat;mask:var(--gf-chev) center/24px no-repeat}
+@media (min-width:480px){#home.gf-home{width:auto;padding:0 14px 0 8px;font-size:14px}}
+.panel{padding-top:max(62px,calc(env(safe-area-inset-top) + 56px))}
+/* HUD: one chip style, an icon-only leave key, and a quiet hint */
+.quit{width:44px;height:44px;min-height:44px;padding:0;margin-top:8px;justify-content:center;border-radius:14px;background:#fffdf6e8;box-shadow:0 3px 0 #1e3b2a33;font-size:0;color:var(--ink)}
+.quit::before{content:'';width:20px;height:20px;background:currentColor;-webkit-mask:var(--gf-x) center/20px no-repeat;mask:var(--gf-x) center/20px no-repeat}
+.clock,.next,.gauge{border-radius:14px}
+.next{min-height:44px;box-sizing:border-box}
+.hint{background:#1e3b2a8c;text-shadow:none;border-radius:12px;padding:8px 10px;max-width:min(52vw,230px)}
+.btn.primary[disabled]{box-shadow:0 4px 0 #737d75}
+.btn.buy{border-radius:16px;box-shadow:0 3px 0 #c48a17;min-height:48px}
+.reqs li small{margin-top:1px}
+.card p.rules{font-size:12.5px;margin-top:8px}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Show jumping arena"></canvas>
+
+<div class="hud" id="hud" hidden>
+  <div class="top">
+    <div>
+      <div class="clock"><b id="time">0:00.0</b><small id="faults">Clear so far</small></div>
+      <button class="quit" id="quit" type="button">Leave the ring</button>
+    </div>
+    <div class="next" aria-live="polite"><svg viewBox="0 0 30 30" id="arrow" aria-hidden="true"><path d="M15 3 L25 25 L15 19 L5 25 Z" fill="#f2b632" stroke="#24402f" stroke-width="2" stroke-linejoin="round"/></svg><div><b id="nextName">Jump 1</b><small id="nextDist">—</small></div></div>
+    <canvas id="map" width="84" height="140" aria-label="Course map"></canvas>
+  </div>
+  <div id="stick" aria-label="Steering stick: push up to speed up, sideways to turn, down to back up"></div>
+  <div class="hint" id="hint">Follow the gold arrow. Higher fences need more speed: watch the ring on Jump.</div>
+  <div class="right">
+    <div class="gauge"><b id="mph">0<small>mph</small></b><div class="bar" id="staBar"><i id="sta" style="width:100%"></i></div><small class="lbl" id="staLbl">STAMINA</small></div>
+    <button id="jump" type="button" aria-label="Jump"><svg viewBox="0 0 116 116" aria-hidden="true"><circle class="track" cx="58" cy="58" r="54"/><circle class="fill" id="ring" cx="58" cy="58" r="54" stroke-dasharray="339.3" stroke-dashoffset="339.3"/></svg><span id="jumpTxt">Jump<small>build speed</small></span></button>
+  </div>
+</div>
+<div id="knob"><i></i></div>
+<div id="count"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<div class="panel" id="menu"><div class="card" id="menuCard"></div></div>
+<div class="panel" id="done" hidden><div class="card" id="doneCard"></div></div>
+
+<script type="module">
+import * as T from './vendor/three-0.180.0/three.module.js';
+import {makeSculptedHorse} from './horse-sculpt.js';
+import {addTackAndRider} from './rider-sculpt.js';
+import {loadLook,saveLook,loadWallet,saveWallet,buyOutfit} from './character-looks.mjs';
+import {queueCoins,showCollect} from './coin-collect.js';
+import {segX} from './steeple-country.mjs';
+import {SHOWS,SHOW_OUTFIT_PRICE,buildShow,showSeed,score,placings,entryNeeds,daysToLevel} from './show-course.mjs';
+import {loadRanch,saveRanch,condition,level,fromPlain,dayNo} from './ranch.mjs';
+import * as G from './riding.mjs';
+
+const params=new URLSearchParams(location.search),SHOW=SHOWS[params.get('show')]||SHOWS.clover,inWorld=params.get('in')==='world'&&parent!==window;
+document.title=SHOW.name;
+// ---------- Your horses (the same stats as the steeplechase: care, age, tack) ----------
+let ranch=null;try{ranch=loadRanch();}catch{}
+const HERD=(ranch?.herd||[]).filter(h=>!G.rideBlock(h)&&G.canRaceHorse(h));
+const statsOf=h=>G.raceStats(h,condition(h).id);
+const STAT_INFO=[['speed','Speed'],['stamina','Stamina'],['trust','Trust'],['agility','Agility'],['heart','Heart']];
+const derive=s=>({maxV:13+s.speed*.05,accel:3+s.speed*.03,turn:1.1+s.agility*.013,drain:9-s.stamina*.06,heart:s.heart/100,refuse:.4*(1-s.trust/100)});
+const mph=v=>Math.round(Math.abs(v)*2);
+const fmt=t=>{t=Math.max(0,t);const m=Math.floor(t/60),s=t-m*60;return `${m}:${s<10?'0':''}${s.toFixed(1)}`;};
+const store={get(k){try{return localStorage.getItem(k);}catch{return null;}},set(k,v){try{localStorage.setItem(k,v);}catch{}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ---------- Renderer, light, camera ----------
+const canvas=document.getElementById('c'),renderer=new T.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.outputColorSpace=T.SRGBColorSpace;
+renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.38;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+const forest=SHOW.kind==='forest';
+const scene=new T.Scene();scene.background=new T.Color(forest?'#a9d8ea':'#9ad7f5');scene.fog=new T.Fog(forest?'#c7e2d4':'#cfeaf6',forest?50:120,forest?190:420);
+const camera=new T.PerspectiveCamera(58,1,.3,700);
+const sun=new T.DirectionalLight('#fff0d0',3.1);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);
+Object.assign(sun.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:140});sun.shadow.bias=-.0006;
+scene.add(sun,sun.target,new T.HemisphereLight('#effbff',forest?'#6f8f4f':'#b9a77a',2.2));
+
+const C=buildShow(SHOW.id,showSeed(SHOW.id));
+const M=(color,o={})=>new T.MeshStandardMaterial({color,roughness:.9,...o});
+const box=new T.BoxGeometry(1,1,1),dummy=new T.Object3D(),col=new T.Color(),tmpV=new T.Vector3();
+const world=new T.Group();scene.add(world);
+function inst(geo,mat,list,fn,parent=world){const m=new T.InstancedMesh(geo,mat,Math.max(1,list.length));
+  list.forEach((it,i)=>{dummy.position.set(0,0,0);dummy.rotation.set(0,0,0,'XYZ');dummy.scale.set(1,1,1);const c=fn(it,dummy,i);dummy.updateMatrix();m.setMatrixAt(i,dummy.matrix);if(c)m.setColorAt(i,col.set(c));});
+  m.count=list.length;m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
+function ribbon(pts,w,yAt,mat){const pos=[],idx=[];
+  pts.forEach((p,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b.x-a.x,dz=b.z-a.z,L=Math.hypot(dx,dz)||1,nx=dz/L*w/2,nz=-dx/L*w/2;
+    pos.push(p.x+nx,yAt(p.x+nx,p.z+nz),p.z+nz,p.x-nx,yAt(p.x-nx,p.z-nz),p.z-nz);if(i)idx.push(2*i-2,2*i-1,2*i,2*i-1,2*i+1,2*i);});
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+  const n=g.attributes.normal;for(let i=0;i<n.count;i++)if(n.getY(i)<0)n.setXYZ(i,-n.getX(i),-n.getY(i),-n.getZ(i));
+  const m=new T.Mesh(g,mat);m.receiveShadow=true;world.add(m);return m;}
+function label(text,bg,fg='#fff',w=256,h=128,font=72){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.fillStyle=bg;g.fillRect(0,0,w,h);
+  g.fillStyle=fg;g.font=`700 ${font}px Fredoka, sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(text,w/2,h/2+4);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return new T.MeshBasicMaterial({map:t});}
+// Poles painted white with coloured bands, like a real show ring.
+const poleTex={};function poleMat(color){if(poleTex[color])return poleTex[color];const c=document.createElement('canvas');c.width=256;c.height=8;const g=c.getContext('2d');
+  g.fillStyle='#fbf8f0';g.fillRect(0,0,256,8);g.fillStyle=color;for(let k=0;k<8;k++)if(k%2)g.fillRect(k*32,0,32,8);
+  const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return poleTex[color]=M('#ffffff',{map:t,roughness:.6});}
+const JUMP_COLORS=['#d0453c','#2f6fc4','#f2b632','#3f8a55','#8a5ac8','#e07a2f'];
+const FLOWER_COLORS=['#f26b8a','#f6d04d','#ffffff','#b07ae0','#ff8a4c','#e84a5f'];
+
+// ---------- The show ground ----------
+const mats={grass:M(forest?'#6f9c56':'#8cc66e'),sand:M('#e4c995',{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),white:M('#f6f2e8'),wood:M('#8a6440'),
+  trunk:M('#7a5636'),leaf:M('#ffffff',{flatShading:true}),hedge:M('#4f8a3a',{flatShading:true}),stone:M('#a9a59a',{flatShading:true}),pot:M('#b8653f'),
+  seat:M('#c9a06a'),skin:M('#ffffff'),shirt:M('#ffffff'),guide:new T.MeshBasicMaterial({color:forest?'#d9b77e':'#fff6dc',transparent:true,opacity:forest?1:.55,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}),
+  gold:M('#f2b632',{emissive:'#f2b632',emissiveIntensity:.5,roughness:.4})};
+const B=C.bounds;
+if(forest){// Draped forest floor over the gentle hills.
+  const nx=80,nz=170,W=B.maxX-B.minX+80,L=B.maxZ-B.minZ+80,pos=[],cols=[],idx=[];
+  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=B.minX-40+i*W/nx,z=B.minZ-40+j*L/nz;pos.push(x,C.height(x,z),z);col.set(Math.sin(x*.4)*Math.sin(z*.37)>.6?'#7aa85e':'#6a9850');const s=.92+.08*Math.sin(x*.9+z*.5);cols.push(col.r*s,col.g*s,col.b*s);}
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+nx+1;idx.push(a,b,a+1,b,b+1,a+1);}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('color',new T.Float32BufferAttribute(cols,3));g.setIndex(idx);g.computeVertexNormals();
+  const m=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,roughness:1}));m.receiveShadow=true;world.add(m);
+  // The trail is the guide: a dirt path through the trees.
+  ribbon(C.path,3.4,(x,z)=>C.height(x,z)+.06,mats.guide);
+  const trees=C.deco.trees.map(t=>({...t,y:C.height(t.x,t.z)}));
+  inst(new T.CylinderGeometry(.3,.45,1,6),mats.trunk,trees,(t,o)=>{o.position.set(t.x,t.y+1.6*t.s,t.z);o.scale.set(t.s,3.2*t.s,t.s);});
+  inst(new T.IcosahedronGeometry(2.3,1),mats.leaf,trees.filter(t=>!t.conifer),(t,o)=>{o.position.set(t.x,t.y+4.8*t.s,t.z);o.scale.set(t.s,t.s,t.s);o.rotation.y=t.x;return ['#5d9c47','#6aa64f','#56923f','#7aae55'][Math.floor(Math.abs(t.x*1.7))%4];});
+  inst(new T.ConeGeometry(2.1,6,7),mats.leaf,trees.filter(t=>t.conifer),(t,o)=>{o.position.set(t.x,t.y+5.4*t.s,t.z);o.scale.setScalar(t.s);return ['#3f7a45','#4a8a4f'][Math.floor(Math.abs(t.z))%2];});
+  inst(new T.IcosahedronGeometry(1,1),mats.leaf,C.deco.bushes,(b,o)=>{o.position.set(b.x,C.height(b.x,b.z)+b.r*.5,b.z);o.scale.set(b.r*1.1,b.r*.8,b.r*1.1);return ['#4f8f3c','#5b9a44','#467f35'][Math.floor(b.s*3)];});
+  // Wildflowers along the trail edges.
+  const fl=[];for(let k=0;k<C.path.length;k+=3){const p=C.path[k];for(const s of [-1,1])if(Math.sin(k*1.7+s)>.2)fl.push({x:p.x+s*(2.2+Math.sin(k)*.4),z:p.z+Math.cos(k*.7),c:FLOWER_COLORS[(k+s+6)%6]});}
+  inst(new T.IcosahedronGeometry(.16,0),mats.leaf,fl,(f,o)=>{o.position.set(f.x,C.height(f.x,f.z)+.18,f.z);return f.c;});
+}else{
+  const g=new T.Mesh(new T.PlaneGeometry(700,700),mats.grass);g.rotation.x=-Math.PI/2;g.position.set(0,-.02,B.minZ+(B.maxZ-B.minZ)/2);g.receiveShadow=true;world.add(g);
+  const w=B.maxX-B.minX,l=B.maxZ-B.minZ,sand=new T.Mesh(new T.PlaneGeometry(w,l),mats.sand);sand.rotation.x=-Math.PI/2;sand.position.set((B.minX+B.maxX)/2,.01,(B.minZ+B.maxZ)/2);sand.receiveShadow=true;world.add(sand);
+  // The guide "sidewalk": a pale raked strip on the sand showing the line to ride.
+  ribbon(C.path,1.8,()=>.03,mats.guide);
+  // White arena rail: posts every 3 m and two rails.
+  const posts=[],rails=[];const side=(ax,az,bx,bz)=>{const L=Math.hypot(bx-ax,bz-az),n=Math.round(L/3);for(let k=0;k<=n;k++)posts.push({x:ax+(bx-ax)*k/n,z:az+(bz-az)*k/n});rails.push({ax,az,bx,bz});};
+  side(B.minX,B.minZ,B.maxX,B.minZ);side(B.maxX,B.minZ,B.maxX,B.maxZ);side(B.maxX,B.maxZ,B.minX,B.maxZ);side(B.minX,B.maxZ,B.minX,B.minZ);
+  inst(box,mats.white,posts,(p,o)=>{o.position.set(p.x,.6,p.z);o.scale.set(.18,1.2,.18);});
+  for(const y of [.55,1.05])inst(box,mats.white,rails,(r,o)=>{o.position.set((r.ax+r.bx)/2,y,(r.az+r.bz)/2);o.rotation.y=Math.atan2(r.bx-r.ax,r.bz-r.az);o.scale.set(.1,.12,Math.hypot(r.bx-r.ax,r.bz-r.az));});
+  // Bushes in tubs along the rail, trees round the showground.
+  inst(new T.IcosahedronGeometry(1,1),mats.hedge,C.deco.bushes,(b,o)=>{o.position.set(b.x,b.r*.7,b.z);o.scale.set(b.r,b.r*.9,b.r);return ['#4f8f3c','#5b9a44','#467f35'][Math.floor(b.s*3)];});
+  const ring=[];for(let k=0;k<70;k++){const a=k/70*Math.PI*2,r=Math.max(w,l)*.62+((k*37)%11)*2.2;const x=Math.sin(a)*r,z=(B.minZ+B.maxZ)/2+Math.cos(a)*r*1.15;if(Math.abs(x)<w/2+24&&z>B.minZ-8&&z<B.maxZ+8)continue;ring.push({x,z,s:.9+((k*13)%7)/10});}
+  inst(new T.CylinderGeometry(.3,.45,1,6),mats.trunk,ring,(t,o)=>{o.position.set(t.x,1.4*t.s,t.z);o.scale.set(t.s,2.8*t.s,t.s);});
+  inst(new T.IcosahedronGeometry(2.3,1),mats.leaf,ring,(t,o)=>{o.position.set(t.x,4.3*t.s,t.z);o.scale.setScalar(t.s);return ['#5d9c47','#6aa64f','#56923f'][Math.floor(Math.abs(t.x))%3];});
+  // Show banner over the in-gate.
+  const ban=new T.Mesh(box,[mats.white,mats.white,mats.white,mats.white,label(SHOW.name.toUpperCase(),'#1f2a44','#fff',1024,128,64),label(SHOW.name.toUpperCase(),'#1f2a44','#fff',1024,128,64)]);
+  ban.scale.set(18,1.6,.2);ban.position.set(0,6.4,B.minZ-1.5);world.add(ban);
+  for(const s of [-1,1]){const p=new T.Mesh(box,mats.white);p.scale.set(.4,7,.4);p.position.set(s*9,3.5,B.minZ-1.5);p.castShadow=true;world.add(p);}
+}
+
+// ---------- The jumps: wings, painted poles, flower boxes, walls; logs, brush and stone in the wood ----------
+const jumps=[];
+C.jumps.forEach((f,i)=>{const g=new T.Group(),y0=C.height(f.x,f.z);g.position.set(f.x,y0,f.z);g.rotation.y=f.dir;world.add(g);
+  const half=Math.hypot(f.bx-f.ax,f.bz-f.az)/2,color=JUMP_COLORS[i%JUMP_COLORS.length],pole=poleMat(color);
+  const part=(mat,sx,sy,sz,x,y,z,geo=box)=>{const m=new T.Mesh(geo,mat);m.scale.set(sx,sy,sz);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m;};
+  const poleGeo=new T.CylinderGeometry(.08,.08,1,10).rotateZ(Math.PI/2);
+  const tops=[];const bar=(y,z=0)=>{const m=part(pole,half*2+.3,1,1,0,y,z,poleGeo);m.userData.rest={y,z};tops.push(m);return m;};
+  if(!forest){// Wing standards each side, capped in the jump's colour.
+    for(const s of [-1,1]){part(mats.white,.28,f.h+.6,.28,s*(half+.25),(f.h+.6)/2,0);part(M(color),.4,.16,.4,s*(half+.25),f.h+.68,0);
+      part(mats.white,.7,f.h*.75,.12,s*(half+.65),f.h*.375,0);}
+    const n=f.height==='high'?3:2;
+    if(f.style==='oxer'){for(const z of [-.55,.55])for(let k=1;k<=n;k++)bar(f.h*k/n-(z<0?.08:0),z);for(const s of [-1,1])part(mats.white,.28,f.h+.6,.28,s*(half+.25),(f.h+.6)/2,-.55);}
+    else if(f.style==='wall'){part(M('#c4473a'),half*2,f.h*.8,.5,0,f.h*.4,0);part(mats.white,half*2+.1,.12,.6,0,f.h*.8+.06,0);bar(f.h);}
+    else if(f.style==='flowers'){part(M('#3f7a3a'),half*2,.45,.7,0,.22,0);
+      const fl=[];for(let k=0;k<22;k++)fl.push({x:-half+.1+k/21*(half*2-.2),z:(k%3-1)*.18,c:FLOWER_COLORS[k%6]});
+      inst(new T.IcosahedronGeometry(.17,0),mats.leaf,fl,(p,o)=>{o.position.set(p.x,.52,p.z);return p.c;},g);
+      for(let k=1;k<=n;k++)bar(.45+(f.h-.45)*k/n);}
+    else for(let k=1;k<=n+1;k++)bar(f.h*k/(n+1));
+  }else{// Cross-country style: solid, natural fences.
+    if(f.style==='log'){const lg=new T.CylinderGeometry(.32,.36,1,10).rotateZ(Math.PI/2);const n=f.height==='low'?2:3;for(let k=0;k<n;k++){const m=part(mats.trunk,half*2,1,1,0,.32+k*(f.h-.32)/(n-1||1)*(k?1:0),k%2?.1:-.1,lg);if(k===n-1){m.userData.rest={y:m.position.y,z:m.position.z};tops.push(m);}}}
+    else if(f.style==='brush'){part(mats.wood,half*2,.35,.8,0,.18,0);const b=part(mats.hedge,half*2-.2,f.h-.2,.6,0,(f.h-.2)/2+.2,0);
+      const tufts=[];for(let k=0;k<12;k++)tufts.push(k);inst(new T.IcosahedronGeometry(.35,0),mats.hedge,tufts,(k,o)=>{o.position.set(-half+.3+k/11*(half*2-.6),f.h,(k%2-.5)*.2);return k%2?'#4a8236':'#5b9a44';},g);
+      bar(f.h+.05).material=M('#a87a4c');}
+    else{part(mats.stone,half*2,f.h*.85,.8,0,f.h*.425,0);part(M('#8f8b80',{flatShading:true}),half*2+.1,.15,.9,0,f.h*.85,0);const m=bar(f.h);m.material=mats.trunk;}
+    for(const s of [-1,1])part(mats.trunk,.3,f.h+.5,.3,s*(half+.3),(f.h+.5)/2,0);
+  }
+  // Number board on the left wing, facing the rider.
+  const num=part(label(String(f.num),forest?'#7a5636':color,'#fff',128,128,96),.7,.7,.04,-(half+.25),f.h+1.25,-.18);num.castShadow=false;num.rotation.y=Math.PI;
+  // Planters with clipped bushes either side of arena jumps.
+  if(!forest)for(const s of [-1,1]){part(mats.pot,.8,.55,.8,s*(half+1.6),.28,0,new T.CylinderGeometry(.5,.38,1,10));const b=part(mats.hedge,.75,.7,.75,s*(half+1.6),.85,0,new T.IcosahedronGeometry(1,1));b.material=M(i%2?'#4f8f3c':'#5b9a44',{flatShading:true});}
+  jumps.push({f,g,tops});});
+const finish=C.checkpoints.at(-1);
+{const s=C.start,mk=(p,text,color,h)=>{const g=new T.Group();g.position.set(p.x,C.height(p.x,p.z),p.z);g.rotation.y=h;world.add(g);
+    for(const k of [-1,1]){const pole=new T.Mesh(box,mats.white);pole.scale.set(.25,3.2,.25);pole.position.set(k*3.2,1.6,0);pole.castShadow=true;g.add(pole);
+      const flag=new T.Mesh(box,M(color));flag.scale.set(.05,.6,.9);flag.position.set(k*3.2,3,.45);g.add(flag);}
+    const ban=new T.Mesh(box,[mats.white,mats.white,mats.white,mats.white,label(text,color,'#fff',512,128,64),label(text,color,'#fff',512,128,64)]);ban.scale.set(4.6,.9,.08);ban.position.y=3.6;g.add(ban);};
+  mk({x:s.x,z:s.z+3},'START','#2f6b3a',s.h);const e=C.path.at(-1),e0=C.path.at(-4);mk(finish,'FINISH','#c0473a',Math.atan2(e.x-e0.x,e.z-e0.z));}
+// The gold arrow that bobs over the next jump.
+const arrow3=new T.Mesh(new T.ConeGeometry(.7,1.5,4).rotateX(Math.PI),mats.gold);world.add(arrow3);
+
+// ---------- Spectators on the bleachers ----------
+const crowd=[];let crowdMeshes=null,cheerT=0,groanT=0;
+{const SHIRTS=['#d0453c','#2f6fc4','#f2b632','#3f8a55','#8a5ac8','#f26b8a','#ffffff','#1f2a44','#e07a2f'],SKINS=['#f3cfae','#e3b48c','#c98f63','#9a6544','#6e4630','#fbe3cf'],HAIR=['#5a3b2a','#2a2230','#e8c46a','#c4473a','#d9dde6'];
+  const seats=[];
+  for(const st of C.crowd.stands){const g=new T.Group(),y0=C.height(st.x,st.z);g.position.set(st.x,y0,st.z);g.rotation.y=st.dir;world.add(g);
+    const len=st.seats*.95+1.2;
+    for(let r=0;r<st.rows;r++){const s=new T.Mesh(box,mats.seat);s.scale.set(len,.18,.6);s.position.set(0,.55+r*.55,-r*.9);s.castShadow=s.receiveShadow=true;g.add(s);
+      const riser=new T.Mesh(box,mats.wood);riser.scale.set(len,.55+r*.55,.12);riser.position.set(0,(.55+r*.55)/2,-r*.9-.32);g.add(riser);}
+    for(const k of [-1,1]){const leg=new T.Mesh(box,mats.wood);leg.scale.set(.2,st.rows*.55+.6,st.rows*.9);leg.position.set(k*len/2,(st.rows*.55+.6)/2,-(st.rows-1)*.45);g.add(leg);}
+    if(st.rows>4){const roof=new T.Mesh(box,M('#1f2a44'));roof.scale.set(len+1,.2,st.rows*.9+1.4);roof.position.set(0,st.rows*.55+3.2,-(st.rows-1)*.45);roof.castShadow=true;g.add(roof);}
+    g.updateMatrixWorld(true);
+    for(let r=0;r<st.rows;r++)for(let k=0;k<st.seats;k++)seats.push(new T.Vector3(-(st.seats-1)*.475+k*.95,.64+r*.55,-r*.9-.05).applyMatrix4(g.matrixWorld));}
+  const n=Math.min(C.crowd.count,seats.length);let h=SHOW.id.length*7;const r=()=>((h=Math.imul(h^h>>>13,2654435761)>>>0)%1000)/1000;
+  for(let i=0;i<n;i++){const s=seats[Math.floor(r()*seats.length)];seats.splice(seats.indexOf(s),1);crowd.push({x:s.x,y:s.y,z:s.z,shirt:SHIRTS[Math.floor(r()*SHIRTS.length)],skin:SKINS[Math.floor(r()*SKINS.length)],hair:HAIR[Math.floor(r()*HAIR.length)],ph:r()*6,face:Math.atan2(-s.x,(C.bounds.minZ+C.bounds.maxZ)/2-s.z)});}
+  const body=new T.CylinderGeometry(.2,.26,.62,8),head=new T.SphereGeometry(.2,10,8),hair=new T.SphereGeometry(.21,10,6,0,Math.PI*2,0,Math.PI*.55),arm=new T.BoxGeometry(.09,.42,.09);
+  crowdMeshes={body:new T.InstancedMesh(body,mats.shirt,Math.max(1,n)),head:new T.InstancedMesh(head,mats.skin,Math.max(1,n)),hair:new T.InstancedMesh(hair,mats.shirt,Math.max(1,n)),arms:new T.InstancedMesh(arm,mats.shirt,Math.max(1,n*2))};
+  crowd.forEach((p,i)=>{crowdMeshes.body.setColorAt(i,col.set(p.shirt));crowdMeshes.head.setColorAt(i,col.set(p.skin));crowdMeshes.hair.setColorAt(i,col.set(p.hair));crowdMeshes.arms.setColorAt(2*i,col.set(p.shirt));crowdMeshes.arms.setColorAt(2*i+1,col.set(p.shirt));});
+  for(const m of Object.values(crowdMeshes)){m.count=m===crowdMeshes.arms?n*2:n;m.castShadow=true;world.add(m);}}
+function poseCrowd(){const up=cheerT>0,ooh=groanT>0;
+  crowd.forEach((p,i)=>{const hop=up?Math.max(0,Math.sin(clock*11+p.ph))*.25:Math.sin(clock*1.3+p.ph)*.01,y=p.y+hop;
+    dummy.rotation.set(0,p.face,0);dummy.scale.set(1,1,1);dummy.position.set(p.x,y+.31,p.z);dummy.updateMatrix();crowdMeshes.body.setMatrixAt(i,dummy.matrix);
+    dummy.position.set(p.x,y+.82,p.z);dummy.rotation.set(ooh?.3:0,p.face,0);dummy.updateMatrix();crowdMeshes.head.setMatrixAt(i,dummy.matrix);
+    dummy.position.set(p.x,y+.86,p.z);dummy.updateMatrix();crowdMeshes.hair.setMatrixAt(i,dummy.matrix);
+    for(const s of [-1,1]){const lift=up?2.6+Math.sin(clock*14+p.ph)*.3:ooh?1.9:.15;dummy.rotation.set(0,p.face,s*lift,'YXZ');
+      dummy.position.set(p.x+Math.cos(p.face)*s*.27,y+(up?.72:.42),p.z-Math.sin(p.face)*s*.27);dummy.updateMatrix();crowdMeshes.arms.setMatrixAt(2*i+(s>0?1:0),dummy.matrix);}});
+  for(const m of Object.values(crowdMeshes))m.instanceMatrix.needsUpdate=true;}
+
+// ---------- Minimap (north up, +x drawn on the left, like the view from behind) ----------
+const mapCanvas=document.getElementById('map'),mapCtx=mapCanvas.getContext('2d');let mapT=null,mapBase=null;
+{const dpr=Math.min(devicePixelRatio||1,2),MW=84,MH=140;mapCanvas.width=MW*dpr;mapCanvas.height=MH*dpr;
+  const xs=C.path.map(p=>p.x),zs=C.path.map(p=>p.z),x0=Math.min(...xs)-8,x1=Math.max(...xs)+8,z0=Math.min(...zs)-8,z1=Math.max(...zs)+8,sc=Math.min((MW-10)/(x1-x0),(MH-10)/(z1-z0));
+  mapT=p=>[MW/2-(p.x-(x0+x1)/2)*sc,MH/2-(p.z-(z0+z1)/2)*sc];
+  mapBase=document.createElement('canvas');mapBase.width=MW*dpr;mapBase.height=MH*dpr;const g=mapBase.getContext('2d');g.scale(dpr,dpr);g.lineCap=g.lineJoin='round';
+  g.fillStyle=forest?'#8fbf72':'#e9d6ac';g.fillRect(0,0,MW,MH);g.strokeStyle=forest?'#d9b77e':'#fff6dcaa';g.lineWidth=forest?3:2;g.beginPath();C.path.forEach((p,i)=>g[i?'lineTo':'moveTo'](...mapT(p)));g.stroke();}
+function drawMap(R){const dpr=Math.min(devicePixelRatio||1,2);mapCtx.setTransform(1,0,0,1,0,0);mapCtx.clearRect(0,0,mapCanvas.width,mapCanvas.height);mapCtx.drawImage(mapBase,0,0);mapCtx.scale(dpr,dpr);
+  C.jumps.forEach((f,i)=>{const [ax,ay]=mapT({x:f.ax,z:f.az}),[bx,by]=mapT({x:f.bx,z:f.bz}),done=i<R.cp,next=i===R.cp;mapCtx.strokeStyle=done?'#7fbf6a':next?'#f2b632':'#24402f';mapCtx.lineWidth=next?3:2;mapCtx.beginPath();mapCtx.moveTo(ax,ay);mapCtx.lineTo(bx,by);mapCtx.stroke();
+    if(next||!done){const [x,y]=mapT(f);mapCtx.fillStyle='#24402f';mapCtx.font='800 7px Nunito, sans-serif';mapCtx.textAlign='center';mapCtx.fillText(String(f.num),x+6,y-3);}});
+  const [px,py]=mapT(R);mapCtx.fillStyle='#fff';mapCtx.strokeStyle='#24402f';mapCtx.lineWidth=1.4;mapCtx.beginPath();mapCtx.arc(px,py,3.4,0,7);mapCtx.fill();mapCtx.stroke();}
+
+// ---------- Your horse and rider ----------
+let player=null;
+function makeRider(h,stats){const model=makeSculptedHorse(T,h||{id:'willow'},{style:'cel'}),group=new T.Group();group.rotation.order='YXZ';group.add(model.root);scene.add(group);
+  const t=h?G.tackOf(h):{},kit=addTackAndRider(T,model,{look:loadLook(),...(h?{saddle:G.tackColor(t.saddle),bridle:G.tackColor(t.bridle)}:{})});
+  model.root.traverse(o=>{if(o.isMesh&&o.material.type!=='MeshBasicMaterial')o.castShadow=true;});
+  return {name:h?.name||'Willow',horse:h,stats,d:derive(stats),model,kit,group,x:0,z:0,h:0,v:0,pitch:0,sta:100,tired:false,stun:0,recover:0,cp:0,finished:null,refusing:null,unsure:0,lastHit:0,fs:new Map(),knock:0,refusals:0,lastRefuse:-9};}
+function disposeRider(R){if(!R)return;scene.remove(R.group);R.kit.dispose();R.model.dispose();}
+const airborne=R=>{const t=R.model.jumpT;return t>=.2&&t<=.74;};
+const inAir=R=>R.model.jumpT>=0;
+const fstate=(R,f)=>{let s=R.fs.get(f.line);if(!s)R.fs.set(f.line,s={rolled:false,cleared:false});return s;};
+function fenceAhead(R,max=40,only=null){if(R.v<-.2)return null;const fx=Math.sin(R.h),fz=Math.cos(R.h),ex=R.x+fx*max,ez=R.z+fz*max;let best=null,bt=2;
+  for(const f of only?[only]:C.fencesNear(R.x+fx*max/2,R.z+fz*max/2,max/2+4)){if(f.down)continue;const t=segX(R.x,R.z,ex,ez,f.ax,f.az,f.bx,f.bz);if(t!==null&&t<bt){bt=t;best=f;}}
+  return best?{f:best,dist:bt*max}:null;}
+const nextJump=R=>C.jumps[R.cp]||null;
+
+// The steeplechase's riding with show rules: jumps in order, a knocked rail or a refusal is 4 faults and you ride on.
+function knock(R,f){f.down=true;R.knock++;R.cp++;const J=jumps.find(j=>j.f===f);if(J)J.falling=0;groanT=1.6;rec.events.push({t:raceTime,k:'knock',i:f.num-1});
+  toast(`Rail down at jump ${f.num}: 4 faults. Keep going!`);}
+function clearJump(R,f){fstate(R,f).cleared=true;R.cp++;cheerT=1.8;toast(R.cp>=C.jumps.length?'All jumps done! Gallop through the finish!':`Clear over ${f.num}! Next: jump ${f.num+1}.`);}
+function refuse(R,f,why){if(raceTime-R.lastRefuse<2)return;R.lastRefuse=raceTime;R.refusals++;groanT=1.2;
+  // v137: never circle forever: the third refusal at the same jump lets you ride on to the next one.
+  const st=fstate(R,f);st.refs=(st.refs||0)+1;if(st.refs>=3&&f===nextJump(R)){st.cleared=true;R.cp++;R.refusing=null;f.down=true;const J=jumps.find(j=>j.f===f);if(J)J.falling=0;/* rails come down so you can walk over */toast(R.cp>=C.jumps.length?`Three tries at jump ${f.num}: that's OK! Gallop through the finish.`:`Three tries at jump ${f.num}: that's OK! Ride on to jump ${f.num+1}.`);return;}
+  toast(why||`${R.name} stopped at jump ${f.num}: 4 faults. Circle back and come in faster.`);}
+function step(R,inp,dt){
+  const d=R.d,g=C.ground(R.x,R.z),air=inAir(R),fx=Math.sin(R.h),fz=Math.cos(R.h);
+  const grade=(C.ground(R.x+fx*1.6,R.z+fz*1.6).y-C.ground(R.x-fx*1.6,R.z-fz*1.6).y)/3.2;
+  let cap=g.factor*Math.max(.6,Math.min(1.1,1-grade*1.4))*(R.tired?.72:1),target=inp.throttle>.05?inp.throttle*d.maxV*cap:inp.throttle<-.3?-3.4:0;
+  if(R.stun>0){R.stun-=dt;target=0;}
+  if(R.refusing){const a=fenceAhead(R,45,R.refusing);
+    if(!a){fstate(R,R.refusing).rolled=false;R.refusing=null;}
+    else if(a.dist<8){target=0;R.v=Math.max(0,R.v-30*dt);if(R.v<.4){const f=R.refusing;R.refusing=null;R.stun=.6;refuse(R,f,`${R.name} refused jump ${f.num}: 4 faults. Circle back, ${R.name} will go next time.`);}}}
+  if(!air){
+    if(target>R.v){let a=d.accel*(1-.45*Math.max(0,R.v)/d.maxV);R.v=Math.min(target,R.v+a*dt);}
+    else R.v=Math.max(target,R.v-(R.v>target+3?13:7)*dt);
+    const rate=Math.abs(R.v)<.6?1.4:d.turn/(1+Math.abs(R.v)/12);R.h-=inp.steer*rate*dt*(R.v<-.2?-1:1);}
+  if(R.v>.8*d.maxV)R.sta=Math.max(0,R.sta-d.drain*.8*(1+Math.max(0,grade)*2.5)*dt);else R.sta=Math.min(100,R.sta+8*dt);
+  if(R.sta<=0&&!R.tired){R.tired=true;toast(`${R.name} is out of breath. Ease off for a moment.`);}
+  if(R.tired&&R.sta>35)R.tired=false;
+  const px=R.x,pz=R.z;R.x+=fx*R.v*dt;R.z+=fz*R.v*dt;
+  R.x=Math.max(B.minX-30,Math.min(B.maxX+30,R.x));R.z=Math.max(B.minZ-30,Math.min(B.maxZ+30,R.z));
+  let bumped=false;
+  for(const o of C.obstaclesNear(R.x,R.z,10)){
+    if(o.w){const dx=R.x-o.x,dz=R.z-o.z,c=Math.cos(o.h),s=Math.sin(o.h),u=dx*s+dz*c,v=dx*c-dz*s,hu=o.l/2+.9,hv=o.w/2+.9;
+      if(Math.abs(u)<hu&&Math.abs(v)<hv){const pu=hu-Math.abs(u),pv=hv-Math.abs(v);let nu=u,nv=v;if(pu<pv)nu=Math.sign(u)*hu;else nv=Math.sign(v)*hv;R.x=o.x+nu*s+nv*c;R.z=o.z+nu*c-nv*s;bumped=true;}}
+    else{const dx=R.x-o.x,dz=R.z-o.z,dd=Math.hypot(dx,dz),m=o.r+1;if(dd<m&&dd>0){R.x=o.x+dx/dd*m;R.z=o.z+dz/dd*m;bumped=true;}}}
+  if(bumped&&clock-R.lastHit>.8){R.lastHit=clock;R.v*=.4;R.stun=.2;}
+  // Crossing a jump's line.
+  for(const f of C.fencesNear((px+R.x)/2,(pz+R.z)/2,6)){if(f.down)continue;const t=segX(px,pz,R.x,R.z,f.ax,f.az,f.bx,f.bz);if(t===null)continue;
+    const L=Math.hypot(f.bx-f.ax,f.bz-f.az),u=((px+(R.x-px)*t-f.ax)*(f.bx-f.ax)+(pz+(R.z-pz)*t-f.az)*(f.bz-f.az))/L;if(u<.3||u>L-.3)continue;
+    const mine=f===nextJump(R),fwd=Math.cos(R.h-f.dir)>.2;// jumps are ridden one way, the way the course goes
+    if(airborne(R)){if(mine&&fwd)clearJump(R,f);else if(mine)toast(`Wrong way! Jump ${f.num} is ridden the other way.`);else toast(`That's jump ${f.num}. Follow the arrow to jump ${nextJump(R)?.num??'the finish'}.`);continue;}
+    if(mine&&fwd&&(R.v>=5.5||inAir(R))){knock(R,f);R.v*=.6;continue;}
+    const nx=-(f.bz-f.az)/L,nz=(f.bx-f.ax)/L,side=Math.sign((px-f.ax)*nx+(pz-f.az)*nz)||1,hx=px+(R.x-px)*t,hz=pz+(R.z-pz)*t;
+    R.x=hx+nx*side*1.3;R.z=hz+nz*side*1.3;R.v=0;R.stun=.6;
+    if(mine&&fwd)refuse(R,f);else toast(mine?`Wrong way! Come round and ride jump ${f.num} the other way.`:`Not this one! Jump ${nextJump(R)?.num??''} is next: follow the arrow.`);
+    break;}
+  // Trust: one roll on the first proper approach to each jump.
+  const nf=fenceAhead(R,30);
+  if(nf&&nf.f===nextJump(R)&&!R.refusing&&nf.dist>7&&R.v>=nf.f.need*.85){const s=fstate(R,nf.f);if(!s.rolled&&!s.cleared){s.rolled=true;if(rand()<d.refuse){R.refusing=nf.f;R.unsure=1.2;toast(`${R.name} looks unsure about jump ${nf.f.num}…`);}}}
+  if(inp.jump&&!air&&R.stun<=0){const ahead=fenceAhead(R,40),need=ahead?ahead.f.need:8.5;
+    if(R.refusing)toast(`${R.name} won't jump this one. Circle back for another go.`);
+    else if(R.v>=need){R.model.jump();rec.events.push({t:raceTime,k:'jump'});}
+    else if(ahead)toast(`Not fast enough for this ${ahead.f.height==='high'?'high':ahead.f.height==='mid'?'medium':'low'} jump: ${mph(need)} mph needed.`);}
+  // Through the finish once every jump is done.
+  if(R.cp>=C.jumps.length&&R.finished===null&&Math.hypot(finish.x-R.x,finish.z-R.z)<finish.r+1.5){R.finished=raceTime;onFinish(R);}
+  animate(R,dt,grade);}
+function animate(R,dt,grade=0){const sp=Math.abs(R.v);R.model.setGait(sp<.3?'stand':sp<3?'walk':sp<6.5?'trot':sp<10.5?'canter':'gallop');R.model.update(dt);
+  R.kit.update(dt,{jumpT:R.model.jumpT,speed:Math.max(0,R.v)/R.d.maxV});
+  if(R.refusing||R.unsure>0){R.unsure=Math.max(0,R.unsure-dt);R.model.head.rotation.y+=Math.sin(clock*13)*.18;R.model.neck.rotation.x+=.12;}
+  const jt=R.model.jumpT,hop=jt>=0?.6*Math.sin(Math.PI*Math.min(1,Math.max(0,(jt-.14)/.66))):0,y=C.height(R.x,R.z);
+  R.pitch+=(-Math.atan(grade)-R.pitch)*Math.min(1,dt*6);R.group.position.set(R.x,y+hop,R.z);R.group.rotation.set(R.pitch,R.h,0);}
+
+// ---------- Input (same as the steeplechase) ----------
+const input={steer:0,throttle:0,jump:false};const keys=new Set();
+const stick=document.getElementById('stick'),knob=document.getElementById('knob'),knobDot=knob.firstElementChild;let stickId=null,sx=0,sy=0;
+stick.addEventListener('pointerdown',e=>{stickId=e.pointerId;sx=e.clientX;sy=e.clientY;stick.setPointerCapture(e.pointerId);knob.style.display='block';knob.style.left=sx+'px';knob.style.top=sy+'px';moveStick(e);document.getElementById('hint').hidden=true;});
+function moveStick(e){if(e.pointerId!==stickId)return;let dx=(e.clientX-sx)/55,dy=(e.clientY-sy)/55;const L=Math.hypot(dx,dy);if(L>1){dx/=L;dy/=L;}
+  input.steer=Math.abs(dx)<.12?0:dx;input.throttle=-dy;knobDot.style.transform=`translate(${dx*34}px,${dy*34}px)`;}
+stick.addEventListener('pointermove',moveStick);
+const endStick=e=>{if(e.pointerId!==stickId)return;stickId=null;input.steer=0;input.throttle=0;knob.style.display='none';knobDot.style.transform='';};
+stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);
+const jumpBtn=document.getElementById('jump');jumpBtn.addEventListener('pointerdown',e=>{e.preventDefault();input.jump=true;});
+addEventListener('keydown',e=>{keys.add(e.key.toLowerCase());if(e.key===' '){input.jump=true;e.preventDefault();}});
+addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+function keyInput(){if(!keys.size)return null;const k=a=>a.some(x=>keys.has(x));
+  return {steer:(k(['arrowright','d'])?1:0)-(k(['arrowleft','a'])?1:0),throttle:k(['arrowup','w'])?1:k(['arrowdown','s'])?-1:0};}
+
+// ---------- Show flow: menu (entry checks), countdown, round, results, replay ----------
+const els=Object.fromEntries(['hud','menu','menuCard','done','doneCard','time','faults','mph','sta','staBar','staLbl','ring','jumpTxt','count','toast','quit','arrow','nextName','nextDist'].map(id=>[id,document.getElementById(id)]));
+let toastT=0;function toast(t){els.toast.textContent=t;els.toast.classList.add('on');toastT=2.6;}
+let phase='menu',raceTime=0,countT=0,clock=0,rand=Math.random,results=null,rec={frames:[],events:[]},replay=null;
+const REPLAY_KEY=`trottville-show-replay-v1:${SHOW.id}`,BEST_KEY=`trottville-show-best-v1:${SHOW.id}:${C.seed}`,XP_KEY=`trottville-show-xp-v1:${SHOW.id}`;
+const sel={horse:store.get('trottville.show.horse')};
+const lvl=h=>level(h.xp);
+const PAID_KEY=`trottville-show-paid-v1:${SHOW.id}`,paidToday=()=>store.get(PAID_KEY)===String(dayNo());
+const checks=h=>entryNeeds(SHOW,{tooOld:!!h&&G.tooOldToCompete(h),level:h?lvl(h):0,upgradedSaddle:!!h&&G.upgraded(G.tackOf(h).saddle),hasOutfit:G.canShow(loadWallet())});
+function paintMenu(){
+  if(!HERD.some(h=>h.id===sel.horse))sel.horse=(HERD.find(h=>!checks(h).length)||HERD[0])?.id;
+  const h=HERD.find(x=>x.id===sel.horse),needs=checks(h),w=loadWallet(),saved=loadReplay();
+  const reqRow=(ok,text,sub='')=>`<li class="${ok?'ok':''}"><b>${ok?'✓':'○'}</b><span>${text}${sub?`<small>${sub}</small>`:''}</span></li>`;
+  const lvlNeed=h&&lvl(h)<SHOW.level?`About ${daysToLevel(h.xp,SHOW.level)} more days of care and games.`:'';
+  els.menuCard.innerHTML=`<span class="eyebrow">${forest?'Cross-country show':'Show jumping'} · Level ${SHOW.level}+</span><h1>${esc(SHOW.name)}</h1><p>${esc(SHOW.blurb)}</p>
+    <p class="note-line rules">Jump the numbered fences in order. A rail or a stop is 4 faults; each second over ${fmt(C.timeAllowed).replace(/\.0$/,'')} is 1 more. Fewest faults wins, then fastest time.</p>
+    <h2>To enter</h2><ul class="reqs">
+      ${reqRow(!needs.some(n=>n.id==='outfit'),'Show Jacket','Navy coat, white breeches, helmet. Yours for good.')}
+      ${reqRow(h&&!needs.some(n=>n.id==='saddle'),'An upgraded saddle',h?(G.upgraded(G.tackOf(h).saddle)?'':`${esc(h.name)} has the Free Saddle. Buy one in the stable profile.`):'')}
+      ${reqRow(h&&!needs.some(n=>n.id==='level'),`Horse level ${SHOW.level}`,h?`${esc(h.name)} is level ${lvl(h)}. ${lvlNeed}`:'')}
+      ${reqRow(h&&!needs.some(n=>n.id==='age'),'A horse under 15',h&&G.tooOldToCompete(h)?`${esc(h.name)} is too tired for shows now. Seniors can still ride the trails.`:'From 15 a horse’s stamina is too weak for shows.')}
+      ${reqRow(paidToday()||w.coins>=(SHOW.fee||0),`Entry ${(SHOW.fee||0).toLocaleString('en-US')} 🪙`,paidToday()?'You won today’s prize, so more rounds are free practice.':`Win and the prize is ${SHOW.prize[0].toLocaleString('en-US')} 🪙. The prize pays once a day.`)}
+    </ul>
+    ${needs.some(n=>n.id==='outfit')?`<button class="btn buy" id="buyJacket" type="button">Buy the Show Jacket · ${SHOW_OUTFIT_PRICE.toLocaleString('en-US')} 🪙 <span style="opacity:.7;margin-left:6px">you have ${w.coins.toLocaleString('en-US')}</span></button>`:''}
+    <h2>Your horse</h2>
+    ${HERD.length?`<div class="chips" id="horses">${HERD.map(x=>`<button type="button" data-h="${esc(x.id)}" aria-pressed="${x.id===sel.horse}" class="${checks(x).some(n=>n.id!=='outfit')?'locked':''}">${esc(x.name)} · Lv ${lvl(x)}</button>`).join('')}</div>
+      <div class="stats">${h?STAT_INFO.map(([k,label])=>{const s=statsOf(h)[k];return `<span>${label}</span><div class="bar"><i style="width:${s}%"></i></div><em>${s}</em>`;}).join(''):''}</div>`
+      :`<p class="note-line">Tame and saddle up one of your own horses first (care for them at home, then ride in the 3D world).</p>`}
+    <button class="btn primary" id="go" type="button" ${needs.length?'disabled':''}>${needs.length?'Not ready to enter yet':paidToday()?'Practice round (free)':`Enter the ring · ${(SHOW.fee||0).toLocaleString('en-US')} 🪙`}</button>
+    ${saved?`<button class="btn secondary" id="watch" type="button">Watch your best round (${saved.faults} faults, ${fmt(saved.time)})</button>`:''}
+    <button class="btn gf-home" id="home" type="button" aria-label="Back to Trottville">Trottville</button>`;
+  const q=s=>els.menuCard.querySelector(s);
+  els.menuCard.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{sel.horse=b.dataset.h;store.set('trottville.show.horse',sel.horse);paintMenu();});
+  q('#buyJacket')?.addEventListener('click',()=>{const res=buyOutfit(loadWallet(),G.SHOW_OUTFIT);if(!res.ok){toast(`You need ${res.short} more Trotties for the Show Jacket.`);return;}
+    saveWallet(res.wallet);saveLook({...loadLook(),outfit:G.SHOW_OUTFIT});toast('Show Jacket on. Looking sharp!');paintMenu();});
+  q('#go')?.addEventListener('click',()=>{if(checks(HERD.find(x=>x.id===sel.horse)).length)return;
+    if(SHOW.fee&&!paidToday()){const wl=loadWallet();if(wl.coins<SHOW.fee){toast(`You need ${(SHOW.fee-wl.coins).toLocaleString('en-US')} more Trotties to enter.`);return;}saveWallet({...wl,coins:wl.coins-SHOW.fee});}
+    startRound();});
+  q('#watch')?.addEventListener('click',()=>startReplay(loadReplay()));
+  q('#home')?.addEventListener('click',()=>{if(inWorld)parent.postMessage('trottville:close-steeple',location.origin);else location.href='./#world';});}
+
+function resetJumps(){for(const J of jumps){J.f.down=false;J.falling=null;for(const m of J.tops){m.position.y=m.userData.rest.y;m.position.z=m.userData.rest.z;m.rotation.set(0,0,0);}}}
+function place(R){const S=C.start;R.x=S.x;R.z=S.z;R.h=S.h;R.group.position.set(R.x,C.height(R.x,R.z),R.z);R.group.rotation.set(0,R.h,0);}
+function startRound(force){
+  const h=HERD.find(x=>x.id===sel.horse)||(force?null:undefined);if(h===undefined)return;
+  disposeRider(player);player=makeRider(h,h?statsOf(h):{speed:70,stamina:70,trust:80,agility:70,heart:70});place(player);resetJumps();
+  rand=Math.random;raceTime=0;countT=3.5;phase='count';results=null;replay=null;rec={frames:[],events:[],horse:h?.id||null};
+  els.menu.hidden=true;els.done.hidden=true;els.hud.hidden=false;document.getElementById('hint').hidden=false;
+  camPos.set(player.x-Math.sin(player.h)*14,9,player.z-Math.cos(player.h)*14);}
+function onFinish(R){phase='finished';const sc=score({time:R.finished,allowed:C.timeAllowed,knockdowns:R.knock,refusals:R.refusals}),me={...sc,time:R.finished};
+  const pl=placings(SHOW,C.seed,C.timeAllowed,me);cheerT=3;
+  const best=JSON.parse(store.get(BEST_KEY)||'null'),better=!best||sc.faults<best.faults||(sc.faults===best.faults&&R.finished<best.time);
+  if(better){store.set(BEST_KEY,JSON.stringify({faults:sc.faults,time:R.finished}));saveReplay({...rec,faults:sc.faults,time:R.finished,seed:C.seed});}
+  // Prize money by placing; the horse gains XP once a day per show.
+  const lines=[`${ordinal(pl.place)} place · ${pl.prize} 🪙`];let xp=0;
+  if(R.horse&&ranch&&store.get(XP_KEY)!==String(dayNo())){xp=pl.place===1?40:pl.place<=3?30:20;store.set(XP_KEY,String(dayNo()));
+    try{const r=loadRanch();if(r){saveRanch({...r,herd:r.herd.map(x=>x.id===R.horse.id?fromPlain({...x,xp:(x.xp||0)+xp}):x)});lines.push(`${R.horse.name} +${xp} XP`);}}catch{}}
+  if(paidToday()){pl.prize=0;lines[0]=`${ordinal(pl.place)} place · today’s prize already won`;}else if(pl.prize>0)store.set(PAID_KEY,String(dayNo()));
+  const collectId=pl.prize>0||xp?queueCoins({from:SHOW.name,coins:pl.prize,lines}):null;
+  results={...sc,time:R.finished,pl,collectId,prize:pl.prize,xp,better};setTimeout(showResults,1600);}
+const ordinal=n=>n+(['th','st','nd','rd'][n%100>10&&n%100<14?0:n%10]||'th');
+const RIBBON=['#2f6fc4','#c0473a','#e2b21f','#f4efe2','#e07fa8','#3f8a55','#8a5ac8','#7a5636'];
+function showResults(){const r=results,stars=`<div class="stars" aria-label="${r.stars} of 3 stars">${'★'.repeat(r.stars)}<i>${'★'.repeat(3-r.stars)}</i></div>`;
+  els.doneCard.innerHTML=`<span class="ribbon" style="background:${RIBBON[r.pl.place-1]};${r.pl.place===4?'color:#24402f':''}">${ordinal(r.pl.place)}</span>
+    <h1>${r.clear?'Clear round!':r.faults<=4?'Nice round!':'Round complete'}</h1>${stars}
+    <div class="result">${r.faults} <small style="font-size:18px">faults</small></div>
+    <p>${fmt(r.time)} (time allowed ${fmt(C.timeAllowed)})${r.better?' · Your best this week!':''}</p>
+    <div class="rows"><div><span>Rails down</span><b>${player.knock?player.knock+' × 4':'none'}</b></div><div><span>Refusals</span><b>${player.refusals?player.refusals+' × 4':'none'}</b></div><div><span>Time faults</span><b>${r.timeFaults||'none'}</b></div></div>
+    <h2>Results</h2><div class="rows">${r.pl.all.map((x,i)=>`<div class="${x.me?'me':''}"><span>${ordinal(i+1)} · ${esc(x.me?`You on ${player.name}`:x.name)}</span><b>${x.faults} · ${fmt(x.time)}</b></div>`).join('')}</div>
+    ${r.xp?`<p style="margin:10px 0 0;font-weight:800">🐴 ${esc(player.name)} +${r.xp} XP</p>`:''}
+    ${r.collectId?`<button class="tc-collect" id="collect" type="button" style="margin:12px 0 4px">Collect ${r.prize} Trotties</button>`:''}
+    <button class="btn primary" id="again" type="button">${SHOW.fee&&!paidToday()?`Ride again · ${(SHOW.fee||0).toLocaleString('en-US')} 🪙`:'Ride again (free practice)'}</button>
+    <button class="btn secondary" id="watchMine" type="button">Watch this round</button>
+    <button class="btn secondary" id="menuBtn" type="button">Back to the show</button>
+    <button class="btn secondary" id="doneHome" type="button">Back to Trottville</button>`;
+  els.done.hidden=false;els.hud.hidden=true;els.toast.classList.remove('on');toastT=0;
+  document.getElementById('doneHome').onclick=()=>{if(inWorld)parent.postMessage('trottville:close-steeple',location.origin);else location.href='./#world';};const lastRec={...rec,faults:r.faults,time:r.time,seed:C.seed};
+  document.getElementById('collect')?.addEventListener('click',e=>{e.currentTarget.remove();showCollect({title:SHOW.name,ids:[r.collectId]});r.collectId=null;});
+  document.getElementById('again').onclick=()=>{if(SHOW.fee&&!paidToday()){const wl=loadWallet();if(wl.coins<SHOW.fee){toast(`You need ${(SHOW.fee-wl.coins).toLocaleString('en-US')} more Trotties to enter again.`);return;}saveWallet({...wl,coins:wl.coins-SHOW.fee});}startRound();};
+  document.getElementById('watchMine').onclick=()=>startReplay(lastRec);
+  document.getElementById('menuBtn').onclick=toMenu;}
+function toMenu(){phase='menu';replay=null;els.done.hidden=true;els.hud.hidden=true;els.menu.hidden=false;resetJumps();paintMenu();}
+els.quit.onclick=()=>{if(phase==='replay'){toMenu();return;}toMenu();};
+
+// Replays: your round recorded ten times a second and played back from the grandstand camera.
+function saveReplay(r){try{localStorage.setItem(REPLAY_KEY,JSON.stringify(r));}catch{}}
+function loadReplay(){try{const r=JSON.parse(localStorage.getItem(REPLAY_KEY)||'null');return r&&r.seed===C.seed&&r.frames?.length?r:null;}catch{return null;}}
+function startReplay(r){if(!r)return;const h=HERD.find(x=>x.id===r.horse)||null;disposeRider(player);player=makeRider(h,h?statsOf(h):{speed:70,stamina:70,trust:80,agility:70,heart:70});
+  resetJumps();replay={r,t:0,ev:0};phase='replay';els.menu.hidden=true;els.done.hidden=true;els.hud.hidden=false;document.getElementById('hint').hidden=true;
+  els.quit.textContent='Stop replay';toast(`Replay: ${r.faults} faults in ${fmt(r.time)}`);}
+function playReplay(dt){const P=replay,F=P.r.frames;P.t+=dt;
+  while(P.ev<P.r.events.length&&P.r.events[P.ev].t<=P.t){const e=P.r.events[P.ev++];if(e.k==='jump')player.model.jump();if(e.k==='knock'){const J=jumps[e.i];J.f.down=true;J.falling=0;groanT=1.6;}}
+  let i=0;while(i<F.length-2&&F[i+1][0]<P.t)i++;const a=F[i],b=F[Math.min(F.length-1,i+1)],k=b[0]>a[0]?Math.min(1,Math.max(0,(P.t-a[0])/(b[0]-a[0]))):0;
+  let dh=b[3]-a[3];dh=Math.atan2(Math.sin(dh),Math.cos(dh));player.x=a[1]+(b[1]-a[1])*k;player.z=a[2]+(b[2]-a[2])*k;player.h=a[3]+dh*k;player.v=a[4]+(b[4]-a[4])*k;
+  animate(player,dt);els.time.textContent=fmt(Math.min(P.t,P.r.time));els.faults.textContent=`Replay · ${P.r.faults} faults`;
+  if(P.t>P.r.time+2.5){toMenu();els.quit.textContent='Leave the ring';}}
+
+// ---------- Camera + frame ----------
+const camPos=new T.Vector3(0,30,-40),camLook=new T.Vector3();
+function fit(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w<h?62:50;camera.updateProjectionMatrix();}
+addEventListener('resize',fit);fit();
+function hud(){const R=player,t=R.finished??raceTime;
+  els.time.textContent=fmt(t);els.time.classList.toggle('over',t>C.timeAllowed);
+  const f=R.knock+R.refusals;els.faults.innerHTML=`${f?`<span class="pen">${f*4} faults</span>`:'Clear so far'} · ${fmt(C.timeAllowed).replace(/\.0$/,'')} allowed`;
+  els.mph.innerHTML=`${mph(R.v)}<small>mph</small>`;els.sta.style.width=R.sta+'%';els.staBar.classList.toggle('tired',R.tired);els.staLbl.textContent=R.tired?'OUT OF BREATH':'STAMINA';
+  const nj=nextJump(R),ahead=fenceAhead(R,40),need=ahead?ahead.f.need:nj?nj.need:8.5,frac=Math.min(1,Math.max(0,R.v)/need),ready=frac>=1&&!inAir(R);
+  els.ring.style.strokeDashoffset=String(339.3*(1-frac));
+  jumpBtn.classList.toggle('ready',ready&&!R.refusing);jumpBtn.classList.toggle('unsure',!!R.refusing);
+  els.jumpTxt.innerHTML=inAir(R)?'Jump<small>in the air!</small>':R.refusing?'Unsure<small>circle back</small>':ready?`Jump<small>${ahead?ahead.f.height==='high'?'high one!':ahead.f.height==='mid'?'medium':'low':'ready'}</small>`:`Jump<small>need ${mph(need)} mph</small>`;
+  const tgt=nj||finish;let rel=Math.atan2(tgt.x-R.x,tgt.z-R.z)-R.h;rel=Math.atan2(Math.sin(rel),Math.cos(rel));els.arrow.style.transform=`rotate(${-rel}rad)`;
+  els.nextName.textContent=nj?`Jump ${nj.num} · ${nj.name}`:'🏁 Finish';
+  els.nextDist.textContent=R.finished!==null?'Finished!':`${Math.round(Math.hypot(tgt.x-R.x,tgt.z-R.z)*.9)} m · ${Math.min(R.cp,C.jumps.length)} of ${C.jumps.length} jumped`;}
+
+const tclock=new T.Clock();
+window.show={get player(){return player},get course(){return C},get phase(){return phase},get time(){return raceTime},input,startRound,startReplay,loadReplay,sel,step:dt=>frame(dt),
+  freeze(){renderer.setAnimationLoop(null);}};
+function frame(dt){
+  clock+=dt;if(toastT>0){toastT-=dt;if(toastT<=0)els.toast.classList.remove('on');}
+  cheerT=Math.max(0,cheerT-dt);groanT=Math.max(0,groanT-dt);poseCrowd();
+  // Knocked rails tumble to the ground.
+  for(const J of jumps)if(J.falling!=null&&J.falling<1){J.falling=Math.min(1,J.falling+dt*2.2);const m=J.tops.at(-1);if(m){const e=J.falling*J.falling;m.position.y=m.userData.rest.y+(.1-m.userData.rest.y)*e;m.position.z=m.userData.rest.z+e*.9;m.rotation.x=e*.5;}}
+  if(phase==='count'){countT-=dt;els.count.textContent=countT>.5?String(Math.ceil(countT-.5)):countT>0?'Go!':'';if(countT<=.5&&countT+dt>.5)phase='race';player.model.update(dt);player.kit.update(dt);}
+  else els.count.textContent='';
+  if(phase==='race'||phase==='finished'){raceTime+=dt;
+    const k=keyInput(),inp=player.finished!==null?{steer:0,throttle:.25,jump:false}:{steer:k?k.steer:input.steer,throttle:k?k.throttle:input.throttle,jump:input.jump};
+    step(player,inp,dt);if(phase==='race'&&(!rec.frames.length||raceTime-rec.frames.at(-1)[0]>=.1))rec.frames.push([+raceTime.toFixed(2),+player.x.toFixed(2),+player.z.toFixed(2),+player.h.toFixed(3),+player.v.toFixed(2)]);
+    hud();}
+  if(phase==='replay')playReplay(dt);
+  input.jump=false;
+  const nj=player&&phase!=='menu'?nextJump(player):C.jumps[0];
+  {const tgt=nj||finish;arrow3.visible=phase!=='menu';arrow3.position.set(tgt.x,C.height(tgt.x,tgt.z)+(nj?nj.h+3:4)+Math.sin(clock*3)*.35,tgt.z);arrow3.rotation.y=clock*1.5;}
+  if(player&&(phase==='count'||phase==='race'||phase==='finished')){
+    const fx=Math.sin(player.h),fz=Math.cos(player.h),py=player.group.position.y,air=player.model.jumpT>=0;
+    camPos.lerp(tmpV.set(player.x-fx*13,py+8.6,player.z-fz*13),1-Math.exp(-dt*4));camPos.y=Math.max(camPos.y,C.height(camPos.x,camPos.z)+3);
+    camLook.lerp(tmpV.set(player.x+fx*9,py+(air?2:1.4),player.z+fz*9),1-Math.exp(-dt*6));camera.position.copy(camPos);camera.lookAt(camLook);
+    sun.position.set(player.x-18,py+40,player.z+14);sun.target.position.set(player.x,py,player.z);drawMap(player);
+  }else if(phase==='replay'){// Grandstand camera: from the side of the ring, following the horse.
+    const st=C.crowd.stands[0],py=player.group.position.y;camPos.lerp(tmpV.set(forest?player.x+10:st.x-2,py+(forest?6:10),forest?player.z-12:player.z-6),1-Math.exp(-dt*(forest?2:1.5)));
+    camera.position.copy(camPos);camLook.lerp(tmpV.set(player.x,py+1.4,player.z),1-Math.exp(-dt*5));camera.lookAt(camLook);
+    sun.position.set(player.x-18,py+40,player.z+14);sun.target.position.set(player.x,py,player.z);drawMap(player);
+  }else{// Menu: a slow fly round the course.
+    const t=clock*.08,cx=(B.minX+B.maxX)/2+Math.sin(t)*(B.maxX-B.minX)*.7,cz=(forest?C.path[Math.floor((clock*4)%C.path.length)].z-30:(B.minZ+B.maxZ)/2+Math.cos(t)*(B.maxZ-B.minZ)*.6);
+    camera.position.set(cx,C.height(cx,cz)+(forest?26:30),cz);camera.lookAt(forest?cx*.3:(B.minX+B.maxX)/2,0,forest?cz+40:(B.minZ+B.maxZ)/2);
+    sun.position.set(cx-18,80,cz+40);sun.target.position.set(cx,0,cz+40);}
+  renderer.render(scene,camera);}
+renderer.setAnimationLoop(()=>frame(Math.min(tclock.getDelta(),.05)));
+paintMenu();
+</script>
+<script type="module" src="pixel-icons.js"></script>
+</body>
+</html>

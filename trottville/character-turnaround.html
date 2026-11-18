@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rider Turnaround</title>
+<style>
+:root{--bg:#f6f1e6;--ink:#2b2026;--card:#fffaf0;--line:#e3d8c3;--accent:#c98a2b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px}
+header h1{font-size:18px;margin:0;flex:1}
+header a{color:var(--ink);font-weight:600;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;padding:0 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.wrap{display:grid;grid-template-columns:1fr;gap:12px;padding:0 16px 24px}
+@media (min-width:1024px){.wrap{grid-template-columns:3fr 1fr}}
+.stage{position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;aspect-ratio:3/2.3}
+.stage canvas{width:100%;height:100%;display:block}
+.labels{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);pointer-events:none}
+.labels span{align-self:end;justify-self:center;font:700 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.12em;color:#8a7b6a;padding-bottom:6px}
+.row-tag{position:absolute;left:10px;font:700 12px/1 system-ui;color:#6b5a48;background:#f6efe2;border-radius:8px;padding:5px 8px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.panel h3{font-size:13px;margin:14px 0 6px;color:#6b5a48;text-transform:uppercase;letter-spacing:.06em}
+.panel h3:first-child{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button,select{min-height:44px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit;padding:0 12px;cursor:pointer}
+.chips button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sw{display:flex;flex-wrap:wrap;gap:6px}
+.sw button{width:44px;height:44px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.sw button[aria-pressed=true]{box-shadow:0 0 0 3px var(--ink)}
+select{width:100%}
+label.sl{display:grid;grid-template-columns:80px 1fr;align-items:center;gap:8px;min-height:44px}
+input[type=range]{width:100%;accent-color:var(--accent);height:44px}
+.note{font-size:13px;color:#6b5a48;margin:10px 0 0}
+</style>
+</head>
+<body>
+<header><h1>Rider turnaround · prototype</h1><a href="./">Back to Trottville</a></header>
+<div class="wrap">
+  <div class="stage"><canvas aria-label="Your rider from the front, side and three-quarter view, in riding and casual clothes"></canvas>
+    <div class="labels"><span>FRONT</span><span>SIDE</span><span>3/4</span><span>FRONT</span><span>SIDE</span><span>3/4</span></div>
+    <b class="row-tag" style="top:10px">Riding</b><b class="row-tag" style="top:calc(50% + 10px)">Casual</b>
+  </div>
+  <div class="panel" id="panel"></div>
+</div>
+<script type="module">
+import * as T from './vendor/three-0.180.0/three.module.js';
+import {makeChibiCharacter} from './chibi-character.js';
+import {HAIR_STYLES,HAIR_COLORS,SKINS,EYE_COLORS,FRAMES,normalizeLook,loadLook} from './character-looks.mjs';
+
+let look=normalizeLook({...loadLook(),frame:'tall'});
+const canvas=document.querySelector('canvas');
+const renderer=new T.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));
+renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.3;renderer.setScissorTest(true);
+const scene=new T.Scene();scene.background=new T.Color('#ffffff');
+const sun=new T.DirectionalLight('#fff4e6',2.6);sun.position.set(2,6,7);scene.add(sun,new T.HemisphereLight('#ffffff','#d9cdb8',2.2));
+const camera=new T.PerspectiveCamera(22,1,.1,50);
+const VIEWS=[0,Math.PI/2,Math.PI/4.5];// front, side (facing left like the sheet), three-quarter
+const ROWS=['showrider','casual'];let figs=[];
+function rebuild(){figs.forEach(f=>{scene.remove(f.root);f.dispose();});figs=[];
+  ROWS.forEach((outfit,r)=>VIEWS.forEach((yaw,c)=>{const f=makeChibiCharacter(T,{...look,outfit});f.root.rotation.y=-yaw;f.root.visible=false;scene.add(f.root);f.update(0,{pose:'stand'});f.arms.forEach((a,i)=>a.rotation.z+=(i?1:-1)*.22);figs.push({...f,r,c});}));
+  draw();}
+function draw(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);const cw=w/3,ch=h/2;camera.aspect=cw/ch;camera.updateProjectionMatrix();
+  const top=Math.max(2.1,2.1*(1+.05*look.height));camera.position.set(0,top*.5+.1,top*3.15);camera.lookAt(0,top*.5-.02,0);
+  for(const f of figs){figs.forEach(g=>g.root.visible=g===f);const x=f.c*cw,y=(1-f.r)*ch;renderer.setViewport(x,y,cw,ch);renderer.setScissor(x,y,cw,ch);renderer.render(scene,camera);}}
+addEventListener('resize',draw);
+
+const P=document.getElementById('panel');
+const chips=(k,list)=>`<div class="chips">${list.map(([v,l])=>`<button type="button" data-k="${k}" data-v="${v}" aria-pressed="${look[k]===v}">${l}</button>`).join('')}</div>`;
+const sw=(k,list,n)=>`<div class="sw">${list.filter(c=>c!=='none').map(c=>`<button type="button" data-k="${k}" data-v="${c}" style="background:${c}" aria-label="${n} ${c}" aria-pressed="${look[k]===c}"></button>`).join('')}</div>`;
+const sl=(k,l)=>`<label class="sl">${l}<input type="range" min="-1" max="1" step=".05" data-k="${k}" value="${look[k]}"></label>`;
+function paint(){P.innerHTML=`<h3>Body</h3>${chips('frame',FRAMES)}${sl('height','Height')}${sl('build','Build')}${sl('shoulders','Shoulders')}${sl('hips','Hips')}
+  <h3>Hair</h3><select data-k="hair" aria-label="Hair style">${HAIR_STYLES.map(([v,l])=>`<option value="${v}" ${look.hair===v?'selected':''}>${l}</option>`).join('')}</select>
+  <h3>Hair colour</h3>${sw('hairColor',HAIR_COLORS,'Hair colour')}<h3>Skin</h3>${sw('skin',SKINS,'Skin')}<h3>Eyes</h3>${sw('eyeColor',EYE_COLORS,'Eye colour')}
+  <p class="note">Starts from your saved rider. Nothing here is saved yet: this page is for comparing the new tall frame with the classic one.</p>`;}
+P.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(!b)return;look=normalizeLook({...look,[b.dataset.k]:b.dataset.v});paint();rebuild();});
+P.addEventListener('input',e=>{const i=e.target.closest('[data-k]');if(!i||i.tagName==='BUTTON')return;look=normalizeLook({...look,[i.dataset.k]:i.type==='range'?+i.value:i.value});if(i.type!=='range')paint();rebuild();});
+paint();rebuild();
+</script>
+</body>
+</html>
