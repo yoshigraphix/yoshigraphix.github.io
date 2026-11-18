@@ -385,3 +385,8 @@ body.rn-adopt #main{padding:0!important;max-width:none!important}
 .rn-ad-name small{display:block;font-size:13px;color:var(--muted);margin-top:2px}.rn-ad-name small::first-letter{text-transform:uppercase}
 .rn-ad-name>span{flex:none;font:600 12px/1 system-ui,sans-serif;color:#6a7f66;padding-bottom:3px}
 .rn-adopt-page{gap:9px}.rn-adopt-page .rn-pick-3d{min-height:170px}.rn-ad-head h1{font-size:28px;margin:2px 0 4px}
+
+/* v157: the sign-in page is its own screen: no game tabs underneath, one clear way back (Yoshi). */
+body.acct-page :is(.mobile-nav,.sidebar,.page-footer){display:none!important}
+body.acct-page .app-shell{margin-left:0!important}
+.acct-back{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;margin:4px 0 8px;border-radius:999px;background:rgba(255,255,255,.08);color:inherit;font:600 15px/1 system-ui,sans-serif;text-decoration:none}
