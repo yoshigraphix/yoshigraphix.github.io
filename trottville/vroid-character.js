@@ -5,8 +5,8 @@
 // The model loads once (async) and is cloned per person; until it has loaded, root is an empty group.
 // Root origin is between the feet, facing +z. Poses are bone rotations about the model's own axes (VRoid rest axes
 // are aligned with the world, see rot()).
-import {GLTFLoader} from './vendor/three-0.180.0/addons/loaders/GLTFLoader.js?v=157';
-import {normalizeLook,outfitOf,drawnSkin,drawnHair,hairModelOf} from './character-looks.mjs?v=157';
+import {GLTFLoader} from './vendor/three-0.180.0/addons/loaders/GLTFLoader.js?v=158';
+import {normalizeLook,outfitOf,drawnSkin,drawnHair,hairModelOf} from './character-looks.mjs?v=158';
 
 const SIZE=1.25;            // game units per metre: the old chibi stood ≈2.0 units, the girl is 1.6 m
 const AGE=14;               // default age; look.height (−1…1) moves it 11…16 (the Me designer's Height slider)
@@ -97,7 +97,15 @@ const SHOES={tall:'tallboots',boots:'paddock',sneakers:'sneakers',shoes:'sneaker
 // opt.fullLight to keep its preview at full brightness.
 const PEOPLE={light:null,full:null};
 export function setPeopleLight(c){if(PEOPLE.light)PEOPLE.light.value.copy(c);}
-export function resetPeopleLight(){if(PEOPLE.light)PEOPLE.light.value.setRGB(1,1,1);}
+export function resetPeopleLight(){if(PEOPLE.light)PEOPLE.light.value.setRGB(1,1,1);CROWD.clear();}
+// v158: every person's skinned meshes are frustumCulled=false (a skinned mesh's box doesn't follow its pose), so everyone in the
+// whole world was drawn, and drawn again into the shadow map, every frame. The 3D world calls cullPeople once a frame: people
+// off screen or far away are hidden and skip their animation. Close ones behind the camera stay, their shadows can fall in view.
+const CROWD=new Set();const CULL={far:85,near:14,r:3,detail:32};let cullF=null,cullM=null,cullS=null;
+export function cullPeople(camera,scene){if(!THREE_T||!CROWD.size)return;if(!cullF){cullF=new THREE_T.Frustum();cullM=new THREE_T.Matrix4();cullS=new THREE_T.Sphere();}
+  camera.updateMatrixWorld();cullF.setFromProjectionMatrix(cullM.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));const c=camera.matrixWorld.elements;
+  for(const p of CROWD){let top=p.root;while(top.parent)top=top.parent;if(top!==scene){p.hide(false);p.far(false);continue;}const e=p.root.matrixWorld.elements,d=Math.hypot(e[12]-c[12],e[13]-c[13],e[14]-c[14]);
+    cullS.center.set(e[12],e[13]+1,e[14]);cullS.radius=CULL.r;p.hide(d>CULL.far||(d>CULL.near&&!cullF.intersectsSphere(cullS)));p.far(d>CULL.detail);}}
 export function makeVroidCharacter(T,rawLook,opt={}){
   if(!PEOPLE.light){PEOPLE.light={value:new T.Color(1,1,1)};PEOPLE.full={value:new T.Color(1,1,1)};}
   THREE_Q=THREE_Q||T.Quaternion;THREE_T=THREE_T||T;
@@ -131,7 +139,7 @@ export function makeVroidCharacter(T,rawLook,opt={}){
     B={};model.traverse(o=>{if(o.isBone)B[o.name.replace(/\./g,'')]=o;});
     applyAge(ageOf(look));makeHair();
     B.handL?.add(hands[0]);B.handR?.add(hands[1]);hands.forEach(x=>x.position.set(0,0,0));
-    dress();root.add(model);update(0);}).catch(e=>{console.warn('VRoid rider failed to load; using the old figure',e);if(disposed||!opt.fallback)return;fb=opt.fallback();root.add(fb.root);
+    dress();root.add(model);model.visible=!culled;update(0);}).catch(e=>{console.warn('VRoid rider failed to load; using the old figure',e);if(disposed||!opt.fallback)return;fb=opt.fallback();root.add(fb.root);
     fb.hands.forEach((h,i)=>{hands[i].parent?.remove(hands[i]);hands[i]=h;});});
 
   // Age (the lab's setAge): height, child shape and head size. Re-run live by setLook when the Height slider moves.
@@ -226,7 +234,7 @@ gl_Position=projectionMatrix*modelViewMatrix*vec4(transformed,1.);}`,
     fragmentShader:`uniform vec3 uC;varying float vC;void main(){if(vC>.99)discard;gl_FragColor=vec4(uC,1.);
 #include <colorspace_fragment>
 }`});mats.push(m);
-    const o=new T.SkinnedMesh(src.geometry,m);o.bind(src.skeleton,src.bindMatrix);o.bindMode=src.bindMode;src.parent.add(o);o.position.copy(src.position);o.quaternion.copy(src.quaternion);o.scale.copy(src.scale);o.frustumCulled=false;
+    const o=new T.SkinnedMesh(src.geometry,m);o.bind(src.skeleton,src.bindMatrix);o.bindMode=src.bindMode;o.userData.isOutline=true;src.parent.add(o);o.position.copy(src.position);o.quaternion.copy(src.quaternion);o.scale.copy(src.scale);o.frustumCulled=false;
     if(src.morphTargetInfluences){o.morphTargetInfluences=src.morphTargetInfluences;o.morphTargetDictionary=src.morphTargetDictionary;}return o;}
 
   // ---- poses (degrees about the model's X/Y/Z, same as the lab's POSES) ----
@@ -235,7 +243,9 @@ gl_Position=projectionMatrix*modelViewMatrix*vec4(transformed,1.);}`,
     const wi=R.w.clone().invert();b.quaternion.copy(R.q).multiply(wi.multiply(q).multiply(R.w));}
   const R2D=180/Math.PI;
   function setPose(p){pose=p;}
-  function update(dt,{pose:p=pose,fast=false,speed=0,air=0,talk=0,steer=0,act=null,wave=0,fidget=true}={}){pose=p;clock+=dt;blinkAt-=dt;if(blinkAt<0){blink=.13;blinkAt=2.5+Math.random()*3.5;}blink=Math.max(0,blink-dt);
+  let culled=false,distant=false;const crowdMe=opt.fullLight?null:{root,hide(v){if(v===culled)return;culled=v;if(model)model.visible=!v;if(!v&&model)update(0);},
+    far(v){if(v===distant||!model)return;distant=v;model.traverse(o=>{if(!o.isMesh)return;if(o.userData.isOutline)o.material.visible=!v;else o.castShadow=!v;});}};if(crowdMe)CROWD.add(crowdMe);
+  function update(dt,{pose:p=pose,fast=false,speed=0,air=0,talk=0,steer=0,act=null,wave=0,fidget=true}={}){pose=p;clock+=dt;if(culled&&!fb)return;blinkAt-=dt;if(blinkAt<0){blink=.13;blinkAt=2.5+Math.random()*3.5;}blink=Math.max(0,blink-dt);
     if(fb){fb.update(dt,{pose:p,fast,speed,air});return;}
     if(!B)return;
     // Talking: tk eases in/out; a syllable every ~0.11 s picks a vowel shape and opens the mouth, with little gaps between words.
@@ -369,7 +379,7 @@ gl_Position=projectionMatrix*modelViewMatrix*vec4(transformed,1.);}`,
     if(gearObj.umbrella){gearObj.umbrella.visible=gear.umbrella;gearObj.umbrella.userData.tint(gear.color);}
     if(gear.poncho&&!gearObj.poncho){gearObj.poncho=makePoncho(T);const inv=rest[B.chest.name].w.clone().invert();gearObj.poncho.quaternion.copy(inv);gearObj.poncho.position.applyQuaternion(inv);B.chest.add(gearObj.poncho);}
     if(gearObj.poncho)gearObj.poncho.visible=gear.poncho;}
-  function dispose(){disposed=true;fb?.dispose();root.parent?.remove(root);mats.forEach(m=>m.dispose());}
+  function dispose(){disposed=true;if(crowdMe)CROWD.delete(crowdMe);fb?.dispose();root.parent?.remove(root);mats.forEach(m=>m.dispose());}
   return {root,body:root,hips:root,torso:root,neck:root,head:root,legs,knees:[],feet:[],arms,elbows:[],hands,look,update,actState:()=>({name:actName,w:ak}),setPose,seatOffset,dispose,setGear,setLook,vroid:true};
 }
 

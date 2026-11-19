@@ -4,8 +4,8 @@
 // - lamp posts along the valley paths: glowing lamps for every post, and real light from the two nearest to you;
 // - lit cottage and Hoofhaven windows.
 // All three lights exist from the start (intensity 0 by day), so dusk never triggers a shader recompile.
-import {MAP_PATHS,terrainHeight,inWater,onBridge} from './world-content.mjs?v=157';
-import {blocked} from './world-logic.mjs?v=157';
+import {MAP_PATHS,terrainHeight,inWater,onBridge} from './world-content.mjs?v=158';
+import {blocked} from './world-logic.mjs?v=158';
 
 const SPACING=24,SIDE=2.9;
 const WINDOW_COLORS=['#ceded5','#f6e7b0','#3e4a52'];// hut windows, Hoofhaven windows (world-expansion.js), Tudor shop glass (world-tudor.js)

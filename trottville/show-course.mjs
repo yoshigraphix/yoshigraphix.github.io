@@ -3,7 +3,7 @@
 // speed: a knocked rail or a refusal is 4 faults, and every second over the time allowed is 1 more.
 // Entry needs the Show Jacket, an upgraded saddle, and a horse of the show's level. Same seed, same course.
 // Built to the steeplechase's course interface (fences, checkpoints, ground, obstacles) so the riding is shared.
-import {rng,hashSeed,weekKey} from './steeple-course.mjs?v=157';
+import {rng,hashSeed,weekKey} from './steeple-course.mjs?v=158';
 
 export const SHOWS={
   clover:{id:'clover',name:'Clover Cup',level:3,kind:'arena',jumps:8,crowd:10,size:[64,104],fee:150,prize:[1500,900,500,200],

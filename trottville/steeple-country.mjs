@@ -2,8 +2,8 @@
 // rolling hills, a village of cottages, farms, woods, a stream with two bridges, lanes, and farm fences (rail fences,
 // stone walls, hedges) dividing the fields. No fixed track: grass is full speed, lanes are a touch faster, crops,
 // ploughed fields, woods and water are slower. Same seed, same countryside (the weekly ranked course).
-import {rng,segDist} from './steeple-course.mjs?v=157';
-export {hashSeed,weekKey} from './steeple-course.mjs?v=157';
+import {rng,segDist} from './steeple-course.mjs?v=158';
+export {hashSeed,weekKey} from './steeple-course.mjs?v=158';
 
 export const W=420,LEN=780;
 export const FENCE_TYPES={rail:{h:.95,need:9.5,name:'rail fence'},wall:{h:.8,need:9,name:'stone wall'},hedge:{h:1.25,need:11.5,name:'hedge'}};

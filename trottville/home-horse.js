@@ -11,18 +11,18 @@
 //    stall-scene.js models, stall-ui.js sheets; saved on the device).
 // Tired horses (lots of care in a row) lower their head and yawn; XP tapers but nothing is blocked.
 // Rewards, food and XP are decided by horselandia.js (onCare); this file only draws and reports.
-import * as T from './vendor/three-0.180.0/three.module.js?v=157';
-import {iconHTML} from './pixel-icons.js?v=157';
-import {makeSculptedHorse} from './horse-sculpt.js?v=157';
-import {buildStall,paintingCanvas,PAINTING_KIND,WINDOW_AT} from './stall-scene.js?v=157';
-import {makeProps} from './stall-props.js?v=157';
-import {sfx,voiceRate} from './sfx.js?v=157';
-import {dirtLevel,sweepsLeft,pieceCount,afterSweep,cleanAtFor,piecesFor,loadDirt,saveDirt} from './stall-dirt.mjs?v=157';
-import {makeWindow} from './stall-window.js?v=157';
-import {addRideTrust,rideTrustOf,trustCap,feedSpeedLimit,TRUST_GAINS,RAKE_TRUST} from './riding.mjs?v=157';
-import {loadPhotos,savePhoto,clearPhoto,showPhotoView,closePhotoView} from './stall-photo.js?v=157';
-import {loadStall,saveStall,openSlots,place,remove,ITEM,SLOT} from './stall-decor.mjs?v=157';
-import {openSlotSheet,openStoreSheet,closeStallSheet} from './stall-ui.js?v=157';
+import * as T from './vendor/three-0.180.0/three.module.js?v=158';
+import {iconHTML} from './pixel-icons.js?v=158';
+import {makeSculptedHorse} from './horse-sculpt.js?v=158';
+import {buildStall,paintingCanvas,PAINTING_KIND,WINDOW_AT} from './stall-scene.js?v=158';
+import {makeProps} from './stall-props.js?v=158';
+import {sfx,voiceRate} from './sfx.js?v=158';
+import {dirtLevel,sweepsLeft,pieceCount,afterSweep,cleanAtFor,piecesFor,loadDirt,saveDirt} from './stall-dirt.mjs?v=158';
+import {makeWindow} from './stall-window.js?v=158';
+import {addRideTrust,rideTrustOf,trustCap,feedSpeedLimit,TRUST_GAINS,RAKE_TRUST} from './riding.mjs?v=158';
+import {loadPhotos,savePhoto,clearPhoto,showPhotoView,closePhotoView} from './stall-photo.js?v=158';
+import {loadStall,saveStall,openSlots,place,remove,ITEM,SLOT} from './stall-decor.mjs?v=158';
+import {openSlotSheet,openStoreSheet,closeStallSheet} from './stall-ui.js?v=158';
 
 const BURSTS={pet:['💗','💕','💖','🤍','💗'],feed:['😋','🥕','💚','✨','🥕'],groom:['✨','🌟','💫','✨','🫧'],golden:['✨','🌟','💛','⭐','✨'],shy:['💦','❗'],toss:['😣','💢'],tidy:['✨','🌾','💫','✨','💛']};
 

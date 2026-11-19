@@ -2,12 +2,12 @@
 // world never ends. Each chunk is two meshes: faceted ground (vertex colours) and everything standing on it
 // (trees, cacti, snowmen, rocks, road ribbons), baked into one geometry so a phone draws few objects.
 // The valley's own scenery still lives in world.js / world-expansion.js; chunks only add ground there.
-import {groundHeight} from './world-logic.mjs?v=157';
-import {BIOMES,biomeAt,wildness,mountainMask,roadDistance,roadX,roadZ,ROAD_EVERY,ROAD_HALF,rng,noise} from './world-wild.mjs?v=157';
-import {cloudstepAt,CLOUDSTEP,trailRadius} from './world-cloudstep.mjs?v=157';
-import {POND,riverAt,mountainLift} from './world-content.mjs?v=157';
-import {LAKE,inSnow} from './world-town.mjs?v=157';
-import {gridNormals} from './world-terrain.js?v=157';
+import {groundHeight} from './world-logic.mjs?v=158';
+import {BIOMES,biomeAt,wildness,mountainMask,roadDistance,roadX,roadZ,ROAD_EVERY,ROAD_HALF,rng,noise} from './world-wild.mjs?v=158';
+import {cloudstepAt,CLOUDSTEP,trailRadius} from './world-cloudstep.mjs?v=158';
+import {POND,riverAt,mountainLift} from './world-content.mjs?v=158';
+import {LAKE,inSnow} from './world-town.mjs?v=158';
+import {gridNormals} from './world-terrain.js?v=158';
 // Cloudstep has its own finer mesh (world-cloudstep-3d.js): chunk ground there sinks out of sight, and nothing is scattered on it.
 const onMountain=(x,z)=>{const s=cloudstepAt(x,z);return !!s&&s.h!=null&&s.region!=='foot';};
 // Where Cloudstep's own mesh reaches (its foot ring, as world-cloudstep-3d.js builds it). Chunk ground only sinks

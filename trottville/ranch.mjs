@@ -7,10 +7,10 @@ export const dayNo=(ms=Date.now())=>Math.floor(ms/DAY);
 // Tiny seeded random, so a seed always makes the same horse / the same market day.
 export function rng(seed){let h=2166136261;for(const c of String(seed))h=Math.imul(h^c.charCodeAt(0),16777619);
   return ()=>{h=Math.imul(h^h>>>15,2246822507);h=Math.imul(h^h>>>13,3266489909);return ((h^=h>>>16)>>>0)/4294967296;};}
-import {BREED_LIST} from './breeds.mjs?v=157';
-import {safeName,horseNameProblem} from './friends-logic.mjs?v=157';
+import {BREED_LIST} from './breeds.mjs?v=158';
+import {safeName,horseNameProblem} from './friends-logic.mjs?v=158';
 export {horseNameProblem};
-import {addTrust,STARTER_TRUST,TAME_AT,ageMonths,ageBand} from './riding.mjs?v=157';
+import {addTrust,STARTER_TRUST,TAME_AT,ageMonths,ageBand} from './riding.mjs?v=158';
 export {ageMonths,ageBand};
 const pick=(r,list)=>list[Math.floor(r()*list.length)];
 

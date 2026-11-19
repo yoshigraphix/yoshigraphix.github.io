@@ -1,14 +1,14 @@
-import {makeChibiCharacter} from './chibi-character.js?v=157';import {setPeopleLight,resetPeopleLight} from './vroid-character.js?v=157';
-import {loadLook,saveLook,lookFromSeed} from './character-looks.mjs?v=157';
-import {queueCoins,showCollect,paintCounters} from './coin-collect.js?v=157';
-import {openDesigner} from './character-designer.js?v=157';
-import {watchReturn} from './star-shop.js?v=157';
-import {log as playLog} from './play-log.js?v=157';
-import {makeSculptedHorse} from './horse-sculpt.js?v=157';
-import {addTackAndRider} from './rider-sculpt.js?v=157';
-import {buildExpansion,buildSkyWorld,SKY} from './world-expansion.js?v=157';
-import {SQUARE} from './world-regions.mjs?v=157';
-import {buildTown,doorNear,SHOP_PARTS,FOUNTAIN,PLAZA_R,buildActivities,ACTIVITIES,ACTIVITY_BY_ID,HOSTS,LOOKOUTS,FISHING,PUMPKINS,lakeStone,STONES,startRun,stepRun,runStatus,runAbandoned,pickFish,inSnow,ARENA,ARENA_POST,ARENA_STEWARD,ARENA_CLASSES,arenaCourse,arenaRivals,startRound,stepRound,roundStatus,inArena,PRACTICE,crossed,judgeJump,PLACE_NAME,ROSETTE} from './world-town.mjs?v=157';
+import {makeChibiCharacter} from './chibi-character.js?v=158';import {setPeopleLight,resetPeopleLight,cullPeople} from './vroid-character.js?v=158';
+import {loadLook,saveLook,lookFromSeed} from './character-looks.mjs?v=158';
+import {queueCoins,showCollect,paintCounters} from './coin-collect.js?v=158';
+import {openDesigner} from './character-designer.js?v=158';
+import {watchReturn} from './star-shop.js?v=158';
+import {log as playLog} from './play-log.js?v=158';
+import {makeSculptedHorse} from './horse-sculpt.js?v=158';
+import {addTackAndRider} from './rider-sculpt.js?v=158';
+import {buildExpansion,buildSkyWorld,SKY} from './world-expansion.js?v=158';
+import {SQUARE} from './world-regions.mjs?v=158';
+import {buildTown,doorNear,SHOP_PARTS,FOUNTAIN,PLAZA_R,buildActivities,ACTIVITIES,ACTIVITY_BY_ID,HOSTS,LOOKOUTS,FISHING,PUMPKINS,lakeStone,STONES,startRun,stepRun,runStatus,runAbandoned,pickFish,inSnow,ARENA,ARENA_POST,ARENA_STEWARD,ARENA_CLASSES,arenaCourse,arenaRivals,startRound,stepRound,roundStatus,inArena,PRACTICE,crossed,judgeJump,PLACE_NAME,ROSETTE} from './world-town.mjs?v=158';
 // The walk-in shops on the map (they open from the village square; the vet is its own place by the home trail).
 // The step 3 activities on the map; fast travel takes you to the nearest named place.
 const nearestLoc=(x,z)=>LOCATIONS.reduce((b,l)=>Math.hypot(l.x-x,l.z-z)<Math.hypot(b.x-x,b.z-z)?l:b).id;
@@ -17,52 +17,52 @@ const ACT_PINS=[{id:'act-arena',name:'Clover Downs Show Ring',x:ARENA.x,z:ARENA.
   {id:'act-fish',name:'Fishing dock',x:FISHING.x,z:FISHING.z,kind:'activity',icon:'🎣',go:'pond',seen:true,description:'Cast off the end of the dock and tap when the float dips.'},
   {id:'act-tree',name:'Treehouse camp',x:LOOKOUTS[0].x,z:LOOKOUTS[0].z,kind:'activity',icon:'🌳',go:'forest',seen:true,description:'Climb the ladder for a view over Mosswood.'}];
 const SHOP_PINS=SHOP_PARTS.map(({shop:s})=>({id:'shop-'+s.id,name:s.name,x:s.x,z:s.z,kind:'village',icon:{bakery:'🥐',post:'✉️',hall:'🏛️',store:'🛒',vet:'🩺',hut:'🛖',dairy:'🐄',lighthouse:'🗼'}[s.kind]||'🏠',go:s.id==='vet'?'home':'village',seen:true,description:'Walk in on foot; your horse waits at the rail outside.'}));
-import {createAdventureUI} from './adventure-ui.js?v=157';
-import {buildStations} from './world-stations.js?v=157';
-import {BOARD_GAMES} from './board-games.mjs?v=157';
-import {VALLEY_GAMES} from './valley-games.mjs?v=157';
-import {createWorldQuests} from './world-quests.js?v=157';
-import {R,REGIONS,regionAt} from './world-regions.mjs?v=157';
-import {createHud} from './world-hud.js?v=157';
-import {cornLayout,CORN,inMaze} from './world-cornmaze.mjs?v=157';
-import {createCornMaze} from './world-cornmaze-3d.js?v=157';
-import {createWorldMap} from './world-map.js?v=157';
-import {todayActivities,loadDone,markDone} from './world-today.mjs?v=157';
-import {createWorldNetwork,roomError} from './world-network.js?v=157';
-import {openFriends,openProfile,openInvite} from './friends.js?v=157';
-import {testOn,TEST_ME} from './test-friends.js?v=157';
-import {sfx,hoofLoop,voiceRate,ambLoop,ambStop,npcVoice} from './sfx.js?v=157';
-import {want as wantMusic} from './music.js?v=157';
-import * as G from './riding.mjs?v=157';
-import * as RanchUI from './ranch-ui.js?v=157';
-import {newHorse,condition,level as horseLevel,marketStock,dayNo as dayNumber,makeCoat,breedOf,COATS} from './ranch.mjs?v=157';
-import {isMidnight,isSighting} from './legends.mjs?v=157';
-import {entryNeeds} from './show-course.mjs?v=157';
-import {loadWallet,saveWallet,buyOutfit,OUTFITS,outfitOf,buyGear,GEAR_ITEMS,coinWords,WINTER_GEAR} from './character-looks.mjs?v=157';
-import {BAYS,inStore,DOOR,COUNTER,KEEPER,STORE,HALL_X,MARKET,inMarketHall} from './barn-interior.js?v=157';
-import {SHOPKEEPER,greeting as shopGreeting,tip as shopTip,pitch as shopPitch,chatter as shopChatter,NO_HORSES} from './shop-talk.mjs?v=157';
-import {RACES,raceName,racePhase,standings,ordinal,raceTime,steepleSeed,safeName} from './friends-logic.mjs?v=157';
-import {FIELDS,RIVERS,riverAt,bridgeFloor,SKYGATE,TOWN2,FARMS,terrainHeight as farmGround,LOCATIONS,MAP_PATHS,BARN_GAMES,INDOOR_GAMES,RACE_GATES,SERVICES,normalizeAdventure,questList,fogBits,fogString,fogMark,onBridge,onCobbles} from './world-content.mjs?v=157';
-import {CLOUDSTEP,cloudstepAt,onCloudstep,trailPhi,climbRoute,trailPoint,trailRadius,START as CLIMB_START,TRAIL_END} from './world-cloudstep.mjs?v=157';
-import {terrainTextures,addTerrain,createGrass} from './world-terrain.js?v=157';
-import {buildCloudstep} from './world-cloudstep-3d.js?v=157';
-import {buildSkiLift,VALLEY_STATION} from './world-skilift.js?v=157';
-import {createValleyLife} from './world-life.js?v=157';
-import {createLegends} from './world-legends.js?v=157';
-import * as T from './vendor/three-0.180.0/three.module.js?v=157';
-import {MARKERS,OBSTACLES,groundHeight,movementVector,moveActor,blocked,normalizeStamps,collectMarkers,followCameraPosition,tooSteep,slopeAt,solidBlocked} from './world-logic.mjs?v=157';
-import {SoftwareRenderer} from './world-renderer.js?v=157';
-import {findGroundPath,steeringStep} from './world-navigation.mjs?v=157';
-import {createChunks,bakeTree,treeGeometry,treeOut,TREE_PALS} from './world-chunks.js?v=157';
-import {createLanterns} from './world-lanterns.js?v=157';
-import {buildTudorShop,detailTextures,detailKind,addDetail,squareProps,forestLogs} from './world-tudor.js?v=157';
-import {BIOMES,biomeAt,wildness,roadDistance,ROAD_HALF} from './world-wild.mjs?v=157';
-import {createSky,createGlow,createMotes,waterize,WATER_TIME,WATER_NIGHT} from './world-sky.js?v=157';
-import {buildStall} from './stall-scene.js?v=157';
-import {createHomeHorse} from './home-horse.js?v=157';
+import {createAdventureUI} from './adventure-ui.js?v=158';
+import {buildStations} from './world-stations.js?v=158';
+import {BOARD_GAMES} from './board-games.mjs?v=158';
+import {VALLEY_GAMES} from './valley-games.mjs?v=158';
+import {createWorldQuests} from './world-quests.js?v=158';
+import {R,REGIONS,regionAt} from './world-regions.mjs?v=158';
+import {createHud} from './world-hud.js?v=158';
+import {cornLayout,CORN,inMaze} from './world-cornmaze.mjs?v=158';
+import {createCornMaze} from './world-cornmaze-3d.js?v=158';
+import {createWorldMap} from './world-map.js?v=158';
+import {todayActivities,loadDone,markDone} from './world-today.mjs?v=158';
+import {createWorldNetwork,roomError} from './world-network.js?v=158';
+import {openFriends,openProfile,openInvite} from './friends.js?v=158';
+import {testOn,TEST_ME} from './test-friends.js?v=158';
+import {sfx,hoofLoop,voiceRate,ambLoop,ambStop,npcVoice} from './sfx.js?v=158';
+import {want as wantMusic} from './music.js?v=158';
+import * as G from './riding.mjs?v=158';
+import * as RanchUI from './ranch-ui.js?v=158';
+import {newHorse,condition,level as horseLevel,marketStock,dayNo as dayNumber,makeCoat,breedOf,COATS} from './ranch.mjs?v=158';
+import {isMidnight,isSighting} from './legends.mjs?v=158';
+import {entryNeeds} from './show-course.mjs?v=158';
+import {loadWallet,saveWallet,buyOutfit,OUTFITS,outfitOf,buyGear,GEAR_ITEMS,coinWords,WINTER_GEAR} from './character-looks.mjs?v=158';
+import {BAYS,inStore,DOOR,COUNTER,KEEPER,STORE,HALL_X,MARKET,inMarketHall} from './barn-interior.js?v=158';
+import {SHOPKEEPER,greeting as shopGreeting,tip as shopTip,pitch as shopPitch,chatter as shopChatter,NO_HORSES} from './shop-talk.mjs?v=158';
+import {RACES,raceName,racePhase,standings,ordinal,raceTime,steepleSeed,safeName} from './friends-logic.mjs?v=158';
+import {FIELDS,RIVERS,riverAt,bridgeFloor,SKYGATE,TOWN2,FARMS,terrainHeight as farmGround,LOCATIONS,MAP_PATHS,BARN_GAMES,INDOOR_GAMES,RACE_GATES,SERVICES,normalizeAdventure,questList,fogBits,fogString,fogMark,onBridge,onCobbles} from './world-content.mjs?v=158';
+import {CLOUDSTEP,cloudstepAt,onCloudstep,trailPhi,climbRoute,trailPoint,trailRadius,START as CLIMB_START,TRAIL_END} from './world-cloudstep.mjs?v=158';
+import {terrainTextures,addTerrain,createGrass} from './world-terrain.js?v=158';
+import {buildCloudstep} from './world-cloudstep-3d.js?v=158';
+import {buildSkiLift,VALLEY_STATION} from './world-skilift.js?v=158';
+import {createValleyLife} from './world-life.js?v=158';
+import {createLegends} from './world-legends.js?v=158';
+import * as T from './vendor/three-0.180.0/three.module.js?v=158';
+import {MARKERS,OBSTACLES,groundHeight,movementVector,moveActor,blocked,normalizeStamps,collectMarkers,followCameraPosition,tooSteep,slopeAt,solidBlocked} from './world-logic.mjs?v=158';
+import {SoftwareRenderer} from './world-renderer.js?v=158';
+import {findGroundPath,steeringStep} from './world-navigation.mjs?v=158';
+import {createChunks,bakeTree,treeGeometry,treeOut,TREE_PALS} from './world-chunks.js?v=158';
+import {createLanterns} from './world-lanterns.js?v=158';
+import {buildTudorShop,detailTextures,detailKind,addDetail,squareProps,forestLogs} from './world-tudor.js?v=158';
+import {BIOMES,biomeAt,wildness,roadDistance,ROAD_HALF} from './world-wild.mjs?v=158';
+import {createSky,createGlow,createMotes,waterize,WATER_TIME,WATER_NIGHT} from './world-sky.js?v=158';
+import {buildStall} from './stall-scene.js?v=158';
+import {createHomeHorse} from './home-horse.js?v=158';
 // What each collect activity calls the things you find (v106: it said “Owl” for everything).
 const FOUND_WORDS={owls:['Owl','Hoo-hoo.'],sheaves:['Sheaf',''],posies:['Posy',''],lanterns:['Lantern','It glows.'],eggs:['Egg','Careful, don’t drop it!'],piglets:['Piglet','It trots off home. Oink!']};
-import {loadStall} from './stall-decor.mjs?v=157';
+import {loadStall} from './stall-decor.mjs?v=158';
 const WEATHER_NEWS={clear:'The sky is clearing. Lovely riding weather.',partly:'The clouds are breaking up.',overcast:'Clouds are rolling in.',fog:'Fog is settling over the valley. Stay close to the paths.',rain:'Rain is rolling in. The trails are muddy, so you go a little slower.',storm:'A thunderstorm! Mud slows you down and the gusts push you about.',windy:'The wind is picking up. Gusts nudge you sideways.',snow:'Snow is falling. Deep snow slows you down a little.'};
 
 export function createWorld(host,{horses,storageKey='guest',preferredHorse='willow',onBarnCare=()=>{},intent=null}){
@@ -70,14 +70,17 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   let renderer;
   try{renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});}
   catch{renderer=new SoftwareRenderer();host.querySelector('.world-location small').textContent='SOLO PLAYTEST · SIMPLE GRAPHICS';}
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+  // v158: with Pretty effects off the picture drops to 1x, so the phone paints far fewer pixels (see onGfx).
+  const fullRatio=()=>Math.min(window.devicePixelRatio||1,1.5),liteRatio=()=>Math.min(window.devicePixelRatio||1,1);
+  renderer.setPixelRatio((()=>{try{return localStorage.getItem('trottville-gfx')==='lite';}catch{return false;}})()?liteRatio():fullRatio());
+  renderer.shadowMap.enabled=true;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;let shadowTick=0;renderer.shadowMap.type=T.PCFSoftShadowMap;
   renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.38;
   view.appendChild(renderer.domElement);
   const scene=new T.Scene();scene.background=new T.Color('#c8e6e5');scene.fog=new T.Fog('#c8e6e5',75,170);
   const camera=new T.PerspectiveCamera(58,1,.25,210),_hudA=new T.Vector3(),_hudB=new T.Vector3();
   const _pl=new T.Color();const sun=new T.DirectionalLight('#fff0d0',3.1);sun.position.set(-18,36,20);sun.castShadow=true;
-  Object.assign(sun.shadow.camera,{left:-45,right:45,top:45,bottom:-45,near:1,far:110});sun.shadow.mapSize.set(1024,1024);sun.shadow.normalBias=.06;sun.shadow.bias=-.0004;
+  // v158: shadows cover 30 m round you (was 45): ~half as many things drawn into the shadow map, and sharper shadows.
+  Object.assign(sun.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:110});sun.shadow.mapSize.set(1024,1024);sun.shadow.normalBias=.06;sun.shadow.bias=-.0004;
   const hemi=new T.HemisphereLight('#effbff','#91ac67',2.2);scene.add(sun,sun.target,hemi);
   const materials=new Map(),geometries=new Set(),textures=new Set(),listeners=[];
   // See-through view: anything standing between the camera and you (trees, buildings, props) fades to a soft
@@ -354,6 +357,12 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   const ringGeometry=geo(new T.TorusGeometry(.94,.075,7,32));
   const gates=MARKERS.map((point,i)=>{const group=new T.Group();const ring=mesh(group,ringGeometry,'#e5b45f',0,2,0);box(group,'#aa8a56',-1.2,.8,0,.13,1.6,.13);box(group,'#aa8a56',1.2,.8,0,.13,1.6,.13);place(group,point.x,point.z);const number=label(String(i+1),point.x,3.6,point.z,1.2);return {group,ring,number};});
 
+  // v158 lag fix: big instanced crops (wheat, flowers, corn, forest floor) spread wide, so their one bounding sphere is nearly
+  // always on screen and every blade was drawn from across the map. Each one is taken off layer 0 (not drawn) once its nearest
+  // edge is more than 150 m from the camera. Layers, not .visible, so nothing else that shows/hides them is overridden.
+  let farList=[],farScan=0,farTick=0;const _fp=new T.Vector3();
+  function farFields(){if(++farTick%6)return;if(farTick>=farScan){farScan=farTick+300;farList=[];outdoors.traverse(o=>{if(!o.isInstancedMesh)return;const g=o.geometry,t=(g.index?g.index.count:g.attributes.position.count)/3;if(t*o.count<4000)return;if(!o.boundingSphere)o.computeBoundingSphere();const s=o.boundingSphere;if(!(s.radius>0&&s.radius<200))return;farList.push(o);});}
+    for(const o of farList){_fp.copy(o.boundingSphere.center).applyMatrix4(o.matrixWorld);const away=_fp.distanceTo(camera.position)-o.boundingSphere.radius>150;if(away)o.layers.set(31);else o.layers.set(0);}}
   const outdoors=new T.Group();const keep=new Set([avatar.root,...companions.flatMap(h=>[h.root,h.name])]);
   [...scene.children].filter(child=>!child.isLight&&!keep.has(child)).forEach(child=>outdoors.add(child));scene.add(outdoors,sun.target);
   // Move the base scenery (built above at design spots) to its block in the nine-region world. Chunks, sky and the
@@ -455,7 +464,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   // v111 "Pretty effects" (✨ switch beside Sounds/Music; localStorage trottville-gfx = 'full' | 'lite'): the bloom +
   // colour grade pass. Left unset, it is on, and if the phone can't keep ~30 fps for 5 s it switches itself off once.
   const GFX='trottville-gfx',gfxPref=()=>{try{return localStorage.getItem(GFX);}catch{return null;}};let pretty=gfxPref()!=='lite',gfxT=0,gfxN=0,gfxLast=0;
-  const onGfx=e=>{pretty=!!e.detail?.on;detU.value=pretty?1:0;};window.addEventListener('trottville:gfx',onGfx);listeners.push(()=>window.removeEventListener('trottville:gfx',onGfx));
+  const onGfx=e=>{pretty=!!e.detail?.on;detU.value=pretty?1:0;renderer.setPixelRatio(pretty?fullRatio():liteRatio());};window.addEventListener('trottville:gfx',onGfx);listeners.push(()=>window.removeEventListener('trottville:gfx',onGfx));
   function gfxWatch(now){const dt=gfxLast?now-gfxLast:0;gfxLast=now;if(!pretty||!glow||gfxPref()||dt<=0||dt>250)return;gfxT+=dt;gfxN++;
     if(gfxT>5000){const avg=gfxT/gfxN;gfxT=0;gfxN=0;if(avg>34){pretty=false;try{localStorage.setItem(GFX,'lite');}catch{}window.dispatchEvent(new CustomEvent('trottville:gfx',{detail:{on:false}}));tell('Pretty effects switched off to keep riding smooth. Turn them back on with ✨ in the menu.',6);}}}
   const legendsWorld=createLegends({T,outdoors,stage:host,groundHeight,tell:(t,s)=>tell(t,s),sfx:(n,o)=>sfx(n,o),
@@ -1422,7 +1431,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   const nearMarketDoor=()=>inMarket()&&position.z>MARKET.z+MARKET.door.z-MARKET.door.reach&&Math.abs(position.x-MARKET.x)<4.5;
   const nearMarketBook=()=>inMarket()&&Math.hypot(position.x-MARKET.x-MARKET.book.x,position.z-MARKET.z-MARKET.book.z)<2.4;
   function nearStallHorse(){if(!inMarket())return null;let best=null,bd=2.6;for(const m of marketHorses){const d=Math.hypot(position.x-(MARKET.x+m.side*(MARKET.front-.6)),position.z-(MARKET.z+MARKET.stallZ(m.row)));if(d<bd){bd=d;best=m;}}return best;}
-  function fillMarket(){return import('./ranch-ui.js?v=157').then(m=>{if(disposed)return;const r=m.get(),{shelf}=marketStock(dayNumber(),r?.bought||[]),key=dayNumber()+':'+shelf.map(l=>l.id).join(',');if(key===marketKey)return;marketKey=key;
+  function fillMarket(){return import('./ranch-ui.js?v=158').then(m=>{if(disposed)return;const r=m.get(),{shelf}=marketStock(dayNumber(),r?.bought||[]),key=dayNumber()+':'+shelf.map(l=>l.id).join(',');if(key===marketKey)return;marketKey=key;
       for(const h of marketHorses){h.model.root.parent?.remove(h.model.root);h.model.dispose?.();}marketHorses=[];
       for(let i=0;i<20;i++){const l=shelf[i],side=i<10?-1:1,row=i%10;expansion.setPlate(i,l?l.name:'');if(!l)continue;
         const model=makeSculptedHorse(T,{id:l.id,name:l.name,breedId:l.breedId,coat:l.coat,size:l.size},{geometry:geo});model.setGait?.('stand');
@@ -1431,7 +1440,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   function enterMarket(){if(mounted?.loaner){backToStall();return;}if(mounted){tell('Hop down first: horses stay outside the market. Your horse will wait here.',5);return;}
     iris(()=>{setArea('barn');yaw=0;pitch=.22;moveTo(MARKET.x,MARKET.z+18);tell('Welcome to Hoofhaven! Walk up to any horse: test rides are free.',6);return fillMarket();},'fade');}
   function leaveMarket(){iris(()=>{setArea('outdoor');yaw=0;pitch=.3;const o=hoofOut();moveTo(o.x,o.z);tell('Back in the valley, outside Hoofhaven.',3);},'fade');}
-  function openStall(st){if(st.listing.id===keepOffer)keepOffer=null;import('./ranch-ui.js?v=157').then(m=>{clearInput();m.openListing(st.listing.id);}).catch(()=>tell('The market is closed right now. Try again in a moment.'));}
+  function openStall(st){if(st.listing.id===keepOffer)keepOffer=null;import('./ranch-ui.js?v=158').then(m=>{clearInput();m.openListing(st.listing.id);}).catch(()=>tell('The market is closed right now. Try again in a moment.'));}
   function startTestRide(id){const st=marketHorses.find(m=>m.listing.id===id);if(!st||loaner)return;const l=st.listing;
     iris(()=>{setArea('outdoor');const o=hoofOut();yaw=0;pitch=.3;moveTo(o.x,o.z);/* v102: the doors face the path (-z) now */
       const h=makeHorse({id:'loan-'+l.id,name:l.name,breedId:l.breedId,coat:l.coat,months:l.months,size:l.size},companions.length);h.loaner=true;h.tack.saddleGroup.visible=true;
@@ -1555,7 +1564,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     adventureUI.dialog.querySelectorAll('[data-board]').forEach(b=>b.onclick=()=>{const g=[...BOARD_GAMES,...VALLEY_GAMES].find(x=>x.id===b.dataset.board);adventureUI.close();openSteeple(g.file+'?in=world',g.name,'Back at the Games Gazebo.');});}
   // Vet, horse market and feed store screens come from ranch-ui.js (the same ones the website uses).
   let nearService=null;
-  function openService(id){import('./ranch-ui.js?v=157').then(m=>{if(!m.get()?.herd.length){tell('Choose your first horse on the home page, then come back.',5);return;}clearInput();({vet:m.openVet,hoofhaven:m.openMarket,store:m.openStore})[id]?.();}).catch(()=>tell('That shop is closed right now. Try again in a moment.'));}
+  function openService(id){import('./ranch-ui.js?v=158').then(m=>{if(!m.get()?.herd.length){tell('Choose your first horse on the home page, then come back.',5);return;}clearInput();({vet:m.openVet,hoofhaven:m.openMarket,store:m.openStore})[id]?.();}).catch(()=>tell('That shop is closed right now. Try again in a moment.'));}
   function raceMenu(){adventureUI.open('A little friendly competition',`<p>Jump farm fences across open countryside, or ride the racecourse checkpoints.</p><button class="primary full" id="steeple-race">Countryside steeplechase</button><button class="secondary full" id="practice-race" style="margin-top:12px">Start practice lap</button><button class="secondary full" id="climb-race" style="margin-top:12px">Race to Cloudstep Summit</button><button class="primary full" id="friends-race" style="margin-top:12px">Race with friends</button>`);const gated=fn=>()=>{adventureUI.close();if(!mounted){tell('Races are on horseback. Ride here on your horse, then come back.',5);sfx('bonk');return;}needGear(()=>raceReady(fn));};adventureUI.dialog.querySelector('#steeple-race').onclick=gated(()=>openSteeple());adventureUI.dialog.querySelector('#practice-race').onclick=gated(startPractice);adventureUI.dialog.querySelector('#climb-race').onclick=gated(raceClimb);adventureUI.dialog.querySelector('#friends-race').onclick=gated(()=>{if(!network.v2){showFriends();return;}openInvite({race:'lap'});});}
   // ---------- Friends races: invites, Join, countdown, results for every race kind (friends.js, docs/friends-races-plan.md) ----------
   const myId=()=>testOn()?TEST_ME:window.MeadowCloud?.user?.id;
@@ -1999,6 +2008,8 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
     if(now-wildCheck>500){wildCheck=now;const b=biomeAt(position.x,position.z);if(b!==wildBiome){if(b!=='valley'){if(!leftValley){leftValley=true;tell('You left the valley. The land goes on forever; the map always brings you home.',6);}else tell(BIOMES[b].name,3.5);}else tell('Back in the valley.',3);wildBiome=b;}}
     }
   function frame(now){if(disposed)return;raf=requestAnimationFrame(frame);const delta=Math.max(0,Math.min((now-lastTime)/1000,.05));lastTime=Math.max(lastTime,now);if(document.hidden)return;
+    // v158: the sun's shadow map is redrawn every 2nd frame (every 3rd with Pretty effects off) instead of every frame.
+    if(++shadowTick>=(pretty?2:3)){shadowTick=0;renderer.shadowMap.needsUpdate=true;}
     const paused=!!adventureUI?.dialog.open||!!steeple||!!worldMap?.isOpen||!!designer;
     if(!paused){if(keys.has('arrowleft'))yaw+=delta*1.6;if(keys.has('arrowright'))yaw-=delta*1.6;if(keys.has('arrowup'))pitch=Math.max(.08,pitch-delta*.8);if(keys.has('arrowdown'))pitch=Math.min(.8,pitch+delta*.8);}
     const horizontal=paused?0:(keys.has('d')?1:0)-(keys.has('a')?1:0);
@@ -2122,7 +2133,7 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
         if(mounted&&position.x>HALL_X-1.4&&Math.abs(position.z-STORE.doorZ)<2.1&&performance.now()/1000-lastNoHorse>6){lastNoHorse=performance.now()/1000;tell(SHOPKEEPER.name+': '+NO_HORSES[Math.floor(lastNoHorse)%NO_HORSES.length],4);}}
       const skyNow=sky.update(delta,{x:position.x,y:area==='outdoor'?groundY(position.x,position.z):0,z:position.z,biome:wildBiome==='valley'?'meadow':wildBiome,tint:wildBiome==='valley'?null:BIOMES[wildBiome].sky,outdoors:area==='outdoor',forest:forestAt(position.x,position.z,wildBiome),falls:Math.hypot(position.x-SILVER_FALLS.x,position.z-SILVER_FALLS.z)});
       // People are unlit toon: give them the sky's light (full by day, moonlit blue at night; barn light inside).
-      {const L=Math.min(1,Math.max(.3,(hemi.intensity+sun.intensity*.5)/3.75));_pl.setRGB(1,1,1).lerp(hemi.color,(1-L)*.55).multiplyScalar(L);setPeopleLight(_pl);}skyNight=skyNow.night??0;glowK=area==='outdoor'?skyNow.glow||0:0;
+      {const L=Math.min(1,Math.max(.3,(hemi.intensity+sun.intensity*.5)/3.75));_pl.setRGB(1,1,1).lerp(hemi.color,(1-L)*.55).multiplyScalar(L);setPeopleLight(_pl);}cullPeople(camera,scene);farFields();skyNight=skyNow.night??0;glowK=area==='outdoor'?skyNow.glow||0:0;
       // v93: the barn's daylight and the stall's warm lights cross-fade over the camera glide (no jump in wall colour).
       {const goal=caring&&area==="barn"?1:0;if(careMix!==goal)careMix=reducedMotion?goal:Math.max(0,Math.min(1,careMix+Math.sign(goal-careMix)*delta/1.2));const e=careMix*careMix*(3-2*careMix);
        sun.intensity*=1-e;hemi.intensity*=1-e;sun.visible=hemi.visible=e<1;renderer.toneMappingExposure=1.38-.18*e;care?.lightMix(e);}snowU.uSnow.value=area==='outdoor'?skyNow.cover:0;

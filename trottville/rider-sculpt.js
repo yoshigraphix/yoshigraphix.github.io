@@ -1,8 +1,8 @@
 // Saddle, bridle, reins and an anime jockey for the sculpted horse (horse-sculpt.js). Same toon ramp and
 // inverted-hull ink outline, so horse and rider read as one drawing. The rider sits on horse.body, so it rides the
 // horse's bob and pitch for free; update() adds the jockey's forward fold and keeps the reins taut.
-import {makeChibiCharacter} from './chibi-character.js?v=157';
-import {lookFromSeed} from './character-looks.mjs?v=157';
+import {makeChibiCharacter} from './chibi-character.js?v=158';
+import {lookFromSeed} from './character-looks.mjs?v=158';
 // Tack Packs (#31): one small canvas texture per pattern + colour pair, shared by every horse that wears it.
 const TEXC=new Map();
 export function packTex(T,pat,a,b){const k=pat+a+b;if(TEXC.has(k))return TEXC.get(k);const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');

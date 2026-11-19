@@ -3,8 +3,8 @@
 // room (Tack Match) at the back and Hazel's Riding Togs, a rider-clothes shop, at the front. Horses never go in the
 // shop. The doors stay shut until you tap them (or press F nearby); they swing open and you ride out.
 // Barn space: x −19…19, z −15 (back) … 15 (doors). The hall is x −4.6…4.6.
-import {INDOOR_GAMES} from './world-content.mjs?v=157';
-import {OUTFITS} from './character-looks.mjs?v=157';
+import {INDOOR_GAMES} from './world-content.mjs?v=158';
+import {OUTFITS} from './character-looks.mjs?v=158';
 
 export const HALL_X=4.6,STORE={x0:HALL_X,x1:19,z0:0,z1:15,doorZ:8},TACK={doorZ:-7};
 export const DOOR={x:0,z:15,half:3,reach:4.2};

@@ -76,7 +76,7 @@ export function makeSculptedHorse(T,horse={},options={}){
     const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('color',new T.Float32BufferAttribute(col,3));
     g.setIndex(idx);g.computeVertexNormals();keep(g);
     const mesh=new T.Mesh(g,skins[style]);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);skinned.push(mesh);
-    if(outline){const line=new T.Mesh(g,ink);line.castShadow=false;mesh.add(line);}
+    if(outline){const line=new T.Mesh(g,ink);line.castShadow=false;line.userData.isOutline=true;mesh.add(line);}
     return mesh;
   }
   const smooth=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};

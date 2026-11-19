@@ -1,11 +1,12 @@
 // Valley life in 3D (rules in world-life.mjs): grazing herds, trail riders, practice gallops and the noon Derby at
 // Clover Racecourse. Horses are built lazily when you come near a group and are only animated within ~95 m.
-import {makeSculptedHorse} from './horse-sculpt.js?v=157';
-import {addTackAndRider} from './rider-sculpt.js?v=157';
-import {lookFromSeed} from './character-looks.mjs?v=157';
-import * as V from './world-life.mjs?v=157';
+import {makeSculptedHorse} from './horse-sculpt.js?v=158';
+import {addTackAndRider} from './rider-sculpt.js?v=158';
+import {lookFromSeed} from './character-looks.mjs?v=158';
+import * as V from './world-life.mjs?v=158';
 
-const BUILD_R=150,ANIM_R=95,SHOW_R=170;
+// v158 lag fix: each sculpted horse is ~20 draws. Herds show within 115 m (was 170) and only horses within 28 m cast shadows.
+const BUILD_R=150,ANIM_R=95,SHOW_R=115,SHADOW_R=28,INK_R=30;   // past INK_R the black outline is dropped (half the draws)
 const ease=(a,b,k)=>a+(b-a)*k;
 const turn=(from,to,k)=>from+Math.atan2(Math.sin(to-from),Math.cos(to-from))*k;
 
@@ -15,7 +16,7 @@ export function createValleyLife({T,scene,groundY,route,simple=false,tell=()=>{}
   function makeEntity(data,{rider=null,foal=false}={}){const model=makeSculptedHorse(T,data,{});let tack=null;
     if(rider){tack=addTackAndRider(T,model,rider);tack.rider.visible=true;}
     model.root.traverse(o=>{if(o.isMesh)o.castShadow=!simple;});if(foal)model.root.scale.multiplyScalar(.62);
-    group.add(model.root);const e={model,tack,x:0,z:0,yaw:0,gait:'stand',graze:0,grazeGoal:0,state:'idle',t:Math.random()*8,path:null,speed:0,near:false};all.push(e);return e;}
+    group.add(model.root);const e={model,tack,x:0,z:0,yaw:0,gait:'stand',graze:0,grazeGoal:0,state:'idle',t:Math.random()*8,path:null,speed:0,near:false,cast:!simple};all.push(e);return e;}
   function place(e){e.model.root.position.set(e.x,groundY(e.x,e.z),e.z);e.model.root.rotation.y=e.yaw;}
   function setGait(e,g){if(e.gait!==g){e.gait=g;e.model.setGait(g);}}
   // Move toward (tx,tz) at `speed`; returns true on arrival.
@@ -65,6 +66,7 @@ export function createValleyLife({T,scene,groundY,route,simple=false,tell=()=>{}
   let lastNear={x:0,z:0},frame=0;
   let raining=false;   // v71: valley riders wear ponchos in the rain
   function update(dt,{x,z,area,night=0,rain=false,now=new Date()}){frame++;raining=rain;group.visible=area==='outdoor';if(!group.visible)return;lastNear={x,z};
+    if(frame%10===0)for(const e of all){const d=Math.hypot(e.x-x,e.z-z),on=!simple&&d<SHADOW_R,ink=d<INK_R;if(on!==e.cast||ink!==e.ink){e.cast=on;e.ink=ink;e.model.root.traverse(o=>{if(!o.isMesh)return;if(o.userData.isOutline)o.visible=ink;else o.castShadow=on;});}}
     const isNight=night>.6;
     // Herds: build when near, animate when nearer.
     for(const h of pastures){const d=Math.hypot(h.p.x-x,h.p.z-z);if(!h.built&&d<BUILD_R)buildHerd(h);if(!h.built)continue;

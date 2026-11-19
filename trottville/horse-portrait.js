@@ -2,8 +2,8 @@
 // still image for cards, profiles and buttons. One small shared renderer does every shot; results are
 // cached by horse and colour, so a list of cards only renders each horse once.
 // shot: 'head' = head-and-shoulders, three-quarter view (cards, profiles); 'body' = the whole horse (zoom > 1 fills more).
-import * as T from './vendor/three-0.180.0/three.module.js?v=157';
-import {makeSculptedHorse} from './horse-sculpt.js?v=157';
+import * as T from './vendor/three-0.180.0/three.module.js?v=158';
+import {makeSculptedHorse} from './horse-sculpt.js?v=158';
 
 let kit=null;const cache=new Map();
 function setup(){

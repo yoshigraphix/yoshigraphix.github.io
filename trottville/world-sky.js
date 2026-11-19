@@ -2,9 +2,9 @@
 // drifting clouds, rain, snow, fog, lightning, fireflies, morning glories, and a small synthesized ambience
 // (rooster at dawn, birds by day, crickets at night, rain, wind, thunder; no sound files). The rules (phases,
 // weather schedule) are pure in world-weather.mjs; this file only draws and plays them.
-import {sfx,ambLoop,ambStop,registerClips,audioContext} from './sfx.js?v=157';
-import {FARMS,LOCATIONS} from './world-content.mjs?v=157';
-import {moonFull,gameHours,roosterTime,owlTime,skyAt,gloryOpen,weatherAt,localWeather,skyLabel,WEATHER,smooth,snowCoverStep} from './world-weather.mjs?v=157';
+import {sfx,ambLoop,ambStop,registerClips,audioContext} from './sfx.js?v=158';
+import {FARMS,LOCATIONS} from './world-content.mjs?v=158';
+import {moonFull,gameHours,roosterTime,owlTime,skyAt,gloryOpen,weatherAt,localWeather,skyLabel,WEATHER,smooth,snowCoverStep} from './world-weather.mjs?v=158';
 
 const SOUND_KEY='trottville-sound-v1';
 const SKY_VERT=`varying vec3 vDir;void main(){vDir=position;vec4 p=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_Position=p.xyww;}`;

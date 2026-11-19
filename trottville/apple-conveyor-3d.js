@@ -1,9 +1,9 @@
 // Appleoosa, 3D edition: a top-down Three.js belt of rounded apples.
 // Rules stay in apple-conveyor.mjs; this file only draws, animates and routes input.
-import * as THREE from './vendor/three-0.180.0/three.module.js?v=157';
-import {ROTTEN,APPLE_COLORS,APPLE_COLUMNS as C,APPLE_ROWS as R,newConveyor,appleGroup,collectApples,advanceConveyor,conveyorInterval,dropFromBasket,deliverBasket,recoverApple,toggleBelt,shakeBelt,startShift,squirrelTakes,moveApple,isLoneTop,flickRot,isLoneRot,FLICK_BONUS,SPOTLESS_BONUS,phaseOf,dayOf,shiftInDay,PHASE_NAMES,SHIFTS_PER_DAY,STOP_MS,BASKET_CAPACITY,TRUCK_BONUS} from './apple-conveyor.mjs?v=157';
-import {createYard,appleParts,APPLE_TINTS as TINTS} from './apple-yard-3d.js?v=157';
-import {createScoreRun,leaderboardHtml} from './scores.js?v=157';
+import * as THREE from './vendor/three-0.180.0/three.module.js?v=158';
+import {ROTTEN,APPLE_COLORS,APPLE_COLUMNS as C,APPLE_ROWS as R,newConveyor,appleGroup,collectApples,advanceConveyor,conveyorInterval,dropFromBasket,deliverBasket,recoverApple,toggleBelt,shakeBelt,startShift,squirrelTakes,moveApple,isLoneTop,flickRot,isLoneRot,FLICK_BONUS,SPOTLESS_BONUS,phaseOf,dayOf,shiftInDay,PHASE_NAMES,SHIFTS_PER_DAY,STOP_MS,BASKET_CAPACITY,TRUCK_BONUS} from './apple-conveyor.mjs?v=158';
+import {createYard,appleParts,APPLE_TINTS as TINTS} from './apple-yard-3d.js?v=158';
+import {createScoreRun,leaderboardHtml} from './scores.js?v=158';
 
 const TOP=-2.2,LIP=-1,BOTTOM=R+.15,LEFT=-.45,RIGHT=C+.45,CENTER_Y=.42,G=46,FOV=24;
 export const STAGE_ASPECT=(RIGHT-LEFT)/(BOTTOM-TOP);
