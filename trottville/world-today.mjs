@@ -2,8 +2,8 @@
 // Pure (no DOM): world.js passes what it knows (today's done list, places found, where you are) and the map draws
 // the result as a list plus glowing pins. Every activity rides/jumps to its nearest map place (`anchor`), so the
 // map card's Ride / Jump buttons work unchanged.
-import {LOCATIONS} from './world-content.mjs?v=158';
-import {R} from './world-regions.mjs?v=158';
+import {LOCATIONS} from './world-content.mjs?v=160';
+import {R} from './world-regions.mjs?v=160';
 
 export const dayKey=(d=new Date())=>d.toISOString().slice(0,10);// same day key as adventure.daily
 // Finished-today marks live in their own small key so the barn games, the herding pen and the steeplechase frame

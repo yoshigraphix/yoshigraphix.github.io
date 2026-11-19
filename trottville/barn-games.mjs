@@ -1,4 +1,4 @@
-import {newConveyor,collectApples,advanceConveyor} from './apple-conveyor.mjs?v=158';
+import {newConveyor,collectApples,advanceConveyor} from './apple-conveyor.mjs?v=160';
 const shuffle=(items,random=Math.random)=>{const c=[...items];for(let i=c.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;};
 export function startBarnGame(id,random=Math.random){const s={id,done:false,moves:0,mistakes:0,message:''};if(id==='muck')return {...s,board:shuffle([...Array(8).fill('pile'),...Array(8).fill('straw')],random),cleaned:[]};if(id==='hay')return {...s,fills:[0,0,0],carrying:false};if(id==='water')return {...s,buckets:0,lastLevel:0};if(id==='groom')return {...s,cleaned:[]};if(id==='feed')return {...s,...newConveyor(random)};if(id==='fling')return {...s,score:0};if(id==='tack')return {...s,cards:shuffle([0,1,2,3,4,5,0,1,2,3,4,5],random),flipped:[],matched:[]};throw Error('Unknown barn game');}
 export function barnAction(session,action,value){const s=JSON.parse(JSON.stringify(session));if(s.done)return s;s.moves++;

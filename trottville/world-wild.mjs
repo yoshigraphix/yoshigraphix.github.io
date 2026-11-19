@@ -6,7 +6,7 @@
 //    them or take a road: every road cuts a low pass straight through.
 //  · Roads run north–south and east–west every 180 units with a gentle wobble. Four leave the valley.
 // Everything is seeded by position, so the same hill is always in the same place.
-import {CLOUDSTEP} from './world-cloudstep.mjs?v=158';
+import {CLOUDSTEP} from './world-cloudstep.mjs?v=160';
 export const VALLEY=300,/* was 100: the nine regions (world-regions.mjs) */BLEND=30,ROAD_EVERY=180,ROAD_HALF=2.6;
 
 function hash(ix,iz,s=0){let h=Math.imul(ix|0,374761393)^Math.imul(iz|0,668265263)^Math.imul(s|0,1442695041);h=Math.imul(h^(h>>>13),1274126177);return ((h^(h>>>16))>>>0)/4294967296;}

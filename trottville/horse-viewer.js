@@ -1,9 +1,9 @@
 // A small 3D stage for one horse: the same cel-shaded sculpted horse as the home page, slowly turning on a
 // patch of grass. Used by the sign-up screen (pick your first horse). snapshot(h) renders another horse
 // into a still image with the same renderer (breed cards), so the page needs only one WebGL context.
-import * as T from './vendor/three-0.180.0/three.module.js?v=158';
-import {makeSculptedHorse} from './horse-sculpt.js?v=158';
-import {addTackAndRider} from './rider-sculpt.js?v=158';
+import * as T from './vendor/three-0.180.0/three.module.js?v=160';
+import {makeSculptedHorse} from './horse-sculpt.js?v=160';
+import {addTackAndRider} from './rider-sculpt.js?v=160';
 
 // rider: a plain grey rider sits in the saddle to show the horse's real size (the rider is one size on every horse,
 // see rider-sculpt.js), so a pony reads as small. setRider(false) takes it off. Stills never include it.

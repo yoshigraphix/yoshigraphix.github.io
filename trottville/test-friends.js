@@ -1,10 +1,10 @@
 // Test friends switch (owner only). Players never see it: the switch shows only to the artifact's owner on claude.ai
 // (claude.use('user').isOwner()) or on the local dev server. While on, friends.js and world-network.js talk to the
 // computer-run riders in test-friends.mjs instead of the game server. Turning it off forgets nothing; Reset starts over.
-import {createTestFriends,TEST_ME,STATE_KEY} from './test-friends.mjs?v=158';
-import {RANCH_KEY,loadRanch,restNow,condition,level} from './ranch.mjs?v=158';
-import {rideTrustOf,isTamed,TAME_AT} from './riding.mjs?v=158';
-import {loadDirt,dirtLevel,sweepsLeft} from './stall-dirt.mjs?v=158';
+import {createTestFriends,TEST_ME,STATE_KEY} from './test-friends.mjs?v=160';
+import {RANCH_KEY,loadRanch,restNow,condition,level} from './ranch.mjs?v=160';
+import {rideTrustOf,isTamed,TAME_AT} from './riding.mjs?v=160';
+import {loadDirt,dirtLevel,sweepsLeft} from './stall-dirt.mjs?v=160';
 export {TEST_ME};
 const KEY='trottville-test-friends';
 const host=globalThis.location?.hostname||'',local=/^(localhost|127\.0\.0\.1|\[::1\])$/.test(host)||/\.(localhost|test)$/.test(host);
@@ -52,19 +52,19 @@ const TOOLS=`<div class="tools"><b>Map clouds (test)</b><div class="row"><button
 function tools(box){const msg=box.querySelector('.msg');let undo=null,timer=0;
   const say=(text,back)=>{clearTimeout(timer);undo=back;msg.querySelector('span').textContent=text;msg.querySelector('button').hidden=!back;msg.hidden=false;timer=setTimeout(()=>{msg.hidden=true;undo=null;},7000);};
   msg.querySelector('button').onclick=()=>{const u=undo;undo=null;msg.hidden=true;u?.();};
-  const money=async(fn,label)=>{const {loadWallet,saveWallet}=await import('./character-looks.mjs?v=158'),{paintCounters}=await import('./coin-collect.js?v=158');
+  const money=async(fn,label)=>{const {loadWallet,saveWallet}=await import('./character-looks.mjs?v=160'),{paintCounters}=await import('./coin-collect.js?v=160');
     const put=c=>{saveWallet({...loadWallet(),coins:c});const w=loadWallet();paintCounters(w.coins);dispatchEvent(new CustomEvent('trottcoins:change',{detail:{coins:w.coins}}));return w.coins;};
     const before=loadWallet().coins,now=put(fn(before));say(`${label}: ${before.toLocaleString()} → ${now.toLocaleString()} Trotties`,()=>{put(before);say('Trotties put back.');});};
   box.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const n=+b.dataset.add;money(c=>c+n,'+'+n.toLocaleString());});
   const inp=box.querySelector('.tools input');box.querySelector('[data-set]').onclick=()=>{const n=Math.floor(Number(inp.value));if(!(n>=0)||inp.value===''){say('Type a number first.');return;}money(()=>n,'Set');inp.value='';};
   // Time: a fixed game hour on this device (world-weather setDevHour) until Live clock; the sky follows at once.
-  import('./world-weather.mjs?v=158').then(W=>{const sl=box.querySelector('[data-hourslider]'),label=h=>h==null?'the live clock':W.clockLabel(h);sl.value=W.devHourNow()??W.gameHours();
+  import('./world-weather.mjs?v=160').then(W=>{const sl=box.querySelector('[data-hourslider]'),label=h=>h==null?'the live clock':W.clockLabel(h);sl.value=W.devHourNow()??W.gameHours();
     const set=h=>{const before=W.devHourNow();W.setDevHour(h);if(h!=null)sl.value=h;say(h==null?'Back on the live clock.':`Time fixed at ${label(h)}.`,()=>{W.setDevHour(before);if(before!=null)sl.value=before;say(`Time put back to ${label(before)}.`);});};
     box.querySelectorAll('[data-hour]').forEach(b=>b.onclick=()=>set(b.dataset.hour==='live'?null:+b.dataset.hour));box.querySelectorAll('[data-weather]').forEach(b=>b.onclick=()=>{const before=W.devWeatherNow(),v=b.dataset.weather==='live'?null:b.dataset.weather;W.setDevWeather(v);const lab=k=>k?W.WEATHER[k].label:'the live weather';say(`Weather set to ${lab(v)}.`,()=>{W.setDevWeather(before);say(`Weather put back to ${lab(before)}.`);});});box.querySelectorAll('[data-moon]').forEach(b=>b.onclick=()=>{const before=W.devMoonNow(),v=b.dataset.moon==='live'?null:+b.dataset.moon;W.setDevMoon(v);const lab=m=>m==null?'the real moon':m>=1?'a full moon':'no moon';say(`Moon set to ${lab(v)}.`,()=>{W.setDevMoon(before);say(`Moon put back to ${lab(before)}.`);});});sl.oninput=()=>W.setDevHour(+sl.value);sl.onchange=()=>set(+sl.value);});
   // v139: legends on demand. Unicorn/pegasus need night to look right, so the clock jumps to 11 pm (Undo puts it back);
   // the moon pegasus needs the game's midnight, so 12:15 am.
   box.querySelectorAll('[data-legend]').forEach(b=>b.onclick=async()=>{const f=globalThis.__trottDevLegend;if(!f){say('Go out into the valley first, then try again.');return;}
-    const kind=b.dataset.legend,W=await import('./world-weather.mjs?v=158'),before=W.devHourNow();if(kind!=='treats')W.setDevHour(kind==='moon'?.25:23);
+    const kind=b.dataset.legend,W=await import('./world-weather.mjs?v=160'),before=W.devHourNow();if(kind!=='treats')W.setDevHour(kind==='moon'?.25:23);
     const text=f(kind);say(text,kind==='treats'?null:()=>{W.setDevHour(before);say('Time put back.');});});
   // New-player run: two taps (native confirm is blocked in Yoshi's browser), the save is backed up before anything is cleared.
   {const np=box.querySelector('[data-newplayer]'),idle=runInfo()?'🐣 Start over (test run is on)':'🐣 Start as a new player';let armed=0;np.textContent=idle;

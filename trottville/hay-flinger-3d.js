@@ -1,11 +1,11 @@
 // Hay’s for Horses, 3D edition: phone-first and portrait. The camera sits close behind the sling and wagon
 // with the barn in the distance, follows each bale to the loft, holds on the landing, then glides back.
 // Rules stay in hay-flinger.mjs; this file only draws, plays back flight paths and routes input.
-import * as THREE from './vendor/three-0.180.0/three.module.js?v=158';
-import {SLING,WALL_X,COLS,ROWS,FLOOR,CEILING,BACK,HALF,EAVE,PEAK,VANE,newFling,nextLoad,throwBale,previewArc} from './hay-flinger.mjs?v=158';
-import {horsePortrait} from './apple-yard-3d.js?v=158';
-import {makeSculptedHorse} from './horse-sculpt.js?v=158';
-import {guestHorse} from './ranch.mjs?v=158';
+import * as THREE from './vendor/three-0.180.0/three.module.js?v=160';
+import {SLING,WALL_X,COLS,ROWS,FLOOR,CEILING,BACK,HALF,EAVE,PEAK,VANE,newFling,nextLoad,throwBale,previewArc} from './hay-flinger.mjs?v=160';
+import {horsePortrait} from './apple-yard-3d.js?v=160';
+import {makeSculptedHorse} from './horse-sculpt.js?v=160';
+import {guestHorse} from './ranch.mjs?v=160';
 
 const FOV=42,PULL=1.4,BALE={w:.96,h:.96,d:1.6},HOLD=900;
 const V=(x,y,z)=>new THREE.Vector3(x,y,z),FRECKLES=V(-4.9,0,-.6),GUEST_AT=V(4.8,0,-6.8);

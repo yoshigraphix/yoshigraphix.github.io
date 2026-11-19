@@ -1,8 +1,8 @@
-import {LOCATIONS,MAP_PATHS,RACE_GATES,SERVICES,terrainHeight,RIVERS,BRIDGES,MOUNTAINS,FIELDS,MILLS,TOWN2,SKYGATE,PASTURE,FARMS,riverWaterY,bridgeFloor,onBridge,mountainLift,COBBLE_SQUARE,COBBLE_STREETS,COBBLE_HALF} from './world-content.mjs?v=158';
-import {buildBarnInterior} from './barn-interior.js?v=158';
-import {R} from './world-regions.mjs?v=158';
-import {waterize} from './world-sky.js?v=158';
-import {realMat,realUV} from './world-tudor.js?v=158';
+import {LOCATIONS,MAP_PATHS,RACE_GATES,SERVICES,terrainHeight,RIVERS,BRIDGES,MOUNTAINS,FIELDS,MILLS,TOWN2,SKYGATE,PASTURE,FARMS,riverWaterY,bridgeFloor,onBridge,mountainLift,COBBLE_SQUARE,COBBLE_STREETS,COBBLE_HALF} from './world-content.mjs?v=160';
+import {buildBarnInterior} from './barn-interior.js?v=160';
+import {R} from './world-regions.mjs?v=160';
+import {waterize} from './world-sky.js?v=160';
+import {realMat,realUV} from './world-tudor.js?v=160';
 export function buildExpansion({T,outdoors,geo,mat,box,ico,label,tree,path}){
  const smoothTree=tree;   // v113: farm trees use the world's smooth, swaying trees (world.js tree)
  const addBox=(parent,c,x,y,z,sx,sy,sz)=>box(parent,c,x,y,z,sx,sy,sz,true);
@@ -216,7 +216,19 @@ function buildNewLands({T,outdoors,geo,mat,sign,obstacles,smoothTree}){
  add(STONE,'box',C.x,cy+5,C.z,4.6,10,4.6);for(const [sx,sz] of [[-1,-1],[1,-1],[1,1],[-1,1]])for(let k=0;k<10;k++)add(STONE2,'box',C.x+sx*2.25,cy+.5+k,C.z+sz*2.25,.5,.5,.5,0,k%2?0:.0);
  add(STONE2,'box',C.x,cy+.3,C.z,5.2,.6,5.2);add('#5b3a24','box',C.x,cy+1.3,C.z+2.32,1.4,2.6,.1);add(STONE2,'box',C.x,cy+2.7,C.z+2.36,1.8,.25,.14);
  add('#f4ecd8','box',C.x,cy+12,C.z,4.3,4,4.3);for(const s of [-1,1]){for(const yy of [10.1,13.9])add(TIMBER,'box',C.x,cy+yy,C.z+s*2.17,4.4,.22,.08);for(const yy of [10.1,13.9])add(TIMBER,'box',C.x+s*2.17,cy+yy,C.z,.08,.22,4.4);for(const xx of [-2.05,2.05]){add(TIMBER,'box',C.x+xx,cy+12,C.z+s*2.17,.22,4,.08);add(TIMBER,'box',C.x+s*2.17,cy+12,C.z+xx,.08,4,.22);}}
- add(SLATE,'cone4',C.x,cy+17.2,C.z,4.9,6.4,4.9);add('#c9a24a','box',C.x,cy+21,C.z,.1,1.6,.1);add('#c9a24a','ico',C.x,cy+20.6,C.z,.45,.45,.45);
+ // v159 (Yoshi: "get to the top of the clock tower and have a nice lookout point"): an open lookout gallery above the
+ // clock, under a raised slate roof. Floor top at cy+14.25 (world.js walks it: TOWER_DECK); oak corner posts, a waist-high
+ // balustrade, a bell under the roof and a stair hatch in the middle. The spire moved up 3.2 m with it.
+ add(STONE2,'box',C.x,cy+14.1,C.z,6.2,.3,6.2);add(STONE2,'box',C.x,cy+13.85,C.z,5.4,.25,5.4);
+ for(const [sx,sz] of [[-1,-1],[1,-1],[1,1],[-1,1]])add(TIMBER,'box',C.x+sx*2.9,cy+15.75,C.z+sz*2.9,.32,3,.32);
+ for(const s of [-1,1]){add(TIMBER,'box',C.x,cy+15.3,C.z+s*2.95,5.9,.14,.16);add(TIMBER,'box',C.x+s*2.95,cy+15.3,C.z,.16,.14,5.9);add(TIMBER,'box',C.x,cy+14.35,C.z+s*2.95,5.9,.12,.16);add(TIMBER,'box',C.x+s*2.95,cy+14.35,C.z,.16,.12,5.9);
+   for(let k=-5;k<=5;k++){if(Math.abs(k)===5)continue;add(TIMBER,'box',C.x+k*.52,cy+14.82,C.z+s*2.95,.09,.85,.09);add(TIMBER,'box',C.x+s*2.95,cy+14.82,C.z+k*.52,.09,.85,.09);}}
+ add(TIMBER,'box',C.x,cy+17.3,C.z,6.4,.22,6.4);
+ // stair hatch: a low oak kerb round a dark opening, a handrail on two sides
+ add('#2b2117','box',C.x,cy+14.26,C.z,1.3,.02,1.3);for(const s of [-1,1]){add(TIMBER,'box',C.x,cy+14.32,C.z+s*.7,1.5,.12,.12);add(TIMBER,'box',C.x+s*.7,cy+14.32,C.z,.12,.12,1.5);}
+ for(const s of [-1,1]){add(TIMBER,'box',C.x+s*.72,cy+14.75,C.z,.08,.08,1.45);for(const t of [-1,1])add(TIMBER,'box',C.x+s*.72,cy+14.55,C.z+t*.68,.08,.5,.08);}
+ add('#b8892f','half',C.x,cy+16.3,C.z,1.1,1.1,1.1);add('#8a6420','box',C.x,cy+16.9,C.z,.12,.9,.12);
+ add(SLATE,'cone4',C.x,cy+20.4,C.z,6.9,6.4,6.9);add('#c9a24a','box',C.x,cy+24.2,C.z,.1,1.6,.1);add('#c9a24a','ico',C.x,cy+23.8,C.z,.45,.45,.45);
  for(const [k,yy] of [[0,8.1],[1,8.1],[2,8.1],[3,8.1]]){const a=k*Math.PI/2;add(GLOW,'box',C.x+Math.sin(a)*2.32,cy+yy,C.z+Math.cos(a)*2.32,.8,1.2,.08,0,a);}
  solid(C.x,C.z,2.7,2.7,22);
  const hands=[];{const faceM=mat('#fbf6e8'),rimM=mat('#c9a24a'),handM=mat('#2b2622');
@@ -226,7 +238,8 @@ function buildNewLands({T,outdoors,geo,mat,sign,obstacles,smoothTree}){
      const hr=new T.Group(),mn=new T.Group();hr.position.z=mn.position.z=.12;face.add(hr,mn);const hb=new T.Mesh(geo(new T.BoxGeometry(.13,.65,.05)),handM);hb.position.y=.3;hr.add(hb);const mb=new T.Mesh(geo(new T.BoxGeometry(.08,.95,.05)),handM);mb.position.y=.45;mn.position.z=.15;mn.add(mb);hands.push({hr,mn});}}
  // Tudor houses: plaster and dark timber, a jettied upper floor, a steep gable to the street, chimney, leaded windows
  const PLASTER=['#f4ecd8','#efe2c4','#f6efe0','#e9dcc0','#f1e4cf'],ROOFS=['#6b4f3a','#7c5b3f','#5a5f68','#8a5a3c'],DOORS=['#5b3a24','#2f5d50','#7a2e2a','#34506e'];
- function house(x,z,yaw,w=7.6,d=6.4,i=0){const y=H(x,z),h1=3,h2=2.7,j=.55,pl=PLASTER[i%PLASTER.length];at(x,y,z,yaw);
+ const HOUSES=[];   // v159: world.js makes each one walk-in (world-houses.js)
+ function house(x,z,yaw,w=7.6,d=6.4,i=0){const y=H(x,z),h1=3,h2=2.7,j=.55,pl=PLASTER[i%PLASTER.length];at(x,y,z,yaw);HOUSES.push({i,x,z,yaw,w,d,j,y,plaster:pl,door:DOORS[i%DOORS.length]});
    add(STONE2,'box',0,.25,0,w+.2,.5,d+.2);add(pl,'box',0,h1/2+.25,0,w,h1,d);add(pl,'box',0,h1+.25+h2/2,j/2,w,h2,d+j);
    const fz=d/2+.03,fz2=d/2+j+.03;
    for(const xx of [-w/2+.1,-w/6,w/6,w/2-.1]){add(TIMBER,'box',xx,h1/2+.25,fz,.24,h1,.08);add(TIMBER,'box',xx,h1+.25+h2/2,fz2,.24,h2,.08);}
@@ -331,11 +344,12 @@ function buildNewLands({T,outdoors,geo,mat,sign,obstacles,smoothTree}){
 
  // 11–12. Thimbleford: market stalls with striped awnings, and bunting across the square
  for(const [sx,sz,yaw,goods] of [[-104,64,Math.PI/2,['#e8574f','#f2c94c','#6fcf97']],[-76,64,-Math.PI/2,['#f49ac1','#ffffff','#b26ad6']],[-98,79,Math.PI,['#d9a25a','#c98a45','#f0d39a']]]){const y=H(sx,sz);at(sx,y,sz,yaw);
-   for(const [px,pz] of [[-1.5,-.9],[1.5,-.9],[-1.5,.9],[1.5,.9]])add(TIMBER,'box',px,1.25,pz,.14,2.5,.14);add('#9a7452','box',0,.9,.75,3.1,.12,.7);add('#7a5634','box',0,.45,.75,3,.9,.1);
+   // v159: each post reaches up to the sloping awning (the back ones used to poke through it, the front ones stopped short)
+   for(const [px,pz] of [[-1.5,-.9],[1.5,-.9],[-1.5,.9],[1.5,.9]]){const top=2.55+(pz-.15)*Math.sin(.25)-.05;add(TIMBER,'box',px,top/2,pz,.14,top,.14);}add('#9a7452','box',0,.9,.75,3.1,.12,.7);add('#7a5634','box',0,.45,.75,3,.9,.1);
    for(let k=0;k<6;k++)add(k%2?'#ffffff':['#c0392b','#2f6b9a','#2f7a4a'][Math.abs(Math.round(yaw*2))%3],'box',-1.35+k*.54,2.55,.15,.54,.08,2.2,-.25);
    for(let k=0;k<9;k++)add(goods[k%3],'ico',-1.2+(k%5)*.6,1.08,.55+(k>4?.3:0),.3,.26,.3);world();solid(sx,sz,Math.abs(Math.cos(yaw))*1.7+Math.abs(Math.sin(yaw))*1.1,Math.abs(Math.sin(yaw))*1.7+Math.abs(Math.cos(yaw))*1.1,3);}
  {const FL=['#e8574f','#f2c94c','#56a7e0','#6fcf97','#f49ac1','#ffffff'];for(const bz of [PZ,PZ+10]){const x0=PX-17.5,x1=PX+17.5;for(const xx of [x0,x1]){const y=H(xx,bz);add(TIMBER,'box',xx,y+3.5,bz,.2,7,.2);solid(xx,bz,.2,.2,7);}
-   const y0=H(PX,bz)+6.6,N=26;for(let k=0;k<N;k++){const u=(k+.5)/N,x=x0+(x1-x0)*u,yy=y0-Math.sin(u*Math.PI)*1.2;add(FL[k%FL.length],'prism',x,yy-.55,bz,.55,.55,.04,Math.PI,0,0);}
+   const y0=H(PX,bz)+6.6,N=26;for(let k=0;k<N;k++){const u=(k+.5)/N,x=x0+(x1-x0)*u,yy=y0-Math.sin(u*Math.PI)*1.2;add(FL[k%FL.length],'prism',x,yy-.02,bz,.55,.55,.04,Math.PI,0,0);}   // v159: the flag's top edge on the string (it hung .55 below it)
    for(let k=0;k<20;k++){const u=k/20,u2=(k+1)/20,xa=x0+(x1-x0)*u,xb=x0+(x1-x0)*u2,ya=y0-Math.sin(u*Math.PI)*1.2,yb=y0-Math.sin(u2*Math.PI)*1.2;add('#efe6d2','box',(xa+xb)/2,(ya+yb)/2,bz,Math.hypot(xb-xa,yb-ya),.04,.04,0,0,Math.atan2(yb-ya,xb-xa));}}}
 
  // ======== v106: farms (Yoshi 2026-11-14: "Farms can have pigs and cows. Go crazy") ========
@@ -451,7 +465,7 @@ function buildNewLands({T,outdoors,geo,mat,sign,obstacles,smoothTree}){
   }
  }
  bake();let lifeT=0;
- return {group:g,tick(dt,hours){lifeT+=dt;for(const f of life)f(dt,lifeT,hours);ripple.offset.y-=dt*.22;swayU.value+=dt;for(const t of turning)t.o.rotation[t.axis]+=t.speed*dt;
+ return {group:g,houses:HOUSES,tick(dt,hours){lifeT+=dt;for(const f of life)f(dt,lifeT,hours);ripple.offset.y-=dt*.22;swayU.value+=dt;for(const t of turning)t.o.rotation[t.axis]+=t.speed*dt;
    if(hours!=null){const h=((hours%12)+12)%12,mi=(hours%1)*60;for(const k of hands){k.hr.rotation.z=-h/12*Math.PI*2;k.mn.rotation.z=-mi/60*Math.PI*2;}}},
    dispose(){for(const o of own)o.dispose?.();}};
 }

@@ -5,11 +5,11 @@
 //    so the 1–200 grid in the Quest Log fills evenly as you meet people.
 //  · Spawn spots (things to pick up, lost kids, places to check) are worked out here, deterministically, and are
 //    never on blocked ground (QUEST_SOLIDS = the world's obstacles as of 2026-11-09, see below).
-import {LOCATIONS,SERVICES,POND} from './world-content.mjs?v=158';
-import {R,offsetOf,HALF} from './world-regions.mjs?v=158';
-import {OBSTACLES,blocked} from './world-logic.mjs?v=158';
-import {PEN_FENCES} from './world-herding.mjs?v=158';
-import {TOWN_SOLIDS,INDOOR_SPOTS,ACT_SOLIDS,CAMP} from './world-town.mjs?v=158';
+import {LOCATIONS,SERVICES,POND} from './world-content.mjs?v=160';
+import {R,offsetOf,HALF} from './world-regions.mjs?v=160';
+import {OBSTACLES,blocked} from './world-logic.mjs?v=160';
+import {PEN_FENCES} from './world-herding.mjs?v=160';
+import {TOWN_SOLIDS,INDOOR_SPOTS,ACT_SOLIDS,CAMP} from './world-town.mjs?v=160';
 
 // The corn maze (built separately, positions final 2026-11-09): centred at (74,78), corn covers x 55.5..92.5,
 // z 59.5..96.5. Farmer Clem stands at CORN_GATE; the gate entrance is CORN_ENTRANCE; the sign post is at CORN_SIGN.

@@ -2,10 +2,10 @@
 // Horses), an apple sorting rig in the orchard clearing (Appleoosa) and the Grapevine Paddock, where the herding
 // game plays right here in the world with your own riding controls (no second renderer).
 // world.js glides the camera to a station's `view` and then opens the game, so it feels like stepping into it.
-import {makeSculptedHorse} from './horse-sculpt.js?v=158';
-import {solidCoat} from './ranch.mjs?v=158';
-import {PADDOCK,PEN,PEN_FENCES,newRound,stepRound,pennedCount,herdReward,FOALS} from './world-herding.mjs?v=158';
-import {R} from './world-regions.mjs?v=158';
+import {makeSculptedHorse} from './horse-sculpt.js?v=160';
+import {solidCoat} from './ranch.mjs?v=160';
+import {PADDOCK,PEN,PEN_FENCES,newRound,stepRound,pennedCount,herdReward,FOALS} from './world-herding.mjs?v=160';
+import {R} from './world-regions.mjs?v=160';
 
 export function buildStations({T,outdoors,box,ico,mat,geo,label,groundHeight}){
   const obstacles=[],cyl=geo(new T.CylinderGeometry(1,1,1,10));

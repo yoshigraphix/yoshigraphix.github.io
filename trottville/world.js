@@ -1,14 +1,14 @@
-import {makeChibiCharacter} from './chibi-character.js?v=158';import {setPeopleLight,resetPeopleLight,cullPeople} from './vroid-character.js?v=158';
-import {loadLook,saveLook,lookFromSeed} from './character-looks.mjs?v=158';
-import {queueCoins,showCollect,paintCounters} from './coin-collect.js?v=158';
-import {openDesigner} from './character-designer.js?v=158';
-import {watchReturn} from './star-shop.js?v=158';
-import {log as playLog} from './play-log.js?v=158';
-import {makeSculptedHorse} from './horse-sculpt.js?v=158';
-import {addTackAndRider} from './rider-sculpt.js?v=158';
-import {buildExpansion,buildSkyWorld,SKY} from './world-expansion.js?v=158';
-import {SQUARE} from './world-regions.mjs?v=158';
-import {buildTown,doorNear,SHOP_PARTS,FOUNTAIN,PLAZA_R,buildActivities,ACTIVITIES,ACTIVITY_BY_ID,HOSTS,LOOKOUTS,FISHING,PUMPKINS,lakeStone,STONES,startRun,stepRun,runStatus,runAbandoned,pickFish,inSnow,ARENA,ARENA_POST,ARENA_STEWARD,ARENA_CLASSES,arenaCourse,arenaRivals,startRound,stepRound,roundStatus,inArena,PRACTICE,crossed,judgeJump,PLACE_NAME,ROSETTE} from './world-town.mjs?v=158';
+import {makeChibiCharacter} from './chibi-character.js?v=160';import {setPeopleLight,resetPeopleLight,cullPeople} from './vroid-character.js?v=160';
+import {loadLook,saveLook,lookFromSeed} from './character-looks.mjs?v=160';
+import {queueCoins,showCollect,paintCounters} from './coin-collect.js?v=160';
+import {openDesigner} from './character-designer.js?v=160';
+import {watchReturn} from './star-shop.js?v=160';
+import {log as playLog} from './play-log.js?v=160';
+import {makeSculptedHorse} from './horse-sculpt.js?v=160';
+import {addTackAndRider} from './rider-sculpt.js?v=160';
+import {buildExpansion,buildSkyWorld,SKY} from './world-expansion.js?v=160';
+import {SQUARE} from './world-regions.mjs?v=160';
+import {CAMP,buildTown,doorNear,SHOP_PARTS,FOUNTAIN,PLAZA_R,buildActivities,ACTIVITIES,ACTIVITY_BY_ID,HOSTS,LOOKOUTS,FISHING,PUMPKINS,lakeStone,STONES,startRun,stepRun,runStatus,runAbandoned,pickFish,inSnow,ARENA,ARENA_POST,ARENA_STEWARD,ARENA_CLASSES,arenaCourse,arenaRivals,startRound,stepRound,roundStatus,inArena,PRACTICE,crossed,judgeJump,PLACE_NAME,ROSETTE} from './world-town.mjs?v=160';
 // The walk-in shops on the map (they open from the village square; the vet is its own place by the home trail).
 // The step 3 activities on the map; fast travel takes you to the nearest named place.
 const nearestLoc=(x,z)=>LOCATIONS.reduce((b,l)=>Math.hypot(l.x-x,l.z-z)<Math.hypot(b.x-x,b.z-z)?l:b).id;
@@ -17,52 +17,54 @@ const ACT_PINS=[{id:'act-arena',name:'Clover Downs Show Ring',x:ARENA.x,z:ARENA.
   {id:'act-fish',name:'Fishing dock',x:FISHING.x,z:FISHING.z,kind:'activity',icon:'🎣',go:'pond',seen:true,description:'Cast off the end of the dock and tap when the float dips.'},
   {id:'act-tree',name:'Treehouse camp',x:LOOKOUTS[0].x,z:LOOKOUTS[0].z,kind:'activity',icon:'🌳',go:'forest',seen:true,description:'Climb the ladder for a view over Mosswood.'}];
 const SHOP_PINS=SHOP_PARTS.map(({shop:s})=>({id:'shop-'+s.id,name:s.name,x:s.x,z:s.z,kind:'village',icon:{bakery:'🥐',post:'✉️',hall:'🏛️',store:'🛒',vet:'🩺',hut:'🛖',dairy:'🐄',lighthouse:'🗼'}[s.kind]||'🏠',go:s.id==='vet'?'home':'village',seen:true,description:'Walk in on foot; your horse waits at the rail outside.'}));
-import {createAdventureUI} from './adventure-ui.js?v=158';
-import {buildStations} from './world-stations.js?v=158';
-import {BOARD_GAMES} from './board-games.mjs?v=158';
-import {VALLEY_GAMES} from './valley-games.mjs?v=158';
-import {createWorldQuests} from './world-quests.js?v=158';
-import {R,REGIONS,regionAt} from './world-regions.mjs?v=158';
-import {createHud} from './world-hud.js?v=158';
-import {cornLayout,CORN,inMaze} from './world-cornmaze.mjs?v=158';
-import {createCornMaze} from './world-cornmaze-3d.js?v=158';
-import {createWorldMap} from './world-map.js?v=158';
-import {todayActivities,loadDone,markDone} from './world-today.mjs?v=158';
-import {createWorldNetwork,roomError} from './world-network.js?v=158';
-import {openFriends,openProfile,openInvite} from './friends.js?v=158';
-import {testOn,TEST_ME} from './test-friends.js?v=158';
-import {sfx,hoofLoop,voiceRate,ambLoop,ambStop,npcVoice} from './sfx.js?v=158';
-import {want as wantMusic} from './music.js?v=158';
-import * as G from './riding.mjs?v=158';
-import * as RanchUI from './ranch-ui.js?v=158';
-import {newHorse,condition,level as horseLevel,marketStock,dayNo as dayNumber,makeCoat,breedOf,COATS} from './ranch.mjs?v=158';
-import {isMidnight,isSighting} from './legends.mjs?v=158';
-import {entryNeeds} from './show-course.mjs?v=158';
-import {loadWallet,saveWallet,buyOutfit,OUTFITS,outfitOf,buyGear,GEAR_ITEMS,coinWords,WINTER_GEAR} from './character-looks.mjs?v=158';
-import {BAYS,inStore,DOOR,COUNTER,KEEPER,STORE,HALL_X,MARKET,inMarketHall} from './barn-interior.js?v=158';
-import {SHOPKEEPER,greeting as shopGreeting,tip as shopTip,pitch as shopPitch,chatter as shopChatter,NO_HORSES} from './shop-talk.mjs?v=158';
-import {RACES,raceName,racePhase,standings,ordinal,raceTime,steepleSeed,safeName} from './friends-logic.mjs?v=158';
-import {FIELDS,RIVERS,riverAt,bridgeFloor,SKYGATE,TOWN2,FARMS,terrainHeight as farmGround,LOCATIONS,MAP_PATHS,BARN_GAMES,INDOOR_GAMES,RACE_GATES,SERVICES,normalizeAdventure,questList,fogBits,fogString,fogMark,onBridge,onCobbles} from './world-content.mjs?v=158';
-import {CLOUDSTEP,cloudstepAt,onCloudstep,trailPhi,climbRoute,trailPoint,trailRadius,START as CLIMB_START,TRAIL_END} from './world-cloudstep.mjs?v=158';
-import {terrainTextures,addTerrain,createGrass} from './world-terrain.js?v=158';
-import {buildCloudstep} from './world-cloudstep-3d.js?v=158';
-import {buildSkiLift,VALLEY_STATION} from './world-skilift.js?v=158';
-import {createValleyLife} from './world-life.js?v=158';
-import {createLegends} from './world-legends.js?v=158';
-import * as T from './vendor/three-0.180.0/three.module.js?v=158';
-import {MARKERS,OBSTACLES,groundHeight,movementVector,moveActor,blocked,normalizeStamps,collectMarkers,followCameraPosition,tooSteep,slopeAt,solidBlocked} from './world-logic.mjs?v=158';
-import {SoftwareRenderer} from './world-renderer.js?v=158';
-import {findGroundPath,steeringStep} from './world-navigation.mjs?v=158';
-import {createChunks,bakeTree,treeGeometry,treeOut,TREE_PALS} from './world-chunks.js?v=158';
-import {createLanterns} from './world-lanterns.js?v=158';
-import {buildTudorShop,detailTextures,detailKind,addDetail,squareProps,forestLogs} from './world-tudor.js?v=158';
-import {BIOMES,biomeAt,wildness,roadDistance,ROAD_HALF} from './world-wild.mjs?v=158';
-import {createSky,createGlow,createMotes,waterize,WATER_TIME,WATER_NIGHT} from './world-sky.js?v=158';
-import {buildStall} from './stall-scene.js?v=158';
-import {createHomeHorse} from './home-horse.js?v=158';
+import {createAdventureUI} from './adventure-ui.js?v=160';
+import {buildStations} from './world-stations.js?v=160';
+import {BOARD_GAMES} from './board-games.mjs?v=160';
+import {VALLEY_GAMES} from './valley-games.mjs?v=160';
+import {createWorldQuests} from './world-quests.js?v=160';
+import {R,REGIONS,regionAt} from './world-regions.mjs?v=160';
+import {createHud} from './world-hud.js?v=160';
+import {cornLayout,CORN,inMaze} from './world-cornmaze.mjs?v=160';
+import {createCornMaze} from './world-cornmaze-3d.js?v=160';
+import {createWorldMap} from './world-map.js?v=160';
+import {todayActivities,loadDone,markDone} from './world-today.mjs?v=160';
+import {createWorldNetwork,roomError} from './world-network.js?v=160';
+import {openFriends,openProfile,openInvite} from './friends.js?v=160';
+import {testOn,TEST_ME} from './test-friends.js?v=160';
+import {sfx,hoofLoop,voiceRate,ambLoop,ambStop,npcVoice} from './sfx.js?v=160';
+import {want as wantMusic} from './music.js?v=160';
+import * as G from './riding.mjs?v=160';
+import * as RanchUI from './ranch-ui.js?v=160';
+import {newHorse,condition,level as horseLevel,marketStock,dayNo as dayNumber,makeCoat,breedOf,COATS} from './ranch.mjs?v=160';
+import {isMidnight,isSighting} from './legends.mjs?v=160';
+import {entryNeeds} from './show-course.mjs?v=160';
+import {loadWallet,saveWallet,buyOutfit,OUTFITS,outfitOf,buyGear,GEAR_ITEMS,coinWords,WINTER_GEAR} from './character-looks.mjs?v=160';
+import {BAYS,inStore,DOOR,COUNTER,KEEPER,STORE,HALL_X,MARKET,inMarketHall} from './barn-interior.js?v=160';
+import {SHOPKEEPER,greeting as shopGreeting,tip as shopTip,pitch as shopPitch,chatter as shopChatter,NO_HORSES} from './shop-talk.mjs?v=160';
+import {RACES,raceName,racePhase,standings,ordinal,raceTime,steepleSeed,safeName} from './friends-logic.mjs?v=160';
+import {FIELDS,RIVERS,riverAt,bridgeFloor,SKYGATE,TOWN2,FARMS,terrainHeight as farmGround,LOCATIONS,MAP_PATHS,BARN_GAMES,INDOOR_GAMES,RACE_GATES,SERVICES,normalizeAdventure,questList,fogBits,fogString,fogMark,onBridge,onCobbles} from './world-content.mjs?v=160';
+import {CLOUDSTEP,cloudstepAt,onCloudstep,trailPhi,climbRoute,trailPoint,trailRadius,START as CLIMB_START,TRAIL_END} from './world-cloudstep.mjs?v=160';
+import {terrainTextures,addTerrain,createGrass} from './world-terrain.js?v=160';
+import {buildCloudstep} from './world-cloudstep-3d.js?v=160';
+import {buildSkiLift,VALLEY_STATION} from './world-skilift.js?v=160';
+import {createValleyLife} from './world-life.js?v=160';
+import {createLegends} from './world-legends.js?v=160';
+import * as T from './vendor/three-0.180.0/three.module.js?v=160';
+import {MARKERS,OBSTACLES,groundHeight,movementVector,moveActor,blocked,normalizeStamps,collectMarkers,followCameraPosition,tooSteep,slopeAt,solidBlocked} from './world-logic.mjs?v=160';
+import {SoftwareRenderer} from './world-renderer.js?v=160';
+import {findGroundPath,steeringStep} from './world-navigation.mjs?v=160';
+import {createChunks,bakeTree,treeGeometry,treeOut,TREE_PALS} from './world-chunks.js?v=160';
+import {createLanterns} from './world-lanterns.js?v=160';
+import {buildTudorShop,detailTextures,detailKind,addDetail,squareProps,forestLogs} from './world-tudor.js?v=160';
+import {BIOMES,biomeAt,wildness,roadDistance,ROAD_HALF} from './world-wild.mjs?v=160';
+import {createSky,createGlow,createMotes,waterize,WATER_TIME,WATER_NIGHT} from './world-sky.js?v=160';
+import {buildStall} from './stall-scene.js?v=160';
+import {createHomeHorse} from './home-horse.js?v=160';
 // What each collect activity calls the things you find (v106: it said “Owl” for everything).
 const FOUND_WORDS={owls:['Owl','Hoo-hoo.'],sheaves:['Sheaf',''],posies:['Posy',''],lanterns:['Lantern','It glows.'],eggs:['Egg','Careful, don’t drop it!'],piglets:['Piglet','It trots off home. Oink!']};
-import {loadStall} from './stall-decor.mjs?v=158';
+import {loadStall} from './stall-decor.mjs?v=160';
+import {createHeights} from './world-heights.mjs?v=160';
+import {buildHouses} from './world-houses.js?v=160';
 const WEATHER_NEWS={clear:'The sky is clearing. Lovely riding weather.',partly:'The clouds are breaking up.',overcast:'Clouds are rolling in.',fog:'Fog is settling over the valley. Stay close to the paths.',rain:'Rain is rolling in. The trails are muddy, so you go a little slower.',storm:'A thunderstorm! Mud slows you down and the gusts push you about.',windy:'The wind is picking up. Gusts nudge you sideways.',snow:'Snow is falling. Deep snow slows you down a little.'};
 
 export function createWorld(host,{horses,storageKey='guest',preferredHorse='willow',onBarnCare=()=>{},intent=null}){
@@ -86,6 +88,9 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   // See-through view: anything standing between the camera and you (trees, buildings, props) fades to a soft
   // dither inside a narrow tube along the line of sight, so it never hides your character. Shadows are unaffected.
   const sightU={uSightA:{value:new T.Vector3()},uSightB:{value:new T.Vector3()},uSightR:{value:2.5}};
+  // v159 walk-in houses (world-houses.js): two world boxes where everything outdoors is cut away: the house you are in
+  // above waist height (its upper walls and roof) and its doorway. Empty (lo > hi) the rest of the time.
+  const cutU={uCutALo:{value:new T.Vector3(1,1,1)},uCutAHi:{value:new T.Vector3(0,0,0)},uCutBLo:{value:new T.Vector3(1,1,1)},uCutBHi:{value:new T.Vector3(0,0,0)}};
   // Snow cover: upward-facing surfaces outdoors (ground, paths, roofs, treetops) blend to snow by uSnow (0–1,
   // set each frame from the sky's snow cover; 0 inside the barn). Walls and steep faces stay their own colour.
   const snowU={uSnow:{value:0}};
@@ -94,9 +99,10 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vSnowUp;varying vec2 vSnowXZ;uniform float uSnow;').replace('#include <color_fragment>',`#include <color_fragment>
       if(uSnow>0.){float n=fract(sin(dot(floor(vSnowXZ*1.4),vec2(12.9898,78.233)))*43758.5453);
         float k=uSnow*smoothstep(.3,.75,vSnowUp)*(.82+.18*n);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.93,.95,.99),k);}`);}
-  function seeThrough(m){m.onBeforeCompile=sh=>{addSnow(sh);Object.assign(sh.uniforms,sightU);
+  function seeThrough(m){m.onBeforeCompile=sh=>{addSnow(sh);Object.assign(sh.uniforms,sightU,cutU);
     sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vSightW;').replace('#include <project_vertex>','#include <project_vertex>\n#ifdef USE_INSTANCING\nvSightW=(modelMatrix*instanceMatrix*vec4(transformed,1.0)).xyz;\n#else\nvSightW=(modelMatrix*vec4(transformed,1.0)).xyz;\n#endif');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vSightW;uniform vec3 uSightA;uniform vec3 uSightB;uniform float uSightR;').replace('void main() {',`void main() {
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vSightW;uniform vec3 uSightA;uniform vec3 uSightB;uniform float uSightR;uniform vec3 uCutALo;uniform vec3 uCutAHi;uniform vec3 uCutBLo;uniform vec3 uCutBHi;').replace('void main() {',`void main() {
+      if(all(greaterThan(vSightW,uCutALo))&&all(lessThan(vSightW,uCutAHi)))discard;if(all(greaterThan(vSightW,uCutBLo))&&all(lessThan(vSightW,uCutBHi)))discard;
       {vec3 ab=uSightB-uSightA;float len=length(ab);vec3 dir=ab/max(len,1e-3);float t=dot(vSightW-uSightA,dir);
        if(t>.3&&t<len-1.3){float d=length(vSightW-(uSightA+dir*t));float k=1.-smoothstep(uSightR*.55,uSightR,d);k*=smoothstep(len-1.3,len-2.6,t);
         if(k>0.){vec2 p=mod(floor(gl_FragCoord.xy),4.);float b=mod(p.x*8.+p.y*4.+mod(p.x,2.)*2.+mod(p.y,2.)*1.,16.)/16.;if(b<k*.85)discard;}}}`);
@@ -377,6 +383,9 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   const town=buildTown({T,outdoors,geo,mat,box,ico,plaque:expansion.plaque,groundY:(x,z)=>chunks.surfaceHeight(x,z),tudor:buildTudorShop,real:squareProps(T,geo,mat)});let inShop=null,shopCam=0,doorTold=null;
   // Step 3: something new in every region (world-town.mjs: courses, owls, pumpkins, Snowy Pines, stones, fishing).
   const acts=buildActivities({T,outdoors,geo,mat,box,ico,label,groundY:(x,z)=>chunks.surfaceHeight(x,z)});let run=null,vista=null,vistaK=0,stoneRun=null,fishing=null;
+  // v159: raised floors you walk on (world-heights.mjs). upY = your height while up there (null on the ground); climbing
+  // = a short eased ride up or down a ladder; CLIMBS = the actions up there and at the foot of each way up.
+  const HT=createHeights(),CLIMBS=[];let upY=null,upClimb=null,houses=null;
   const vistaPos=new T.Vector3(),vistaLook=new T.Vector3();
   const hostFigs=HOSTS.map(h=>{const f=figure(lookFromSeed('host-'+h.id));const a=ACTIVITY_BY_ID[h.activity],fx=a?a.points[0]:TOWN2.clock;f.root.position.set(h.x,chunks.surfaceHeight(h.x,h.z),h.z);f.root.rotation.y=Math.atan2(fx.x-h.x,fx.z-h.z)+Math.PI;outdoors.add(f.root);return {h,f};});
   {const h={id:'steward',x:ARENA_STEWARD.x,z:ARENA_STEWARD.z},f=figure(lookFromSeed('host-steward'));f.root.position.set(h.x,chunks.surfaceHeight(h.x,h.z),h.z);f.root.rotation.y=Math.atan2(-6,-10)+Math.PI;outdoors.add(f.root);hostFigs.push({h,f});}   // Marigold, the show ring steward
@@ -708,8 +717,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     const PODS=[0,1,2,3,4].map(i=>{const a=i/5*Math.PI*2+.3;return {x:C.x+Math.cos(a)*12,z:C.z+Math.sin(a)*12,h:7.5+(i%2)*2.5};});
     const LADDER={x:C.x,z:C.z+2.6};
     for(const p of [{x:C.x,z:C.z,r:1.9},...PODS.map(p=>({...p,r:1.1}))])outdoorObstacles.push({kind:'box',x:p.x,z:p.z,hx:p.r,hz:p.r,height:30});
-    LOOKOUTS.push({id:'treetop',name:'Glowmoss Hollow',x:LADDER.x,z:LADDER.z,reach:2.6,pos:[C.x+2.4,groundHeight(C.x,C.z)+23.5,C.z+2.4],look:[C.x+40,groundHeight(C.x,C.z)+6,C.z+30],
-      line:'Up in Glowmoss Hollow, the treetop village! Wren the keeper waves from her lantern.'});
+    // v159: the ladder is a real climb now (CLIMBS, registered in build()); decks, bridges and stairs are walkable.
     // v118 (Yoshi: "it should be deep forest of many trees and the village in the middle"): a thick old wood ~85 m round
     // the village. One obstacle for all of it (a 'lake' whose pass() asks a 6 m grid of trees), so collisions stay cheap.
     const WOOD_R=85,CLEAR=21;const WOOD=[],GRID=new Map(),gk=(x,z)=>Math.floor(x/6)+','+Math.floor(z/6);
@@ -743,29 +751,71 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
         cap=new T.MeshStandardMaterial({color:'#8a5a2e',roughness:.85,flatShading:true}),shell=new T.MeshStandardMaterial({color:'#d6a866',roughness:.7}),glow=new T.MeshBasicMaterial({color:'#ffd27a'}),rope=new T.MeshStandardMaterial({color:'#cdb88e',roughness:1});
       const trunk=(x,z,r,h)=>{const t=new T.Mesh(new T.CylinderGeometry(r*.75,r*1.25,h,9),bark);t.position.set(x,groundY(x,z)+h/2,z);t.castShadow=true;grp.add(t);for(let k=0;k<5;k++){const rt=new T.Mesh(new T.ConeGeometry(r*.5,r*1.6,5),bark);const a=k*1.26;rt.position.set(x+Math.cos(a)*r*1.1,groundY(x,z)+r*.5,z+Math.sin(a)*r*1.1);rt.rotation.set(Math.sin(a)*.9,0,-Math.cos(a)*.9);grp.add(rt);}};
       const crownAt=(x,y,z,s)=>{for(let k=0;k<6;k++){const b=new T.Mesh(new T.IcosahedronGeometry(s*(.7+.3*Math.sin(k*2.1)),0),moss);b.position.set(x+Math.cos(k)*s*.9,y+(k%2)*s*.5,z+Math.sin(k)*s*.9);b.castShadow=true;grp.add(b);}};
-      const deck=(x,y,z,r)=>{const d=new T.Mesh(new T.CylinderGeometry(r,r,.35,18),plank);d.position.set(x,y,z);d.receiveShadow=true;grp.add(d);for(let k=0;k<14;k++){const a=k/14*Math.PI*2,p=new T.Mesh(new T.CylinderGeometry(.06,.06,1),plank);p.position.set(x+Math.cos(a)*r*.96,y+.6,z+Math.sin(a)*r*.96);grp.add(p);}
-        const rail=new T.Mesh(new T.TorusGeometry(r*.96,.05,4,24),rope);rail.rotation.x=Math.PI/2;rail.position.set(x,y+1.1,z);grp.add(rail);};
+      // v159: gaps (angles a, x=cos a, z=sin a) open the rail where a bridge or stair comes in; cut = [a0,a1] stairwell.
+      const inGap=(a,gaps)=>gaps.some(([g0,g1])=>{let u=a-g0;u-=Math.floor(u/(Math.PI*2))*Math.PI*2;return u<=g1-g0;});
+      const deck=(x,y,z,r,gaps=[],cut=null)=>{const g=cut?new T.CylinderGeometry(r,r,.35,24,1,false,Math.PI/2-cut[0],Math.PI*2-(cut[1]-cut[0])):new T.CylinderGeometry(r,r,.35,18);
+        const d=new T.Mesh(g,plank);if(cut)d.material=plankDS;d.position.set(x,y,z);d.receiveShadow=true;grp.add(d);
+        for(let k=0;k<20;k++){const a=k/20*Math.PI*2;if(inGap(a,gaps))continue;const p=new T.Mesh(new T.CylinderGeometry(.06,.06,1),plank);p.position.set(x+Math.cos(a)*r*.96,y+.6,z+Math.sin(a)*r*.96);grp.add(p);}
+        const N=48;let run=null;const arcs=[];for(let k=0;k<=N;k++){const a=k/N*Math.PI*2,open=k<N&&!inGap(a+Math.PI/N,gaps);if(open&&run==null)run=a;if((!open||k===N)&&run!=null){arcs.push([run,a]);run=null;}}
+        for(const [a0,a1] of arcs){const rg=new T.TorusGeometry(r*.96,.05,4,Math.max(2,Math.round((a1-a0)*8)),a1-a0).rotateZ(a0).rotateX(Math.PI/2);const rail=new T.Mesh(rg,rope);rail.position.set(x,y+1.1,z);grp.add(rail);}};
       const acorn=(x,y,z,s)=>{const b=new T.Mesh(new T.SphereGeometry(s,14,10),shell);b.scale.y=1.15;b.position.set(x,y+s*1.05,z);grp.add(b);const c=new T.Mesh(new T.SphereGeometry(s*1.12,14,8,0,Math.PI*2,0,Math.PI/2.1),cap);c.position.set(x,y+s*1.5,z);grp.add(c);
         const st=new T.Mesh(new T.CylinderGeometry(.08,.12,.6,6),cap);st.position.set(x,y+s*2.55,z);grp.add(st);const door=new T.Mesh(new T.CircleGeometry(s*.38,12),new T.MeshStandardMaterial({color:'#5b3a22'}));door.position.set(x,y+s*.6,z+s*.98);grp.add(door);
         const win=new T.Mesh(new T.CircleGeometry(s*.16,10),glow);win.position.set(x+s*.55,y+s*1.25,z+s*.8);win.lookAt(x+s*2,y+s*1.25,z+s*3);grp.add(win);lanterns.push(win);};
       const lamp=(x,y,z)=>{const m=new T.Mesh(new T.SphereGeometry(.16,8,6),glow);m.position.set(x,y,z);grp.add(m);lanterns.push(m);};
-      const bridge=(a,b)=>{const n=12,dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),yaw=Math.atan2(dx,dz);for(let i=1;i<n;i++){const t=i/n,sag=Math.sin(t*Math.PI)*1.1,y=a.y+(b.y-a.y)*t-sag;
-          const pl=new T.Mesh(new T.BoxGeometry(1.3,.08,len/n*.8),plank);pl.position.set(a.x+dx*t,y,a.z+dz*t);pl.rotation.y=yaw;grp.add(pl);if(i%3===0)lamp(a.x+dx*t,y+1.25,a.z+dz*t);}
+      const bridge=(a,b)=>{const n=12,dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),yaw=Math.atan2(dx,dz);for(let i=0;i<=n;i++){const t=i/n,sag=Math.sin(t*Math.PI)*1.1,y=a.y+(b.y-a.y)*t-sag;
+          const pl=new T.Mesh(new T.BoxGeometry(1.3,.08,len/n*.8),plank);pl.position.set(a.x+dx*t,y,a.z+dz*t);pl.rotation.y=yaw;grp.add(pl);if(i%3===0&&i&&i<n){const sx=Math.cos(yaw)*.68,sz=-Math.sin(yaw)*.68;lamp(a.x+dx*t+sx,y+.74,a.z+dz*t+sz);const cord=new T.Mesh(new T.CylinderGeometry(.012,.012,.2,3),rope);cord.position.set(a.x+dx*t+sx,y+.9,a.z+dz*t+sz);grp.add(cord);}}
+        for(const t of [0,1])for(const s of [-1,1]){const post=new T.Mesh(new T.CylinderGeometry(.06,.07,1.1,5),plank);post.position.set(a.x+dx*t+Math.cos(yaw)*s*.68,(t?b.y:a.y)+.5,a.z+dz*t-Math.sin(yaw)*s*.68);grp.add(post);}
         for(const s of [-1,1]){const pts=[];for(let i=0;i<=n;i++){const t=i/n;pts.push(new T.Vector3(a.x+dx*t+Math.cos(yaw)*s*.68,a.y+(b.y-a.y)*t-Math.sin(t*Math.PI)*1.1+1,a.z+dz*t-Math.sin(yaw)*s*.68));}
           grp.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts),16,.035,4),rope));}};
-      // the great tree
-      trunk(C.x,C.z,1.9,26);crownAt(C.x,y0+27,C.z,5);deck(C.x,y0+9,C.z,4.2);deck(C.x,y0+16,C.z,3.4);deck(C.x,y0+22.5,C.z,3);
-      acorn(C.x+2.2,y0+9.2,C.z-1.6,1.3);acorn(C.x-2,y0+16.2,C.z+1.2,1.1);
+      // the great tree (v159: everything here is walkable: decks, the spiral stairs, the rope bridges, the pods)
+      const plankDS=new T.MeshStandardMaterial({color:'#b48a5a',roughness:.9,side:T.DoubleSide});
+      const TR=(y)=>2.375-.95*(y-y0)/26;   // the great trunk's radius at height y (CylinderGeometry 1.9*.75 → 1.9*1.25, 26 m)
+      const D1=y0+9,D2=y0+16,D3=y0+22.5,TOP=.175;   // deck centres; their walking surface is TOP above
+      // spiral stairs: A from deck 1 up to deck 2, B from deck 2 up to deck 3 (angle a: x=cos a, z=sin a)
+      const SA={a0:.2,a1:.2+7.4},SB={a0:SA.a1+.9,a1:SA.a1+.9+6.9};
+      const podA=PODS.map(p=>Math.atan2(p.z-C.z,p.x-C.x));   // bridge directions from the centre
+      const gap=(a,w)=>[a-w,a+w];
+      trunk(C.x,C.z,1.9,26);crownAt(C.x,y0+27,C.z,5);
+      const LAD=2.18,LX=Math.cos(LAD),LZ_=Math.sin(LAD);   // the ladder: on the side between two pod bridges
+      deck(C.x,D1,C.z,4.2,[...podA.map(a=>gap(a,.2)),gap(LAD,.16)]);
+      deck(C.x,D2,C.z,3.4,[gap(SB.a0,.3)],[SA.a1-1.15,SA.a1+.02]);
+      deck(C.x,D3,C.z,3,[],[SB.a1-1.2,SB.a1+.02]);
+      acorn(C.x+2.2,D1+.2,C.z-1.6,1.3);acorn(C.x-2,D2+.2,C.z+1.2,1.1);
       crown=new T.Mesh(new T.SphereGeometry(.55,12,10),new T.MeshBasicMaterial({color:'#fff1b8'}));crown.position.set(C.x,y0+24.4,C.z);grp.add(crown);
       const halo=new T.Sprite(new T.SpriteMaterial({map:glowTexture(),color:'#ffd27a',transparent:true,depthWrite:false,blending:T.AdditiveBlending}));halo.scale.setScalar(6);halo.position.copy(crown.position);grp.add(halo);
-      // ladder up the great tree (front)
-      for(let k=0;k<44;k++){const r=new T.Mesh(new T.BoxGeometry(.9,.07,.07),plank);r.position.set(LADDER.x,y0+.4+k*.5,C.z+1.95);grp.add(r);}for(const s of [-.45,.45]){const sr=new T.Mesh(new T.BoxGeometry(.07,22.5,.07),plank);sr.position.set(LADDER.x+s,y0+11.25,C.z+1.95);grp.add(sr);}
+      // ladder up the great tree (front): from the roots to deck 1, standing just off the bark (it used to sit inside
+      // the trunk's flared foot and run on through the upper decks).
+      const LH=D1+TOP-y0+1,LP=(y,s=0)=>new T.Vector3(C.x+LX*(TR(y)+.18)-LZ_*s,y,C.z+LZ_*(TR(y)+.18)+LX*s);
+      for(let k=0;k*.45+.35<LH-.4;k++){const yy=y0+.35+k*.45,r=new T.Mesh(new T.BoxGeometry(.9,.07,.07),plank);r.position.copy(LP(yy));r.rotation.y=Math.PI/2-LAD;grp.add(r);}
+      for(const s of [-.45,.45]){const b=LP(y0,s),t=LP(y0+LH,s),dir=t.clone().sub(b),len=dir.length();const sr=new T.Mesh(new T.BoxGeometry(.07,len,.07),plank);sr.position.copy(b).addScaledVector(dir,.5);sr.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),dir.normalize());grp.add(sr);}
       // the pods
-      for(const p of PODS){const yb=groundY(p.x,p.z);trunk(p.x,p.z,1.05,p.h+6);crownAt(p.x,yb+p.h+7,p.z,3);deck(p.x,yb+p.h,p.z,2.6);acorn(p.x,yb+p.h+.2,p.z,1.15);
-        const k=Math.hypot(p.x-C.x,p.z-C.z),ux=(C.x-p.x)/k,uz=(C.z-p.z)/k;bridge({x:p.x+ux*2.5,y:yb+p.h+.2,z:p.z+uz*2.5},{x:C.x-ux*4.1,y:y0+9.2,z:C.z-uz*4.1});}
+      for(const p of PODS){const yb=groundY(p.x,p.z);trunk(p.x,p.z,1.05,p.h+6);crownAt(p.x,yb+p.h+7,p.z,3);const toC=Math.atan2(C.z-p.z,C.x-p.x);
+        const gaps=[gap(toC,.35)];for(const q of PODS)if(q!==p){const i=PODS.indexOf(p),j=PODS.indexOf(q);if((i%2===0&&j===(i+1)%PODS.length)||(j%2===0&&i===(j+1)%PODS.length))gaps.push(gap(Math.atan2(q.z-p.z,q.x-p.x),.35));}
+        deck(p.x,yb+p.h,p.z,2.6,gaps);acorn(p.x,yb+p.h+.2,p.z,1.15);
+        const k=Math.hypot(p.x-C.x,p.z-C.z),ux=(C.x-p.x)/k,uz=(C.z-p.z)/k;bridge({x:p.x+ux*2.5,y:yb+p.h+.2,z:p.z+uz*2.5},{x:C.x-ux*4.1,y:D1+.2,z:C.z-uz*4.1});}
       for(let i=0;i<PODS.length;i++){const a=PODS[i],b=PODS[(i+1)%PODS.length];if(i%2)continue;const ya=groundY(a.x,a.z)+a.h+.2,yb=groundY(b.x,b.z)+b.h+.2,k=Math.hypot(b.x-a.x,b.z-a.z),ux=(b.x-a.x)/k,uz=(b.z-a.z)/k;bridge({x:a.x+ux*2.5,y:ya,z:a.z+uz*2.5},{x:b.x-ux*2.5,y:yb,z:b.z-uz*2.5});}
-      // spiral stair from deck 1 → 2 → 3 on the great tree
-      for(let k=0;k<26;k++){const a=k*.48,yy=y0+9.3+k*.5;const st=new T.Mesh(new T.BoxGeometry(1.1,.12,.5),plank);st.position.set(C.x+Math.cos(a)*2.4,yy,C.z+Math.sin(a)*2.4);st.rotation.y=-a;grp.add(st);}
+      // spiral stairs on the great tree: each step sits on the walking surface (HT helix) it belongs to
+      for(const [S,yA,yB] of [[SA,D1+TOP,D2+TOP],[SB,D2+TOP,D3+TOP]]){const n=Math.round((yB-yA)/.4);for(let k=1;k<=n;k++){const t=(k-.5)/n,a=S.a0+(S.a1-S.a0)*t,yy=yA+(yB-yA)*k/n-.06,rr=(TR(yy)+3.05)/2;
+        const st=new T.Mesh(new T.BoxGeometry(3.05-TR(yy)+.1,.12,.62),plank);st.position.set(C.x+Math.cos(a)*rr,yy,C.z+Math.sin(a)*rr);st.rotation.y=-a;grp.add(st);
+        if(k%2===0){const post=new T.Mesh(new T.CylinderGeometry(.05,.05,1.05),plank);post.position.set(C.x+Math.cos(a)*3.0,yy+.55,C.z+Math.sin(a)*3.0);grp.add(post);}}
+        const pts=[];for(let k=0;k<=40;k++){const t=k/40,a=S.a0+(S.a1-S.a0)*t;pts.push(new T.Vector3(C.x+Math.cos(a)*3.0,yA+(yB-yA)*t+1.05,C.z+Math.sin(a)*3.0));}grp.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts),80,.04,4),rope));}
+      // ---- the walking surfaces (world-heights.mjs). Bridges: a 1.3 m deck, so 0.9 m to walk on; ends reach into the decks.
+      const surf=s=>HT.add({tree:true,...s});
+      surf({kind:'disc',id:'deck1',x:C.x,z:C.z,r:3.75,hole:TR(D1)+.35,y:D1+TOP,block:[{x:C.x+2.2,z:C.z-1.6,r:1.55}]});
+      surf({kind:'disc',id:'deck2',x:C.x,z:C.z,r:2.95,hole:TR(D2)+.35,y:D2+TOP,gap:[SA.a1-1.15,SA.a1+.02],block:[{x:C.x-2,z:C.z+1.2,r:1.35}]});
+      surf({kind:'disc',id:'deck3',x:C.x,z:C.z,r:2.55,hole:TR(D3)+.3,y:D3+TOP,gap:[SB.a1-1.2,SB.a1+.02]});
+      surf({kind:'helix',id:'stairA',x:C.x,z:C.z,r0:TR(D1)+.15,r1:2.95,a0:SA.a0,a1:SA.a1,y0:D1+TOP,y1:D2+TOP});
+      surf({kind:'helix',id:'stairB',x:C.x,z:C.z,r0:TR(D2)+.15,r1:2.95,a0:SB.a0,a1:SB.a1,y0:D2+TOP,y1:D3+TOP});
+      const walkBridge=(a,b)=>surf({kind:'strip',ax:a.x,az:a.z,ay:a.y+.04,bx:b.x,bz:b.z,by:b.y+.04,w:.95,sag:1.1,pad:.8});
+      for(const p of PODS){const yb=groundY(p.x,p.z);surf({kind:'disc',id:'pod',x:p.x,z:p.z,r:2.15,y:yb+p.h+TOP,block:[{x:p.x,z:p.z,r:1.3}]});
+        const k=Math.hypot(p.x-C.x,p.z-C.z),ux=(C.x-p.x)/k,uz=(C.z-p.z)/k;walkBridge({x:p.x+ux*2.5,y:yb+p.h+.2,z:p.z+uz*2.5},{x:C.x-ux*4.1,y:D1+.2,z:C.z-uz*4.1});}
+      for(let i=0;i<PODS.length;i+=2){const a=PODS[i],b=PODS[(i+1)%PODS.length];const ya=groundY(a.x,a.z)+a.h+.2,yb=groundY(b.x,b.z)+b.h+.2,k=Math.hypot(b.x-a.x,b.z-a.z),ux=(b.x-a.x)/k,uz=(b.z-a.z)/k;walkBridge({x:a.x+ux*2.5,y:ya,z:a.z+uz*2.5},{x:b.x-ux*2.5,y:yb,z:b.z-uz*2.5});}
+      // ---- ways up and down, and Wren at the top
+      const foot={x:C.x+LX*(TR(y0)+.62),z:C.z+LZ_*(TR(y0)+.62)},topSpot={x:C.x+LX*(TR(D1)+.75),z:C.z+LZ_*(TR(D1)+.75)};
+      CLIMBS.push({id:'tree-up',x:foot.x,z:foot.z,r:2.2,ground:true,label:'Climb up to Glowmoss Hollow',go:()=>climbTo({x:foot.x,z:foot.z,y:groundY(foot.x,foot.z)},{x:topSpot.x,z:topSpot.z,y:D1+TOP},{face:C,
+        then:()=>{if(!told){told=true;tell('Glowmoss Hollow! Walk the rope bridges to the pods, or take the spiral stairs up to Wren’s lantern.',7);}}})});
+      CLIMBS.push({id:'tree-down',x:topSpot.x,z:topSpot.z,y:D1+TOP,r:1.4,label:'Climb down the ladder',go:()=>climbTo({x:topSpot.x,z:topSpot.z,y:D1+TOP},{x:foot.x,z:foot.z,y:groundY(foot.x,foot.z)},{face:C})});
+      CLIMBS.push({id:'wren',x:C.x,z:C.z,y:D3+TOP,r:3.2,label:'Talk to Wren',go:()=>keeper()});
       label('GLOWMOSS HOLLOW',C.x,y0+4.2,C.z+3.6,7);
       // the deep wood: tall firs and mossy oaks (instanced), ferns underneath, glow-moss on some trunks
       {const n=[0,0];WOOD.forEach(t=>n[t.kind]++);const m4=new T.Matrix4(),q=new T.Quaternion(),v=new T.Vector3(),sc=new T.Vector3(),e=new T.Euler();
@@ -841,7 +891,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
       if(seedMesh.visible)seedMesh.rotation.y=now/700;
       // unfenced sprout overnight: the rabbits nibble it back to nothing (the seed survives)
       const p=g.plant;if(p&&!p.fence&&p.day!==day()){g.plant=null;g.seed=true;save();paint();tell('🐰 Oh no! Rabbits nibbled your golden sprout overnight. You saved the seed. Plant it again and fence it this time!',8);}
-      if(vista?.id==='treetop'&&vistaK>.85&&!vistaSeen){vistaSeen=true;keeper();}if(!vista)vistaSeen=false;}
+      {const top=upY!=null&&upY>groundY(C.x,C.z)+20&&Math.hypot(position.x-C.x,position.z-C.z)<3.2;if(top&&!vistaSeen){vistaSeen=true;keeper();}if(upY==null)vistaSeen=false;}}
     return {step,paint,info:()=>({C,SEED,ladder:LADDER,g,state:plantState(),built,trees:WOOD.length,logs:LOGS.length,pathLogs:LOGS.filter(l=>l.path).map(l=>[Math.round(l.x),Math.round(l.z)]),kids:built?crown.parent.children.length:0}),keeper,_set(o){g={...g,...o};save();paint();}};})();
 
   // ===== Wave D: the wild corners (v116) =====
@@ -1124,7 +1174,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   const peers=new Map();let network,adventureUI;
   const isBlocked=(x,z,r,j=0)=>blocked(x,z,r,j,area==='barn'?indoorList():outdoorList());
   // Feet and hooves stand on the ground as drawn (chunks.surfaceHeight), which matters on dunes and ridges.
-  const groundY=(x,z)=>area==='barn'?0:Math.max(chunks.surfaceHeight(x,z),acts.floor(x,z),bridgeFloor(x,z));   // Lily Lake's stepping-stones and dock stand above the water
+  const groundY=(x,z)=>area==='barn'?0:upY!=null&&x===position.x&&z===position.z?upY:Math.max(chunks.surfaceHeight(x,z),acts.floor(x,z),bridgeFloor(x,z));   // Lily Lake's stepping-stones and dock stand above the water
   const stampKey='horselandia-world-stamps-v1:'+storageKey;let stamps={};try{stamps=JSON.parse(localStorage.getItem(stampKey))||{};}catch{}
   stamps=normalizeStamps(stamps,horses.map(h=>h.id));
   let hoofDist=0,mounted=null,called=companions.find(h=>h.data.id===preferredHorse)||companions[0],yaw=Math.PI*.22,pitch=.26,cameraDistance=11,canter=false,jump=0,jumpVelocity=0,phase=0,totalDistance=0,disposed=false,raf=0,lastTime=performance.now(),lastHUD=0,lastRender=0,messageUntil=0;
@@ -1177,7 +1227,15 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   const hintRing=new T.Mesh(geo(new T.RingGeometry(.75,.92,40)),mat('#fff4cf',{side:T.DoubleSide,depthWrite:false,transparent:true,opacity:0}));hintRing.rotation.x=-Math.PI/2;hintRing.visible=false;scene.add(hintRing);
   let tapAge=9,hintAt=0,hintT=null;
   function pulseAt(p){tapAge=0;tapRing.position.set(p.x,(area==='outdoor'?groundY(p.x,p.z):0)+.08,p.z);tapRing.visible=true;}
-  function tickTapRings(dt){if(tapRing.visible){tapAge+=dt;const k=Math.min(1,tapAge/.6);tapRing.scale.setScalar(1+k*.8);tapRing.material.opacity=.95*(1-k);if(k>=1)tapRing.visible=false;}
+  // v160: first ride only, a little pulsing bubble on the saddle: "Tap the saddle to get off" (there's no Get-off icon up top).
+  let saddleHint=null;const SADDLE_KEY='trottville-saddle-hint';
+  function saddleHintStart(){try{if(localStorage.getItem(SADDLE_KEY))return;localStorage.setItem(SADDLE_KEY,'1');}catch{}
+    saddleHint?.el.remove();const el=document.createElement('div');el.className='saddle-hint';el.setAttribute('role','status');el.innerHTML='<i></i><b>Tap the saddle to get off</b>';
+    (host.querySelector('.world-stage')||host).append(el);saddleHint={el,t:0};}
+  function tickSaddleHint(dt){const s=saddleHint;if(!s)return;s.t+=dt;if(!mounted||s.t>9){s.el.remove();saddleHint=null;return;}
+    mounted.anchor.getWorldPosition(_sp);_sp.project(camera);const r=renderer.domElement.getBoundingClientRect(),hr=s.el.parentElement.getBoundingClientRect();
+    s.el.style.transform=`translate(${r.left-hr.left+(_sp.x+1)/2*r.width}px,${r.top-hr.top+(1-_sp.y)/2*r.height}px)`;s.el.style.opacity=String(Math.min(1,s.t*2,(9-s.t)/1.2));}
+  function tickTapRings(dt){tickSaddleHint(dt);if(tapRing.visible){tapAge+=dt;const k=Math.min(1,tapAge/.6);tapRing.scale.setScalar(1+k*.8);tapRing.material.opacity=.95*(1-k);if(k>=1)tapRing.visible=false;}
     const now=performance.now();if(now-hintAt>300){hintAt=now;hintT=null;if(!mounted?.loaner||true){let bd=12;for(const t of tapTargets()){const p=t.stand||t,d=Math.hypot(p.x-position.x,p.z-position.z);if(d<bd&&d>1.2){bd=d;hintT=p;}}}}
     if(hintT&&!caring&&!irisBusy){hintRing.visible=true;hintRing.position.set(hintT.x,(area==='outdoor'?groundY(hintT.x,hintT.z):0)+.06,hintT.z);hintRing.material.opacity=.35+.25*Math.sin(now/420);}else hintRing.visible=false;}
   function requestWalk(clientX,clientY){
@@ -1225,18 +1283,25 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   // Which part of the horse you ride was tapped: 'rider', 'head' or null. Mesh hit first; then a finger-sized
   // screen-space check (rider torso, horse head) so small on-screen targets are still easy on a phone.
   const _rp=new T.Vector3(),_hp=new T.Vector3();
+  const _sp=new T.Vector3();
   function ridePart(cx,cy,rect){const h=mounted,inside=(o,root)=>{while(o){if(o===root)return true;o=o.parent;}return false;};
     const hit=groundRay.intersectObject(h.root,true).find(x=>x.object.visible&&x.object.isMesh);
     if(hit){if(inside(hit.object,h.tack.rider))return 'rider';if(inside(hit.object,h.head))return 'head';}
     const scr=v=>{v.project(camera);return v.z<1?{x:rect.left+(v.x+1)/2*rect.width,y:rect.top+(1-v.y)/2*rect.height}:null;};
     h.anchor.getWorldPosition(_rp);_rp.y+=.75*(h.scale||1);h.head.localToWorld(_hp.set(0,-.25,.38));
     const r=scr(_rp),hd=scr(_hp),dr=r?Math.hypot(r.x-cx,r.y-cy):1e9,dh=hd?Math.hypot(hd.x-cx,hd.y-cy):1e9;
-    if(hit&&!inside(hit.object,h.tack.rider)&&!inside(hit.object,h.head))return dh<56?'head':null;
-    if(Math.min(dr,dh)>48)return null;return dr<=dh?'rider':'head';}
+    // v160 (Yoshi: "my instinct is to tap the horse saddle in-game… to get off"): the saddle and the horse's back count as
+    // the rider (get off); the head stays the whinny. Back = a hit near the saddle, not low on the legs or out at the rump.
+    if(hit&&!inside(hit.object,h.tack.rider)&&!inside(hit.object,h.head)){if(dh<56)return 'head';const sc=h.scale||1;
+      h.anchor.getWorldPosition(_sp);return hit.point.y>_sp.y-.45*sc&&Math.hypot(hit.point.x-_sp.x,hit.point.z-_sp.z)<1.05*sc?'rider':null;}
+    if(Math.min(dr,dh)>64)return null;return dr<=dh?'rider':'head';}
   // Nine regions: a trip can span 600 m. Short trips plan on the 1 m grid; long ones on a 2 m grid over a box that holds both ends.
   function navOpts(a,b){const half=Math.max(Math.abs(a.x-b.x),Math.abs(a.z-b.z))/2+24,center={x:(a.x+b.x)/2,z:(a.z+b.z)/2};return half<=104?{bounds:104,center}:{bounds:half,center,step:2,maxNodes:90000};}
   // Plans a route to a ground point and starts following it; false if there is no way there.
   function walkTo(goal,quiet=false){const radius=mounted?.76:.4;
+    if(upClimb)return false;if(upY!=null){let y=upY,ok=true;const n=Math.ceil(Math.hypot(goal.x-position.x,goal.z-position.z)/.3);for(let i=1;i<=n&&ok;i++){const h=HT.at(position.x+(goal.x-position.x)*i/n,position.z+(goal.z-position.z)*i/n,y);if(h)y=h.y;else ok=false;}
+      if(!ok){if(!quiet)tell('Up here, walk along the planks and stairs. Tap a spot on the same deck or bridge.',3);return false;}
+      cancelWalk();walkPath=[{x:goal.x,z:goal.z}];walkGoal=goal;destination.position.set(goal.x,y+.12,goal.z);destination.visible=true;$('#world-walk-stop').hidden=false;setButtonLabel('#world-walk-stop','Stop walking');host.dataset.walking='true';return true;}
     const canWalk=(x,z)=>!isBlocked(x,z,radius)&& (area==='barn'?(inMarket()?Math.abs(x-MARKET.x)<12.6&&z>MARKET.z-20.6&&z<MARKET.z+24.6:Math.abs(x)<18.5&&Math.abs(z)<14.6):groundHeight(x,z)<2.6||wildness(x,z)>0||onCloudstep(x,z));
     const ground=(a,b)=>findGroundPath(a,b,canWalk,area==='barn'?(inMarket()?{bounds:26,center:{x:MARKET.x,z:MARKET.z+2}}:{bounds:19}):navOpts(a,b));
     // On Cloudstep a route follows the spiral ledge; from the plain it goes by the trailhead.
@@ -1272,7 +1337,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   function updateHUD(){const nearby=nearest();$('#world-riding').textContent=mounted?'Riding '+mounted.data.name:'Exploring on foot';setButtonLabel('#world-mount',(caring&&companions[myIndex]?'Ride '+companions[myIndex].data.name:mounted?.loaner?'Back to the stable':mounted?'Dismount '+mounted.data.name:nearby?'Mount '+nearby.data.name:'Call '+called.data.name)+' · E');$('#world-distance').textContent=Math.round(totalDistance)+' m explored';host.querySelectorAll('[data-call-horse]').forEach(el=>el.classList.toggle('active',el.dataset.callHorse===(mounted||called).data.id));hud?.horse((mounted||called).data,!!mounted);
     $('#world-location').textContent=inMarket()?'Hoofhaven Horse Market':area==='barn'?'Inside your barn':nearestPlace&&nearestPlace.distance<12?nearestPlace.name:position.x>-24&&position.x<9&&position.z>-11&&position.z<14?'The stable yard':'Meadow paths';updateStamps();}
   function dismount(){if(skyRide)return false;cancelWalk();if(!mounted)return;/* v98 (Yoshi): no hopping down on a test ride; Back to the stable ends it */if(mounted.loaner){tell('This is a test ride. Tap ↩ Back to the stable when you are done.',3);return false;}if(chair){tell('Stay in the saddle until the platform reaches the station.',3);return false;}const old=mounted;const options=[[2,0],[-2,0],[0,3],[0,-3]];let spot=options.map(([x,z])=>({x:position.x+x,z:position.z+z})).find(p=>!isBlocked(p.x,p.z,.4));if(!spot){tell('Find an open patch before dismounting.');return false;}scene.attach(avatar.root);avatar.root.scale.setScalar(1);position.x=spot.x;position.z=spot.z;avatar.root.position.set(position.x,groundY(position.x,position.z),position.z);avatar.root.rotation.set(0,old.root.rotation.y,0);avatar.root.visible=true;old.tack.rider.visible=false;mounted=null;canter=false;jump=0;jumpVelocity=0;old.name.visible=true;if(old.loaner){endLoan(false);updateHUD();return true;}tell('Back on foot. '+old.data.name+' is right here.');updateHUD();return true;}
-  function callHorse(id){cancelWalk();closeCompactPanels();if(area==='barn'&&inStore(position.x,position.z)){tell(SHOPKEEPER.name+': '+NO_HORSES[1],3);return;}if(mounted&&!dismount())return;called=companions.find(h=>h.data.id===id)||called;const offsets=[[2.2,1.4],[-2.2,1.4],[0,-2.8],[0,2.8]];const spot=offsets.map(([x,z])=>({x:position.x+x,z:position.z+z})).find(p=>!isBlocked(p.x,p.z,.8));if(!spot){tell('Step into an open space to call your companion.');return;}whistle();called.area=area;called.root.visible=true;
+  function callHorse(id){cancelWalk();closeCompactPanels();if(upY!=null||upClimb){tell('Climb down first. Your horse can’t come up here!',3);return;}if(area==='barn'&&inStore(position.x,position.z)){tell(SHOPKEEPER.name+': '+NO_HORSES[1],3);return;}if(mounted&&!dismount())return;called=companions.find(h=>h.data.id===id)||called;const offsets=[[2.2,1.4],[-2.2,1.4],[0,-2.8],[0,2.8]];const spot=offsets.map(([x,z])=>({x:position.x+x,z:position.z+z})).find(p=>!isBlocked(p.x,p.z,.8));if(!spot){tell('Step into an open space to call your companion.');return;}whistle();called.area=area;called.root.visible=true;
     // Outdoors the horse starts just out of sight and canters in; indoors (or with no clear way in) it is simply there.
     const from=area==='outdoor'?offCameraStart(called):null;
     if(from){called.root.position.set(from.x,groundY(from.x,from.z),from.z);called.root.rotation.y=Math.atan2(position.x-from.x,position.z-from.z);called.arriving={gait:'trot',t:0,fade:0};horseFade(called,0);tell(called.data.name+' heard you and is on the way!',3);}
@@ -1334,10 +1399,10 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     if(block==='untamed')return `${target.data.name} isn’t tamed yet. Taming ${G.tamePct(target.data)}%: pet, brush and feed them in the stall, or work with them in the Taming Corral.`;
     if(block==='tack'){const miss=G.missingTack(target.data).map(G.pieceName);return `${target.data.name} needs tack before riding: ${miss.join(', ').replace(/, ([^,]*)$/,' and $1')}. Buy the 🎒 Starter Kit (all three) from Otis at the Tack Room counter in the barn.`;}
     return '';}
-  function mount(chosen){if(skyRide){tell('Not up here! Tap “Fly home” to land first.',3);return;}if(caring&&!chosen){const me=companions[myIndex],msg=me&&rideBlockMsg(me);if(msg){tell(msg,7);return;}leaveCare({ride:true});return;}cancelWalk();closeCompactPanels();if(chair){tell(mounted?'Stay in the saddle until the platform reaches the station.':'Sit tight! The chair lets you off at the station.',3);return;}if(mounted){if(mounted.loaner){backToStall();return;}dismount();return;}const target=chosen||nearest();if(!target){callHorse(called.data.id);return;}
+  function mount(chosen){if(skyRide){tell('Not up here! Tap “Fly home” to land first.',3);return;}if(upY!=null||upClimb){tell('Climb down first. Horses wait on the ground.',3);return;}if(caring&&!chosen){const me=companions[myIndex],msg=me&&rideBlockMsg(me);if(msg){tell(msg,7);return;}leaveCare({ride:true});return;}cancelWalk();closeCompactPanels();if(chair){tell(mounted?'Stay in the saddle until the platform reaches the station.':'Sit tight! The chair lets you off at the station.',3);return;}if(mounted){if(mounted.loaner){backToStall();return;}dismount();return;}const target=chosen||nearest();if(!target){callHorse(called.data.id);return;}
     // Tack comes first (Otis's counter in the barn's tack room), then taming.
     {const msg=rideBlockMsg(target);if(msg){tell(msg,7);return;}}
-    ride=startRide(target.data);sfx('saddle');sfx('nicker',{delay:.6,rate:voiceRate(target.data.size)});mounted=target;called=target;target.arriving=null;horseFade(target,1);/* v150: mounting mid fade-in left the horse see-through */position.x=target.root.position.x;position.z=target.root.position.z;target.anchor.add(avatar.root);avatar.root.position.set(0,-.70,0);avatar.root.rotation.set(0,0,0);target.name.visible=false;avatar.root.visible=false;target.tack.rider.visible=true;target.area=area;jump=0;jumpVelocity=0;{const got=(stamps[target.data.id]||[]).length;tell(area!=='outdoor'?'You & '+target.data.name+'. Ride out through the big barn doors!':got<5?'You & '+target.data.name+'. Find the golden meadow rings! ('+got+' of 5)':'You & '+target.data.name+'. Happy riding!',5);};updateHUD();view.focus({preventScroll:true});}
+    ride=startRide(target.data);sfx('saddle');sfx('nicker',{delay:.6,rate:voiceRate(target.data.size)});mounted=target;called=target;target.arriving=null;horseFade(target,1);/* v150: mounting mid fade-in left the horse see-through */position.x=target.root.position.x;position.z=target.root.position.z;target.anchor.add(avatar.root);avatar.root.position.set(0,-.70,0);avatar.root.rotation.set(0,0,0);target.name.visible=false;avatar.root.visible=false;target.tack.rider.visible=true;target.area=area;jump=0;jumpVelocity=0;{const got=(stamps[target.data.id]||[]).length;tell(area!=='outdoor'?'You & '+target.data.name+'. Ride out through the big barn doors!':got<5?'You & '+target.data.name+'. Find the golden meadow rings! ('+got+' of 5)':'You & '+target.data.name+'. Happy riding!',5);};if(!target.loaner)saddleHintStart();updateHUD();view.focus({preventScroll:true});}
   function doJump(){if(chair)return;if(jump<=.001){if(mounted&&!mounted.loaner)window.TrottStats?.add('jumps',1);sfx('whoosh',{vol:mounted?1:.6});jumpVelocity=mounted?5.7:4.4;mounted?.model.jump();tell(mounted?called.data.name+' takes a little leap!':'A little hop!',1.4);}}
   function on(target,event,fn,options){target.addEventListener(event,fn,options);listeners.push(()=>target.removeEventListener(event,fn,options));}
   on($('#world-mount'),'click',()=>mount());
@@ -1403,12 +1468,43 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     else if(kind==='reset'){const b=fogBits('');fogMark(b,position.x,position.z);adventure.fog=fogString(b);adventure.regions=[...new Set(['c',regionAt(position.x,position.z).id])];try{localStorage.setItem('horselandia-map-fog-shown',adventure.fog);}catch{}}
     fogB=null;fogSrc=null;fogDirty=false;saveAdventure();if(worldMap?.isOpen){worldMap.close();worldMap.open();}return before;};
   function saveAdventure(){try{localStorage.setItem(adventureKey,JSON.stringify(adventure));}catch{tell('Your adventure will last for this visit; device storage is unavailable.');}network?.saveProgress(adventure);}
-  function moveTo(x,z){cancelWalk();position.x=x;position.z=z;jump=0;jumpVelocity=0;const actor=mounted?mounted.root:avatar.root;actor.position.set(x,groundY(x,z),z);cameraTarget.set(x,groundY(x,z)+(mounted?3.1:1.45),z);network?.teleported();}
-  function setArea(next){cancelWalk();if(next!=='barn'&&caring)leaveCare();if(next!=='outdoor'&&loaner)endLoan(true);if(next!==area){companions.forEach((h,i)=>{if(next==='barn'){h.outdoorPose={x:h.root.position.x,y:h.root.position.y,z:h.root.position.z,yaw:h.root.rotation.y};h.area='barn';if(h!==mounted)standHome(h,i);}else{h.area='outdoor';if(h!==mounted&&h.outdoorPose){const p=h.outdoorPose;h.root.position.set(p.x,p.y,p.z);h.root.rotation.y=p.yaw;}}});}if(next==='barn')expansion.door.shut();area=next;outdoors.visible=area==='outdoor';expansion.interior.visible=area==='barn';if(mounted)mounted.area=area;scene.background.set(area==='barn'?'#e8d9bc':'#c8e6e5');scene.fog.color.copy(scene.background);host.dataset.area=area;climb=null;localRace=null;}
+  function moveTo(x,z){cancelWalk();upY=null;upClimb=null;position.x=x;position.z=z;jump=0;jumpVelocity=0;const actor=mounted?mounted.root:avatar.root;actor.position.set(x,groundY(x,z),z);cameraTarget.set(x,groundY(x,z)+(mounted?3.1:1.45),z);network?.teleported();}
+  function setArea(next){cancelWalk();upY=null;upClimb=null;if(next!=='barn'&&caring)leaveCare();if(next!=='outdoor'&&loaner)endLoan(true);if(next!==area){companions.forEach((h,i)=>{if(next==='barn'){h.outdoorPose={x:h.root.position.x,y:h.root.position.y,z:h.root.position.z,yaw:h.root.rotation.y};h.area='barn';if(h!==mounted)standHome(h,i);}else{h.area='outdoor';if(h!==mounted&&h.outdoorPose){const p=h.outdoorPose;h.root.position.set(p.x,p.y,p.z);h.root.rotation.y=p.yaw;}}});}if(next==='barn')expansion.door.shut();area=next;outdoors.visible=area==='outdoor';expansion.interior.visible=area==='barn';if(mounted)mounted.area=area;scene.background.set(area==='barn'?'#e8d9bc':'#c8e6e5');scene.fog.color.copy(scene.background);host.dataset.area=area;climb=null;localRace=null;}
   // The world opens inside the barn, standing in your horse's stall beside them (like the home page), not out in the yard.
   function startInStall(){setArea('barn');const h=companions[myIndex];yaw=-1.2;pitch=.4;moveTo(-8.4,-8.6);
     startNote=h?(rideBlockMsg(h)?`You’re in ${h.data.name}’s stall. ${rideBlockMsg(h)}`:`You’re in ${h.data.name}’s stall. Tap ${h.data.name} to ride, then tap the big doors at the end of the hall.`):'';}
   let startNote='';
+  // ---------- v159: up high (world-heights.mjs) ----------
+  // A ladder climb: you ride up (or down) it in ~3 s, facing the trunk, then step off. While climbing you can't steer.
+  let upCam=0;
+  function climbTo(from,to,{face=null,then=null}={}){if(upClimb||mounted)return;cancelWalk();vista=null;position.x=from.x;position.z=from.z;upY=from.y;
+    const dur=Math.max(1.2,Math.abs(to.y-from.y)/3.2);upClimb={from,to,t:0,dur,then};if(face){const a=Math.atan2(face.x-from.x,face.z-from.z);avatar.root.rotation.y=a;yaw=a+Math.PI;pitch=Math.max(pitch,.3);}sfx('creak',{vol:.5});}
+  function stepClimb(delta){const c=upClimb;c.t=Math.min(1,c.t+delta/c.dur);const k=c.t*c.t*(3-2*c.t),up=c.to.y>c.from.y;
+    // up: rise first, then step across onto the deck; down: step off first, then climb down
+    const ky=up?Math.min(1,k/.85):Math.max(0,(k-.15)/.85),kx=up?Math.max(0,(k-.85)/.15):Math.min(1,k/.15);
+    position.x=c.from.x+(c.to.x-c.from.x)*kx;position.z=c.from.z+(c.to.z-c.from.z)*kx;upY=c.from.y+(c.to.y-c.from.y)*ky;
+    if(c.t>=1){upClimb=null;const g=Math.max(chunks.surfaceHeight(c.to.x,c.to.z),bridgeFloor(c.to.x,c.to.z));upY=Math.abs(c.to.y-g)<.05?null:c.to.y;c.then?.();}}
+  // Walking while up: only along the surfaces (rails stop you; the bottom of a stair lets you off onto the ground).
+  function upStep(v,speed,delta){if(upClimb)return {x:position.x,z:position.z};const dt=Math.min(Math.max(delta,0),.05);
+    const r=HT.step(position,upY,position.x+v.x*speed*dt,position.z+v.z*speed*dt,(x,z)=>Math.max(chunks.surfaceHeight(x,z),bridgeFloor(x,z)));
+    upY=r.down?null:r.y;return {x:r.x,z:r.z};}
+  const nearClimb=()=>{if(upClimb)return null;let best=null,bd=1e9;for(const c of CLIMBS){if(c.ground?upY!=null:upY==null||Math.abs(c.y-upY)>1.2)continue;const d=Math.hypot(c.x-position.x,c.z-position.z);if(d<c.r&&d<bd){bd=d;best=c;}}return best;};
+  const upHint=()=>houses?.inside()?'Have a look round! Walk back out of the door when you’re ready.':'Walk along the planks and stairs. Look for the way down when you’re ready.';
+  // The clock tower's lookout gallery (world-expansion.js builds it): in at the door, up the stairs (iris), out on top.
+  {const K=TOWN2.clock,cy=farmGround(K.x,K.z),GY=cy+14.25,door={x:K.x,z:K.z+3.45},out={x:K.x,z:K.z+1.75},LK=LOOKOUTS.find(l=>l.id==='clocktower');
+    HT.add({kind:'ring',id:'tower',x:K.x,z:K.z,hx:2.6,hz:2.6,inner:1.05,y:GY});
+    CLIMBS.push({id:'tower-up',x:door.x,z:door.z,r:2.2,ground:true,label:'Go in and climb the clock tower',go:()=>iris(()=>{moveTo(out.x,out.z);upY=GY;avatar.root.rotation.y=0;yaw=Math.PI;
+      if(moonTonight(LK))setTimeout(()=>CLIMBS.find(c=>c.id==='tower-look')?.go(),900);else tell('The top of the clock tower! Walk round the gallery for the view. The stairs down are in the middle.',7);})});
+    CLIMBS.push({id:'tower-down',x:K.x,z:K.z,y:GY,r:1.75,label:'Take the stairs down',go:()=>iris(()=>{moveTo(door.x,door.z);avatar.root.rotation.y=0;yaw=Math.PI;})});
+    // The treehouse camp: a real ladder up to its platform (world-town.mjs), a hut in the middle, a lookout from the deck.
+    {const T0=CAMP.tree,gy=chunks.surfaceHeight(T0.x,T0.z),DY=gy+6.625,foot={x:T0.x-3.25,z:T0.z+1.6},top={x:T0.x-1.85,z:T0.z+1.6},LT=LOOKOUTS.find(l=>l.id==='treehouse');
+      HT.add({kind:'rect',id:'camp',x:T0.x,z:T0.z,hx:2.05,hz:2.05,y:DY,block:[{x:T0.x,z:T0.z,r:1.55}]});
+      CLIMBS.push({id:'camp-up',x:foot.x,z:foot.z,r:2,ground:true,label:'Climb up to the treehouse',go:()=>climbTo({x:foot.x,z:foot.z,y:chunks.surfaceHeight(foot.x,foot.z)},{x:top.x,z:top.z,y:DY},{face:{x:T0.x,z:foot.z}})});
+      CLIMBS.push({id:'camp-down',x:top.x,z:top.z,y:DY,r:1.1,label:'Climb down the ladder',go:()=>climbTo({x:top.x,z:top.z,y:DY},{x:foot.x,z:foot.z,y:chunks.surfaceHeight(foot.x,foot.z)},{face:{x:T0.x,z:foot.z}})});
+      CLIMBS.push({id:'camp-look',x:T0.x,z:T0.z,y:DY,r:3.2,label:'Look out over Mosswood',go:()=>{const ox=position.x-T0.x,oz=position.z-T0.z,ol=Math.hypot(ox,oz)||1;openVista({...LT,pos:[position.x,DY+1.75,position.z],look:[position.x+ox/ol*40,gy-6,position.z+oz/ol*40]});}});}
+    // Anywhere on the gallery: the lookout view (the moon pegasus at midnight lives here, see openVista/moonTonight).
+    CLIMBS.push({id:'tower-look',x:K.x,z:K.z,y:GY,r:3.9,label:'Look out over Thimbleford',go:()=>{const ox=position.x-K.x,oz=position.z-K.z,ol=Math.hypot(ox,oz)||1;
+      openVista({...LK,pos:[position.x+ox/ol*.6,GY+1.75,position.z+oz/ol*.6],look:[position.x+ox/ol*40,cy+1,position.z+oz/ol*40]});}});}
   // v93: cartoon iris wipe between the barn and the valley. A black circle closes on you, the area swaps while it is
   // black, and once the new view has drawn (two frames, not a timer) a small circle opens out from you again.
   const irisEl=document.createElement('div');irisEl.className='world-iris';irisEl.hidden=true;view.appendChild(irisEl);let irisBusy=false,irisNext=null,irisKind='circle';const _ir=new T.Vector3();
@@ -1431,7 +1527,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   const nearMarketDoor=()=>inMarket()&&position.z>MARKET.z+MARKET.door.z-MARKET.door.reach&&Math.abs(position.x-MARKET.x)<4.5;
   const nearMarketBook=()=>inMarket()&&Math.hypot(position.x-MARKET.x-MARKET.book.x,position.z-MARKET.z-MARKET.book.z)<2.4;
   function nearStallHorse(){if(!inMarket())return null;let best=null,bd=2.6;for(const m of marketHorses){const d=Math.hypot(position.x-(MARKET.x+m.side*(MARKET.front-.6)),position.z-(MARKET.z+MARKET.stallZ(m.row)));if(d<bd){bd=d;best=m;}}return best;}
-  function fillMarket(){return import('./ranch-ui.js?v=158').then(m=>{if(disposed)return;const r=m.get(),{shelf}=marketStock(dayNumber(),r?.bought||[]),key=dayNumber()+':'+shelf.map(l=>l.id).join(',');if(key===marketKey)return;marketKey=key;
+  function fillMarket(){return import('./ranch-ui.js?v=160').then(m=>{if(disposed)return;const r=m.get(),{shelf}=marketStock(dayNumber(),r?.bought||[]),key=dayNumber()+':'+shelf.map(l=>l.id).join(',');if(key===marketKey)return;marketKey=key;
       for(const h of marketHorses){h.model.root.parent?.remove(h.model.root);h.model.dispose?.();}marketHorses=[];
       for(let i=0;i<20;i++){const l=shelf[i],side=i<10?-1:1,row=i%10;expansion.setPlate(i,l?l.name:'');if(!l)continue;
         const model=makeSculptedHorse(T,{id:l.id,name:l.name,breedId:l.breedId,coat:l.coat,size:l.size},{geometry:geo});model.setGait?.('stand');
@@ -1440,7 +1536,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   function enterMarket(){if(mounted?.loaner){backToStall();return;}if(mounted){tell('Hop down first: horses stay outside the market. Your horse will wait here.',5);return;}
     iris(()=>{setArea('barn');yaw=0;pitch=.22;moveTo(MARKET.x,MARKET.z+18);tell('Welcome to Hoofhaven! Walk up to any horse: test rides are free.',6);return fillMarket();},'fade');}
   function leaveMarket(){iris(()=>{setArea('outdoor');yaw=0;pitch=.3;const o=hoofOut();moveTo(o.x,o.z);tell('Back in the valley, outside Hoofhaven.',3);},'fade');}
-  function openStall(st){if(st.listing.id===keepOffer)keepOffer=null;import('./ranch-ui.js?v=158').then(m=>{clearInput();m.openListing(st.listing.id);}).catch(()=>tell('The market is closed right now. Try again in a moment.'));}
+  function openStall(st){if(st.listing.id===keepOffer)keepOffer=null;import('./ranch-ui.js?v=160').then(m=>{clearInput();m.openListing(st.listing.id);}).catch(()=>tell('The market is closed right now. Try again in a moment.'));}
   function startTestRide(id){const st=marketHorses.find(m=>m.listing.id===id);if(!st||loaner)return;const l=st.listing;
     iris(()=>{setArea('outdoor');const o=hoofOut();yaw=0;pitch=.3;moveTo(o.x,o.z);/* v102: the doors face the path (-z) now */
       const h=makeHorse({id:'loan-'+l.id,name:l.name,breedId:l.breedId,coat:l.coat,months:l.months,size:l.size},companions.length);h.loaner=true;h.tack.saddleGroup.visible=true;
@@ -1564,7 +1660,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     adventureUI.dialog.querySelectorAll('[data-board]').forEach(b=>b.onclick=()=>{const g=[...BOARD_GAMES,...VALLEY_GAMES].find(x=>x.id===b.dataset.board);adventureUI.close();openSteeple(g.file+'?in=world',g.name,'Back at the Games Gazebo.');});}
   // Vet, horse market and feed store screens come from ranch-ui.js (the same ones the website uses).
   let nearService=null;
-  function openService(id){import('./ranch-ui.js?v=158').then(m=>{if(!m.get()?.herd.length){tell('Choose your first horse on the home page, then come back.',5);return;}clearInput();({vet:m.openVet,hoofhaven:m.openMarket,store:m.openStore})[id]?.();}).catch(()=>tell('That shop is closed right now. Try again in a moment.'));}
+  function openService(id){import('./ranch-ui.js?v=160').then(m=>{if(!m.get()?.herd.length){tell('Choose your first horse on the home page, then come back.',5);return;}clearInput();({vet:m.openVet,hoofhaven:m.openMarket,store:m.openStore})[id]?.();}).catch(()=>tell('That shop is closed right now. Try again in a moment.'));}
   function raceMenu(){adventureUI.open('A little friendly competition',`<p>Jump farm fences across open countryside, or ride the racecourse checkpoints.</p><button class="primary full" id="steeple-race">Countryside steeplechase</button><button class="secondary full" id="practice-race" style="margin-top:12px">Start practice lap</button><button class="secondary full" id="climb-race" style="margin-top:12px">Race to Cloudstep Summit</button><button class="primary full" id="friends-race" style="margin-top:12px">Race with friends</button>`);const gated=fn=>()=>{adventureUI.close();if(!mounted){tell('Races are on horseback. Ride here on your horse, then come back.',5);sfx('bonk');return;}needGear(()=>raceReady(fn));};adventureUI.dialog.querySelector('#steeple-race').onclick=gated(()=>openSteeple());adventureUI.dialog.querySelector('#practice-race').onclick=gated(startPractice);adventureUI.dialog.querySelector('#climb-race').onclick=gated(raceClimb);adventureUI.dialog.querySelector('#friends-race').onclick=gated(()=>{if(!network.v2){showFriends();return;}openInvite({race:'lap'});});}
   // ---------- Friends races: invites, Join, countdown, results for every race kind (friends.js, docs/friends-races-plan.md) ----------
   const myId=()=>testOn()?TEST_ME:window.MeadowCloud?.user?.id;
@@ -1721,7 +1817,8 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     fishing={tick(now){if(state==='wait'&&now>wait){state='bite';bite=now+900;bob.classList.add('dip');bob.textContent='🐟';msg.textContent='A bite! Tap Reel in!';sfx('splash');}
       else if(state==='bite'&&now>bite){state='idle';bob.classList.remove('dip');bob.textContent='🎣';msg.textContent='It got away. Cast again?';go.textContent='Cast again';}},close};}
   const nearAct=()=>{if(area!=='outdoor')return null;const x=position.x,z=position.z,d=(a,b)=>Math.hypot(a-x,b-z);
-    const look=!mounted&&LOOKOUTS.find(l=>d(l.x,l.z)<l.reach);if(look)return {kind:'look',look,label:'Climb up to '+look.name};
+    {const c=nearClimb();if(c)return {kind:'climb',c,label:mounted&&c.ground?'Hop down to climb':c.label};if(upY!=null)return null;}
+    const look=!mounted&&LOOKOUTS.find(l=>l.id!=='clocktower'&&l.id!=='treehouse'&&d(l.x,l.z)<l.reach);if(look)return {kind:'look',look,label:'Climb up to '+look.name};
     if(!mounted&&d(FISHING.x,FISHING.z)<FISHING.reach)return {kind:'fish',label:'Fish off the dock'};
     if(d(ARENA_POST.x,ARENA_POST.z)<4||d(ARENA_STEWARD.x,ARENA_STEWARD.z)<3.6)return {kind:'arena',label:'Show ring entries'};
     const h=HOSTS.find(h=>d(h.x,h.z)<3.4);if(h)return {kind:'host',h,label:h.activity?ACTIVITY_BY_ID[h.activity].name+' with '+h.name:'Talk to '+h.name};
@@ -1793,7 +1890,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     adventureUI.dialog.querySelector('#ar-again').onclick=()=>{adventureUI.close();enterClass(cls.id);};
     const col=adventureUI.dialog.querySelector('#ar-collect');if(col)col.onclick=()=>{adventureUI.close();if(cid)showCollect({title:`${cls.icon} ${PLACE_NAME[res.place]} in the ${cls.name}!`,ids:[cid]});};}
   showArenaClass('open');
-  function actInteract(n){if(n.kind==='look'){openVista(n.look);return;}if(n.kind==='fish'){openFishing();return;}
+  function actInteract(n){if(n.kind==='climb'){if(mounted&&n.c.ground){tell('Hop down first. Horses can’t climb!',3);return;}n.c.go();return;}if(n.kind==='look'){openVista(n.look);return;}if(n.kind==='fish'){openFishing();return;}
     if(n.kind==='host'){if(!n.h.activity){n.h.k=(n.h.k??-1)+1;tell(n.h.name+': '+n.h.lines[n.h.k%n.h.lines.length],6);return;}tell(n.h.name+': '+n.h.lines[Math.floor(Date.now()/9000)%n.h.lines.length],4);beginActivity(ACTIVITY_BY_ID[n.h.activity]);return;}
     if(n.kind==='start'){beginActivity(n.a);return;}
     if(n.kind==='arena'){openArena();return;}
@@ -1855,7 +1952,8 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     camera.position.copy(r.cam);camera.lookAt(r.look);
     if(!paused&&(!renderer.simpleGraphics||now-lastRender>=60)){renderer.render(scene,camera);lastRender=now;}
     if(now-lastHUD>180){lastHUD=now;if(now>messageUntil)$('#world-message').classList.add('quiet');}}
-  function interact(){cancelWalk();if(adventureUI.dialog.open)return;if(inMyStall()&&enterCare())return;if(chair){tell(mounted?'Stay in the saddle until the platform reaches the station.':'Sit tight! The chair lets you off at the station.',3);return;}
+  function interact(){cancelWalk();if(adventureUI.dialog.open)return;
+    if(upClimb)return;if(upY!=null){const n=nearAct();if(n)actInteract(n);else tell(upHint(),4);return;}if(inMyStall()&&enterCare())return;if(chair){tell(mounted?'Stay in the saddle until the platform reaches the station.':'Sit tight! The chair lets you off at the station.',3);return;}
     if(area==='outdoor'){const ls=skiLift.near(position.x,position.z);if(ls){skiLift.openPanel(ls,{mounted:mounted?.data.name||null,onRide:()=>boardLift(ls)});return;}}
     if(nearCave()){enterCave();return;}
     if(area==='outdoor'&&mounted){const d=doorNear(position.x,position.z);if(d){const name=mounted.data.name;if(dismount()!==false)tell('You hop down at '+d.shop.name+'. '+name+' waits by the rail. Walk on in!',5);return;}}
@@ -1935,11 +2033,12 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
   function updateAdventureHUD(){const qlist=questList(adventure),done=qlist.filter(q=>q.have>=q.goal).length;$('#world-journal-count').textContent=done+'/'+qlist.length;$('#world-map-count').textContent=adventure.visited.length+'/'+LOCATIONS.length;
     let prompt=area==='barn'?'Barn games · F':'Explore · F';if(inMarket()){const st=nearStallHorse();prompt=nearMarketDoor()?'Back to the valley · F':nearMarketBook()?'Read the market book · F':st?(st.listing.id===keepOffer?'Keep '+st.listing.name+'? · F':st.listing.name+'’s clipboard · stats & test ride · F'):'Walk up to a horse';}else if(area==='barn'){if(inMyStall()&&companions[myIndex]?.area==='barn')prompt='Care for '+companions[myIndex].data.name+' · F';else if(nearDoor())prompt='Open the doors · F';else if(nearKeeper())prompt='Talk to '+SHOPKEEPER.name+' · F';else{const station=INDOOR_GAMES.find(g=>Math.hypot(g.x-position.x,g.z-position.z)<5);if(station)prompt=station.name+' · F';}}else if(nearestPlace?.distance<6)prompt=(nearestPlace.id==='stable'?'Enter barn':nearestPlace.id==='mountain'?'Cloudstep Climb':nearestPlace.id==='race'?'Race':nearestPlace.name)+' · F';if(area==='outdoor'){const lp=legendsWorld.prompt(legendCtx())||(nearestPlace?.distance<6?null:legendsWorld.stargazePrompt(legendCtx()));if(lp)prompt=lp+' · F';if(nearCave())prompt=(mounted?'Cave · hop down first':'Enter the cave')+' · F';}
     // What Interact will do here, spelled out (same order interact() checks): ski lift, cave, quest giver, game station, service.
-    if(area==='outdoor'&&!nearCave()){if(skiLift.near(position.x,position.z))prompt='Ride the sky lift · F';else if(!legendsWorld.prompt(legendCtx())){const qg=quests?.near(position.x,position.z),st=!qg&&nearStation(),sv=!qg&&!st&&SERVICES.find(s=>Math.hypot(s.x-position.x,s.z-position.z)-(s.id==='hoofhaven'?9:3)<5);
+    if(area==='outdoor'&&(upY!=null||upClimb)){const n=upClimb?null:nearAct();prompt=n?n.label+' · F':'Explore · F';}
+    else if(area==='outdoor'&&!nearCave()){if(skiLift.near(position.x,position.z))prompt='Ride the sky lift · F';else if(!legendsWorld.prompt(legendCtx())){const qg=quests?.near(position.x,position.z),st=!qg&&nearStation(),sv=!qg&&!st&&SERVICES.find(s=>Math.hypot(s.x-position.x,s.z-position.z)-(s.id==='hoofhaven'?9:3)<5);
       if(qg)prompt='Talk to '+qg.name+' · F';else if(st)prompt=(st.kind==='game'?'Play ':'')+st.name+' · F';else if(sv)prompt=(sv.id==='hoofhaven'?(mounted?.loaner?mounted.data.name+' · test ride':mounted?'Hop down to go in':'Enter Hoofhaven'):sv.name)+' · F';}
       if(mounted&&doorNear(position.x,position.z))prompt='Hop down to go in · F';{const n=nearAct();if(n)prompt=n.label+' · F';}}
     setButtonLabel('#world-interact',prompt);paintPrompt(prompt);
-    if(inMarket())$('#world-location').textContent='Hoofhaven Horse Market';else if(area==='barn')$('#world-location').textContent='Inside your barn';else if(inShop)$('#world-location').textContent='Inside '+inShop.shop.name;else if(area==='outdoor'&&Math.hypot(position.x-FOUNTAIN.x,position.z-FOUNTAIN.z)<PLAZA_R+16)$('#world-location').textContent='Bramble Village';else if(area==='outdoor'&&inSnow(position.x,position.z)&&!(nearestPlace?.distance<12))$('#world-location').textContent='Snowy Pines';else if(nearestPlace?.distance<12)$('#world-location').textContent=nearestPlace.name;else if(wildBiome&&wildBiome!=='valley')$('#world-location').textContent=BIOMES[wildBiome].name;
+    if(inMarket())$('#world-location').textContent='Hoofhaven Horse Market';else if(area==='barn')$('#world-location').textContent='Inside your barn';else if(inShop)$('#world-location').textContent='Inside '+inShop.shop.name;else if(area==='outdoor'&&houses?.inside())$('#world-location').textContent='Thimbleford · '+houses.inside().owner.replace(/^the /,'The ')+'’s house';else if(area==='outdoor'&&upY!=null&&HT.at(position.x,position.z,upY)?.s.id==='tower')$('#world-location').textContent='Clock tower lookout';else if(area==='outdoor'&&upY!=null&&HT.at(position.x,position.z,upY)?.s.tree)$('#world-location').textContent='Glowmoss Hollow';else if(area==='outdoor'&&Math.abs(position.x-TOWN2.x)<24&&Math.abs(position.z-TOWN2.z)<27)$('#world-location').textContent='Thimbleford';else if(area==='outdoor'&&Math.hypot(position.x-FOUNTAIN.x,position.z-FOUNTAIN.z)<PLAZA_R+16)$('#world-location').textContent='Bramble Village';else if(area==='outdoor'&&inSnow(position.x,position.z)&&!(nearestPlace?.distance<12))$('#world-location').textContent='Snowy Pines';else if(nearestPlace?.distance<12)$('#world-location').textContent=nearestPlace.name;else if(wildBiome&&wildBiome!=='valley')$('#world-location').textContent=BIOMES[wildBiome].name;
     if(tracked){const target=LOCATIONS.find(l=>l.id===tracked),dist=Math.round(Math.hypot(target.x-position.x,target.z-position.z));$('#world-track').hidden=false;$('#world-track').textContent=target.name+' · '+dist+' m';
       // Compass arrow: the target's direction as seen through the camera (screen up = straight ahead).
       if(hud){camera.updateMatrixWorld();const a=_hudA.set(target.x,0,target.z).applyMatrix4(camera.matrixWorldInverse),b=_hudB.set(position.x,0,position.z).applyMatrix4(camera.matrixWorldInverse);hud.track(target.name,dist,Math.atan2(a.x-b.x,-(a.z-b.z)));}}
@@ -1998,7 +2097,7 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
     on(fullButton,'click',async()=>{if(document.fullscreenElement===host){await document.exitFullscreen();}else if(host.classList.contains('world-fullscreen'))host.classList.remove('world-fullscreen');else{try{if(!host.requestFullscreen)throw Error();await host.requestFullscreen();}catch{host.classList.add('world-fullscreen');}}fullLabel();});on(document,'fullscreenchange',fullLabel);
     // On phones the world goes properly full screen as it opens (the tap that opened it still counts as a gesture); quietly skipped if refused.
     if(matchMedia('(pointer:coarse)').matches&&!document.fullscreenElement&&host.requestFullscreen)host.requestFullscreen({navigationUI:'hide'}).then(fullLabel,()=>{});on(window,'keydown',event=>{if(event.key==='Escape'&&host.classList.contains('world-fullscreen')){host.classList.remove('world-fullscreen');fullLabel();}});
-    paintCounters();host.__world={npcs:()=>quests?.life?.()||[],callHorse:id=>callHorse(id),horses:()=>companions.map(h=>{let op=1;h.root.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material))op=Math.min(op,o.material.opacity);});return {id:h.data.id,vis:h.root.visible,arr:h.arriving?.gait||null,fade:h.arriving?.fade??null,op:+op.toFixed(2),d:+Math.hypot(h.root.position.x-position.x,h.root.position.z-position.z).toFixed(1)};}),tp:()=>TP.info(),tpSet:o=>TP._set(o),tpOpen:t=>TP.open(t),tpBuy:(id,f)=>TP.buy(id,f),tpDraw:(id,n)=>TP._draw(id,n),wb:()=>WB.info(),wc:()=>WC.info(),tt:()=>TT.info(),wd:()=>WD.info(),wn:()=>WN.info(),gt:()=>GT.info(),gtSet:o=>GT._set(o),gtTap:c=>({p:GT.prompt(c),r:GT.tap(c)}),wnSet:o=>WN._set(o),wnTap:c=>({p:WN.prompt(c),r:WN.tap(c)}),wnGo:(x,z)=>{position.x=x;position.z=z;},wdTap:c=>({p:WD.prompt(c),r:WD.tap(c)}),wdSet:o=>WD._set(o),ttKeeper:()=>TT.keeper(),ttSet:o=>TT._set(o),wcStar:()=>WC.starNow(),wcFox:()=>WC.foxSummon(),collections:()=>WB.open(),wa:()=>WA.info(),gust:()=>WA.gustNow(),moon:()=>moonPeg&&{state:moonPeg.state,t:moonPeg.t,vis:moonPeg.m.root.visible,p:moonPeg.m.root.position.toArray().map(v=>+v.toFixed(1))},state:()=>({area,mounted:mounted?.data.name,pos:{...position},horse:mounted?{...mounted.root.position,vis:mounted.root.visible,parent:mounted.root.parent?.type}:null,yaw,pitch}),market:(x,z,y,p)=>{if(caring)leaveCare();setArea("barn");moveTo(MARKET.x+x,MARKET.z+z);yaw=y;pitch=p;fillMarket();},barn:(x,z,y,p)=>{if(caring)leaveCare();setArea("barn");moveTo(x,z);yaw=y;pitch=p;},loanLeft:v=>{if(v!=null)loanLeft=v;return loanLeft;},enterMarket:()=>enterMarket(),dismount:()=>dismount(),backToStall:()=>backToStall(),interact:()=>interact(),companions:()=>companions.map(c=>c.data.name),testRide:id=>startTestRide(id??marketHorses[0]?.listing.id),vista:id=>openVista(LOOKOUTS.find(l=>l.id===id)),view:(x,z,y,p)=>{setArea("outdoor");moveTo(x,z);yaw=y;pitch=p;},leaveBarn:()=>leaveBarn(),enterBarn:()=>enterBarn(),outdoorsGroup:outdoors,arenaDemo(rails=[]){if(!round)return null;const c=round.course,go=(x,z,o,t)=>{const ev=stepRound(round,{x,z,...o},t);if(ev)arenaEvent(ev);return ev;};go(ARENA.x+ARENA.gateU,ARENA.z+ARENA.startV-1,{},0);go(ARENA.x+ARENA.gateU,ARENA.z+ARENA.startV+1,{},performance.now()-30000);let last;for(const f of c.fences.slice(0,c.jumps)){if(!round)break;const o={air:true,speed:rails.includes(f.n)?f.need-1:9};go(f.x-f.dx*.5,f.z-f.dz*.5,o,0);last=go(f.x+f.dx*.5,f.z+f.dz*.5,o,performance.now());}return last?.result||null;},setHours(h){sky.preview.hours=h;},advance(steps=1,dt=1/30){for(let i=0;i<steps;i++){const t=performance.now();lastTime=t-dt*1000;frame(t);cancelAnimationFrame(raf);}},snap(){renderer.render(scene,camera);return renderer.domElement.toDataURL('image/jpeg',.7);},legends:legendsWorld,sky,actorObj:()=>mounted?mounted.root:avatar.root,mountCalled:()=>{const h=called;h.root.position.set(position.x+1.5,groundY(position.x+1.5,position.z),position.z);mount(h);return mounted?.data.id||null;},walkTo:(x,z)=>walkTo({x,z}),tap:(x,y)=>requestWalk(x,y),gfxInfo:()=>{renderer.info.autoReset=false;renderer.info.reset();renderer.render(scene,camera);const i=renderer.info.render;renderer.info.autoReset=true;return {calls:i.calls,tris:i.triangles,pretty};},rideParts(){if(!mounted)return null;const r=renderer.domElement.getBoundingClientRect(),h=mounted,sc=v=>{v.project(camera);return {x:Math.round(r.left+(v.x+1)/2*r.width),y:Math.round(r.top+(1-v.y)/2*r.height)};};const a=new T.Vector3();h.anchor.getWorldPosition(a);a.y+=.75*(h.scale||1);return {rider:sc(a),head:sc(h.head.localToWorld(new T.Vector3(0,-.25,.38))),whinnying:h.model.whinnying};},walking:()=>!!walkGoal,enterSky:()=>enterSky(),skyTo:(x,y,z)=>{if(skyRide){skyRide.x=x;skyRide.y=y;skyRide.z=z;}},skyRings:()=>skyWorld?.rings.map(r=>[r.x,r.y,r.z]),leaveSky:()=>leaveSky(),skyState:()=>skyRide&&{x:+skyRide.x.toFixed(1),y:+skyRide.y.toFixed(1),z:+skyRide.z.toFixed(1),ring:skyRide.ring,stars:skyRide.stars},camera,cam:()=>({x:+camera.position.x.toFixed(1),y:+camera.position.y.toFixed(1),z:+camera.position.z.toFixed(1)}),teleport:(x,z,y)=>{setArea('outdoor');moveTo(x,z);if(y!=null)yaw=y;},cave:CAVE,blocked:(x,z,r=.6)=>isBlocked(x,z,r),life:valleyLife,lift:()=>({on:skiLift.isOn(),chair:chair?{end:chair.end,p:+chair.ride.progress().toFixed(3),y:+chairY.toFixed(1)}:null,near:skiLift.near(position.x,position.z),L:skiLift.layout.L}),skiLift,boardLift,actor(){const a=mounted?mounted.root:avatar.root;return {y:+a.position.y.toFixed(2),g:+groundY(position.x,position.z).toFixed(2),x:+position.x.toFixed(1),z:+position.z.toFixed(1),yaw:+yaw.toFixed(2),area,climb:!!climb,phi:climbPhi};},race:()=>raceClimb(),probe(x,z){const rc=new T.Raycaster(new T.Vector3(x,400,z),new T.Vector3(0,-1,0));rc.camera=camera;const hits=rc.intersectObjects(scene.children,true).filter(h=>h.object.isMesh&&h.object.visible&&!h.object.isSprite).slice(0,3).map(h=>({y:+h.point.y.toFixed(2),n:h.object.name||h.object.parent?.name||h.object.geometry?.type}));return {g:+groundY(x,z).toFixed(2),hits};},moveTo,interact,outdoor:()=>setArea('outdoor'),barnDoor:()=>expansion.door,sliding:()=>!!slide,look:(y,p)=>{yaw=y;if(p!=null)pitch=p;},riding:()=>mounted?.data.id||null,motion:()=>({speed:+moveSpeed.toFixed(2),gait:(mounted||called).model.gait,stick:!!stick,x:+position.x.toFixed(1),z:+position.z.toFixed(1)}),peerOnScreen(name){const p=[...peers.values()].find(q=>q.name===name&&q.group.visible);if(!p)return null;const r=renderer.domElement.getBoundingClientRect(),v=new T.Vector3(p.group.position.x,p.group.position.y+(p.mounted?1.6:1),p.group.position.z).project(camera);return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height};},horseOnScreen(id){const h=companions.find(c=>c.data.id===id)||called,r=renderer.domElement.getBoundingClientRect(),v=new T.Vector3(h.root.position.x,h.root.position.y+1.9*h.scale,h.root.position.z).project(camera);return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height,id:h.data.id};}};markVisit(LOCATIONS[0]);startInStall();if(enterCare())startNote='';void network.loadProgress(adventure);{let pending=null;try{pending=JSON.parse(sessionStorage.getItem('trottville-join')||'null');sessionStorage.removeItem('trottville-join');}catch{}if(pending&&Date.now()-pending.at<120000)void joinRace(pending);else void network.resume();}updateAdventureHUD();if(intent){const [kind,id]=intent.split(':');if(kind==='game'){const g=BARN_GAMES.find(x=>x.id===id);if(g?.where==='outdoor')worldMap.open({x:g.x,z:g.z});else adventureUI.showGame(id);}else if(kind==='map')worldMap.open();else if(kind==='me')$('#world-style').click();else if(kind==='tackroom'){if(walkTo(TACK_SPOT)){doOnArrival=()=>talkToOtis();tell('Walking to Otis in the Tack Room.',3);}}else if(kind==='steeple')openSteeple();else if(kind==='barn')adventureUI.showBarn();}
+    paintCounters();host.__world={npcs:()=>quests?.life?.()||[],callHorse:id=>callHorse(id),horses:()=>companions.map(h=>{let op=1;h.root.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material))op=Math.min(op,o.material.opacity);});return {id:h.data.id,vis:h.root.visible,arr:h.arriving?.gait||null,fade:h.arriving?.fade??null,op:+op.toFixed(2),d:+Math.hypot(h.root.position.x-position.x,h.root.position.z-position.z).toFixed(1)};}),tp:()=>TP.info(),tpSet:o=>TP._set(o),tpOpen:t=>TP.open(t),tpBuy:(id,f)=>TP.buy(id,f),tpDraw:(id,n)=>TP._draw(id,n),wb:()=>WB.info(),wc:()=>WC.info(),tt:()=>TT.info(),wd:()=>WD.info(),wn:()=>WN.info(),gt:()=>GT.info(),gtSet:o=>GT._set(o),gtTap:c=>({p:GT.prompt(c),r:GT.tap(c)}),wnSet:o=>WN._set(o),wnTap:c=>({p:WN.prompt(c),r:WN.tap(c)}),wnGo:(x,z)=>{position.x=x;position.z=z;},wdTap:c=>({p:WD.prompt(c),r:WD.tap(c)}),wdSet:o=>WD._set(o),ttKeeper:()=>TT.keeper(),ttSet:o=>TT._set(o),wcStar:()=>WC.starNow(),wcFox:()=>WC.foxSummon(),collections:()=>WB.open(),wa:()=>WA.info(),gust:()=>WA.gustNow(),moon:()=>moonPeg&&{state:moonPeg.state,t:moonPeg.t,vis:moonPeg.m.root.visible,p:moonPeg.m.root.position.toArray().map(v=>+v.toFixed(1))},state:()=>({area,mounted:mounted?.data.name,pos:{...position},horse:mounted?{...mounted.root.position,vis:mounted.root.visible,parent:mounted.root.parent?.type}:null,yaw,pitch}),market:(x,z,y,p)=>{if(caring)leaveCare();setArea("barn");moveTo(MARKET.x+x,MARKET.z+z);yaw=y;pitch=p;fillMarket();},barn:(x,z,y,p)=>{if(caring)leaveCare();setArea("barn");moveTo(x,z);yaw=y;pitch=p;},loanLeft:v=>{if(v!=null)loanLeft=v;return loanLeft;},enterMarket:()=>enterMarket(),dismount:()=>dismount(),backToStall:()=>backToStall(),interact:()=>interact(),companions:()=>companions.map(c=>c.data.name),testRide:id=>startTestRide(id??marketHorses[0]?.listing.id),vista:id=>openVista(LOOKOUTS.find(l=>l.id===id)),view:(x,z,y,p)=>{setArea("outdoor");moveTo(x,z);yaw=y;pitch=p;},heights:()=>({upY,climbing:!!upClimb,x:position.x,z:position.z,prompt:pillText,climbs:CLIMBS.map(c=>c.id)}),climb:id=>{const c=CLIMBS.find(c=>c.id===id);if(!c)return false;moveTo(c.x,c.z);if(!c.ground)upY=c.y;c.go();return true;},yawTo:(y,p)=>{yaw=y;if(p!=null)pitch=p;},upAt:(x,z,y)=>{moveTo(x,z);upClimb=null;upY=y;},surfs:()=>HT.surfaces.map(s=>({...s,block:undefined})),houseList:()=>houses?.list.map(l=>({i:l.h.i,door:l.door,yaw:l.h.yaw,x:l.h.x,z:l.h.z}))||[],inside:()=>houses?.inside()?.h.i??null,obsAt:(x,z,r)=>outdoorObstacles.filter(o=>blocked(x,z,r,0,[o])).map(o=>JSON.parse(JSON.stringify(o))),leaveBarn:()=>leaveBarn(),enterBarn:()=>enterBarn(),outdoorsGroup:outdoors,arenaDemo(rails=[]){if(!round)return null;const c=round.course,go=(x,z,o,t)=>{const ev=stepRound(round,{x,z,...o},t);if(ev)arenaEvent(ev);return ev;};go(ARENA.x+ARENA.gateU,ARENA.z+ARENA.startV-1,{},0);go(ARENA.x+ARENA.gateU,ARENA.z+ARENA.startV+1,{},performance.now()-30000);let last;for(const f of c.fences.slice(0,c.jumps)){if(!round)break;const o={air:true,speed:rails.includes(f.n)?f.need-1:9};go(f.x-f.dx*.5,f.z-f.dz*.5,o,0);last=go(f.x+f.dx*.5,f.z+f.dz*.5,o,performance.now());}return last?.result||null;},setHours(h){sky.preview.hours=h;},advance(steps=1,dt=1/30){for(let i=0;i<steps;i++){const t=performance.now();lastTime=t-dt*1000;frame(t);cancelAnimationFrame(raf);}},snap(){renderer.render(scene,camera);return renderer.domElement.toDataURL('image/jpeg',.7);},legends:legendsWorld,sky,actorObj:()=>mounted?mounted.root:avatar.root,mountCalled:()=>{const h=called;h.root.position.set(position.x+1.5,groundY(position.x+1.5,position.z),position.z);mount(h);return mounted?.data.id||null;},walkTo:(x,z)=>walkTo({x,z}),tap:(x,y)=>requestWalk(x,y),gfxInfo:()=>{renderer.info.autoReset=false;renderer.info.reset();renderer.render(scene,camera);const i=renderer.info.render;renderer.info.autoReset=true;return {calls:i.calls,tris:i.triangles,pretty};},rideParts(){if(!mounted)return null;const r=renderer.domElement.getBoundingClientRect(),h=mounted,sc=v=>{v.project(camera);return {x:Math.round(r.left+(v.x+1)/2*r.width),y:Math.round(r.top+(1-v.y)/2*r.height)};};const a=new T.Vector3();h.anchor.getWorldPosition(a);a.y+=.75*(h.scale||1);return {rider:sc(a),head:sc(h.head.localToWorld(new T.Vector3(0,-.25,.38))),whinnying:h.model.whinnying};},walking:()=>!!walkGoal,enterSky:()=>enterSky(),skyTo:(x,y,z)=>{if(skyRide){skyRide.x=x;skyRide.y=y;skyRide.z=z;}},skyRings:()=>skyWorld?.rings.map(r=>[r.x,r.y,r.z]),leaveSky:()=>leaveSky(),skyState:()=>skyRide&&{x:+skyRide.x.toFixed(1),y:+skyRide.y.toFixed(1),z:+skyRide.z.toFixed(1),ring:skyRide.ring,stars:skyRide.stars},camera,cam:()=>({x:+camera.position.x.toFixed(1),y:+camera.position.y.toFixed(1),z:+camera.position.z.toFixed(1)}),teleport:(x,z,y)=>{setArea('outdoor');moveTo(x,z);if(y!=null)yaw=y;},cave:CAVE,blocked:(x,z,r=.6)=>isBlocked(x,z,r),life:valleyLife,lift:()=>({on:skiLift.isOn(),chair:chair?{end:chair.end,p:+chair.ride.progress().toFixed(3),y:+chairY.toFixed(1)}:null,near:skiLift.near(position.x,position.z),L:skiLift.layout.L}),skiLift,boardLift,actor(){const a=mounted?mounted.root:avatar.root;return {y:+a.position.y.toFixed(2),g:+groundY(position.x,position.z).toFixed(2),x:+position.x.toFixed(1),z:+position.z.toFixed(1),yaw:+yaw.toFixed(2),area,climb:!!climb,phi:climbPhi};},race:()=>raceClimb(),probe(x,z){const rc=new T.Raycaster(new T.Vector3(x,400,z),new T.Vector3(0,-1,0));rc.camera=camera;const hits=rc.intersectObjects(scene.children,true).filter(h=>h.object.isMesh&&h.object.visible&&!h.object.isSprite).slice(0,3).map(h=>({y:+h.point.y.toFixed(2),n:h.object.name||h.object.parent?.name||h.object.geometry?.type}));return {g:+groundY(x,z).toFixed(2),hits};},moveTo,interact,outdoor:()=>setArea('outdoor'),barnDoor:()=>expansion.door,sliding:()=>!!slide,look:(y,p)=>{yaw=y;if(p!=null)pitch=p;},riding:()=>mounted?.data.id||null,saddleScreen:(dy=0)=>{if(!mounted)return null;mounted.anchor.getWorldPosition(_sp);_sp.y+=dy;_sp.project(camera);const r=renderer.domElement.getBoundingClientRect();return {x:r.left+(_sp.x+1)/2*r.width,y:r.top+(1-_sp.y)/2*r.height};},saddleHint:()=>!!saddleHint,motion:()=>({speed:+moveSpeed.toFixed(2),gait:(mounted||called).model.gait,stick:!!stick,x:+position.x.toFixed(1),z:+position.z.toFixed(1)}),peerOnScreen(name){const p=[...peers.values()].find(q=>q.name===name&&q.group.visible);if(!p)return null;const r=renderer.domElement.getBoundingClientRect(),v=new T.Vector3(p.group.position.x,p.group.position.y+(p.mounted?1.6:1),p.group.position.z).project(camera);return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height};},horseOnScreen(id){const h=companions.find(c=>c.data.id===id)||called,r=renderer.domElement.getBoundingClientRect(),v=new T.Vector3(h.root.position.x,h.root.position.y+1.9*h.scale,h.root.position.z).project(camera);return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height,id:h.data.id};}};markVisit(LOCATIONS[0]);startInStall();if(enterCare())startNote='';void network.loadProgress(adventure);{let pending=null;try{pending=JSON.parse(sessionStorage.getItem('trottville-join')||'null');sessionStorage.removeItem('trottville-join');}catch{}if(pending&&Date.now()-pending.at<120000)void joinRace(pending);else void network.resume();}updateAdventureHUD();if(intent){const [kind,id]=intent.split(':');if(kind==='game'){const g=BARN_GAMES.find(x=>x.id===id);if(g?.where==='outdoor')worldMap.open({x:g.x,z:g.z});else adventureUI.showGame(id);}else if(kind==='map')worldMap.open();else if(kind==='me')$('#world-style').click();else if(kind==='tackroom'){if(walkTo(TACK_SPOT)){doOnArrival=()=>talkToOtis();tell('Walking to Otis in the Tack Room.',3);}}else if(kind==='steeple')openSteeple();else if(kind==='barn')adventureUI.showBarn();}
   }
 
   // The wild lands: keep chunks loaded around you, move the sun (and its shadows) with you, tint the sky to
@@ -2038,11 +2137,16 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
     if(chair)v={x:0,z:0};
     const moving=!!(v.x||v.z);
     if(jumpVelocity||jump){jumpVelocity-=12*delta;jump=Math.max(0,jump+jumpVelocity*delta);if(jump===0){if(jumpVelocity<-1)sfx(mounted?'thud':'thump',{vol:mounted?.9:.5});jumpVelocity=0;}}
-    const next=slide?{x:position.x,z:position.z}:moveActor(position,v,speed,delta,mounted?.7:.36,jump,area==='barn'?indoorList():outdoorList());let distance=Math.hypot(next.x-position.x,next.z-position.z);totalDistance+=distance;Object.assign(position,next);
+    if(upClimb)stepClimb(delta);
+    if(!houses&&expansion.lands?.houses)houses=buildHouses({T,houses:expansion.lands.houses,outdoors,HT,ground:(x,z)=>Math.max(chunks.surfaceHeight(x,z),bridgeFloor(x,z))});
+    const next=slide?{x:position.x,z:position.z}:upY!=null||upClimb?upStep(v,speed,delta):moveActor(position,v,speed,delta,mounted?.7:.36,jump,area==='barn'?indoorList():outdoorList());let distance=Math.hypot(next.x-position.x,next.z-position.z);totalDistance+=distance;Object.assign(position,next);
+    if(area==='outdoor'&&upY==null&&!upClimb&&!mounted&&!slide){const f=HT.foot(position.x,position.z,Math.max(chunks.surfaceHeight(position.x,position.z),bridgeFloor(position.x,position.z)));if(f)upY=f.y;}
+    if(houses){const ev=houses.tick(delta,now/1000,{x:position.x,z:position.z,upY,surf:area==='outdoor'&&upY!=null?HT.at(position.x,position.z,upY)?.s:null},cutU);
+      if(ev?.entered){sfx('doorOpen',{vol:.7});tell(ev.entered.owner[0].toUpperCase()+ev.entered.owner.slice(1)+'’s house. '+ev.entered.line,5);}else if(ev?.left)sfx('doorClose',{vol:.6});}
     // Too steep (world-logic tooSteep): you never walk through a mountain. Pushing up a slope that's too steep skids you
     // back down it; stepping off the top of one slides you down it. Either way you go downhill in a spray of dirt until
     // the ground is gentle again, and the slide can't pass anything solid.
-    if(area==='outdoor'&&moving&&!slide&&distance<speed*Math.min(delta,.05)*.5){const ax=position.x+v.x*1.2,az=position.z+v.z*1.2;
+    if(area==='outdoor'&&moving&&!slide&&upY==null&&distance<speed*Math.min(delta,.05)*.5){const ax=position.x+v.x*1.2,az=position.z+v.z*1.2;
       // Cloudstep (2026-11-13, Yoshi: "if you walk off the path ... slide down to the level below, making it risky"):
       // stepping over the outer edge of a ledge sends you skidding down the cliff to the ledge (or foot) below.
       // The cliff above you still stops you.
@@ -2074,7 +2178,7 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
       motes.update(delta,pretty?{x:position.x,y:gy,z:position.z,sunny,night:skyNight,petal:pt?.color||null,px:pt&&pt.x+(Math.random()-.5)*3*pt.s,py:pt&&groundY(pt.x,pt.z)+3.2*pt.s,pz:pt&&pt.z+(Math.random()-.5)*3*pt.s}:null);}
     else motes.update(delta,null);
     // Strong wind (windy days, thunderstorms) nudges you sideways while you move.
-    if(moving&&area==='outdoor'&&sky.fx.wind>.6){const push=moveActor(position,{x:sky.fx.windX,z:sky.fx.windZ},(sky.fx.wind-.5)*1.6,delta,mounted?.7:.36,jump,outdoorList());Object.assign(position,push);}
+    if(moving&&area==='outdoor'&&upY==null&&sky.fx.wind>.6){const push=moveActor(position,{x:sky.fx.windX,z:sky.fx.windZ},(sky.fx.wind-.5)*1.6,delta,mounted?.7:.36,jump,outdoorList());Object.assign(position,push);}
     if(mounted&&ride&&!paused){const was=ride.stamina.overheated,low=ride.stamina.value<25;ride.stamina=G.staminaStep(ride.stamina,distance/Math.max(delta,1e-4),delta,ride.care);
       if(!was&&ride.stamina.overheated)tell(`${mounted.data.name} is overheating! Slow to a walk and let them cool down.`,6);
       else if(was&&!ride.stamina.overheated)tell(`${mounted.data.name} has their breath back.`,3);
@@ -2113,9 +2217,9 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
     if(area==='outdoor'&&mounted&&distance>.001){const previous=stamps[mounted.data.id]||[],list=collectMarkers(position,previous);const changed=list.length>previous.length;if(changed){const marker=MARKERS[list.at(-1)];tell(list.length===5?'All five found! A complete meadow loop with '+mounted.data.name+'.':'Meadow stamp '+list.length+' of 5 · '+marker.name,5);}if(changed){stamps[mounted.data.id]=list;try{localStorage.setItem(stampKey,JSON.stringify(stamps));}catch{tell('Stamp collected for this visit. Device storage is unavailable.');}updateStamps();}}
     const currentStamps=mounted?(stamps[mounted.data.id]||[]):[];gates.forEach((g,i)=>{const done=currentStamps.includes(i);g.ring.material=mat(done?'#96b882':'#e5b45f');if(!reducedMotion)g.ring.rotation.y=now*.0006;g.number.visible=!done;});
     // In the corn maze the camera drops below the corn tops (0→1 over ~1 s), so you can't see over the walls.
-    cornCam+=((area==='outdoor'&&inMaze(position.x,position.z)?1:0)-cornCam)*(1-Math.exp(-delta*3));shopCam+=((inShop?1:0)-shopCam)*(1-Math.exp(-delta*3));
+    cornCam+=((area==='outdoor'&&inMaze(position.x,position.z)?1:0)-cornCam)*(1-Math.exp(-delta*3));upCam+=((upY!=null&&!vista&&!upClimb&&!houses?.inside()?1:0)-upCam)*(1-Math.exp(-delta*3));shopCam+=((inShop||houses?.inside()?1:0)-shopCam)*(1-Math.exp(-delta*3));
     aim.set(position.x,(chair?chairY+(mounted?0:.9):groundY(position.x,position.z))+(mounted?(3.1-1.15*cornCam)*mounted.scale:1.45-.15*cornCam)+jump*.65,position.z);cameraTarget.lerp(aim,reducedMotion?1:1-Math.exp(-delta*8));
-    const camPitch=pitch+(Math.min(pitch,.08)-pitch)*cornCam+Math.max(0,.62-pitch)*shopCam,camDist=((cameraDistance+(mounted?2:0))*(1-cornCam)+Math.min(cameraDistance,4.5)*cornCam+(chair?6:0))*(1-shopCam)+Math.min(cameraDistance,8)*shopCam;
+    const camPitch=pitch+(Math.min(pitch,.08)-pitch)*cornCam+Math.max(0,.62-pitch)*shopCam+(Math.min(pitch,.28)-pitch)*upCam,camDist=(((cameraDistance+(mounted?2:0))*(1-cornCam)+Math.min(cameraDistance,4.5)*cornCam+(chair?6:0))*(1-shopCam)+Math.min(cameraDistance,8)*shopCam)*(1-upCam)+Math.min(cameraDistance,5.2)*upCam;
     const desired=followCameraPosition(cameraTarget,yaw,camPitch,camDist);cameraDirection.set(desired.x-cameraTarget.x,desired.y-cameraTarget.y,desired.z-cameraTarget.z);const radius=cameraDirection.length();cameraDirection.normalize();cameraRay.set(cameraTarget,cameraDirection);cameraRay.far=radius;barn.updateMatrixWorld(true);const obstruction=cameraRay.intersectObjects(area==='barn'?expansion.walls:[barn],true)[0];let safeDistance=obstruction?Math.max(1.8,obstruction.distance-.55):radius;if(area==='outdoor'&&(wildness(position.x,position.z)>0||onCloudstep(position.x,position.z))){/* wild hills: tilt the camera up (smoothly) until the hillside behind you no longer hides you, then pull in if still needed */
       const hits=(dir,len)=>{for(let d=1;d<len;d+=.8)if(groundHeight(cameraTarget.x+dir.x*d,cameraTarget.z+dir.z*d)+.5>cameraTarget.y+dir.y*d)return d;return 0;},look=p=>{const alt=followCameraPosition(cameraTarget,yaw,p,cameraDistance+(mounted?2:0));return cameraDirection.set(alt.x-cameraTarget.x,alt.y-cameraTarget.y,alt.z-cameraTarget.z).normalize();};
       let need=0;while(pitch+need<.8&&hits(look(pitch+need),safeDistance))need+=.06;cameraLift+=(need-cameraLift)*(1-Math.exp(-delta*5));look(pitch+cameraLift);const hit=hits(cameraDirection,safeDistance);if(hit)safeDistance=Math.max(1.8,hit-.4);}else cameraLift=0;camera.position.copy(cameraTarget).addScaledVector(cameraDirection,safeDistance);sightU.uSightA.value.copy(camera.position);sightU.uSightB.value.copy(cameraTarget);camera.position.y=Math.max(camera.position.y,(area==='barn'?0:groundHeight(camera.position.x,camera.position.z))+.65);camera.lookAt(cameraTarget);

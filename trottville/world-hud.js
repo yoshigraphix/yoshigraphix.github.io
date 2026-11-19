@@ -3,7 +3,7 @@
 // Interact / Jump / Mount + the profile disc (bottom-right). The profile disc shows your horse, its level, and a
 // stamina ring while riding; tap it for the menu with the tools you only need now and then.
 // The original buttons are MOVED (not copied), so their ids and handlers in world.js keep working.
-import {horsePortrait} from './horse-portrait.js?v=158';
+import {horsePortrait} from './horse-portrait.js?v=160';
 
 const MENU=[['#world-companions-toggle','Horses'],['#world-journal','To-do'],['#world-barn','Barn games'],['#world-style','Me'],
   ['#world-friends','Friends'],['#world-camera-toggle','Camera'],['#world-fullscreen','Fullscreen'],['#world-exit','Exit']];
@@ -17,13 +17,15 @@ export function createHud({stage}){
 
   // Top-left column: place, compass, quest.
   const tl=document.createElement('div');tl.className='hud-tl';stage.append(tl);
-  const place=document.createElement('div');place.className='hud-place';place.innerHTML='<svg class="hud-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.3"/></svg><b></b>';tl.append(place);
+  const place=document.createElement('div');place.className='hud-place';place.innerHTML='<svg class="hud-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.3"/></svg><b></b>';const row=document.createElement('div');row.className='hud-tl-row';row.append(place);tl.append(row);
   watch($('#world-location'),()=>{place.querySelector('b').textContent=$('#world-location')?.textContent||'';},{childList:true,characterData:true,subtree:true});
   const compass=document.createElement('div');compass.className='hud-compass';compass.hidden=true;
   compass.innerHTML='<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2l6 18-6-4-6 4z"/></svg></i><span><b></b><small></small></span>';tl.append(compass);
   const pill=$('.wq-pill');if(pill){tl.append(pill);
     // UI pass 2026-11-10: the Quest Log button gets a line-drawn book to match Map and the menu (was the 📖 emoji).
-    const book=pill.querySelector('.wq-book');if(book)book.innerHTML='<img class="px-ic world-px" src="assets/icons/book.webp" alt="" aria-hidden="true" draggable="false">';}
+    const book=pill.querySelector('.wq-book');if(book){book.innerHTML='<img class="px-ic world-px" src="assets/icons/book.webp" alt="" aria-hidden="true" draggable="false">';
+      // v160 (Yoshi: the top-left icons block the view): the book sits beside the place name, 44 px, instead of its own row below it.
+      row.append(book);}}
 
   // Top-right column: coins, sky. Clear-sky emoji become Yoshi's pixel sun/moon/sunrise/sunset (2026-11-10).
   const SKY_PX={'☀':'sun','🌙':'moon','🌄':'sunrise','🌅':'sunrise','🌇':'sunset','🌆':'sunset','⛅':'wx-partly','☁':'wx-cloudy','🌫':'wx-fog','🌧':'wx-rain','⛈':'wx-storm','🌬':'wx-wind','🌨':'wx-snow','🌈':'rainbow'};
@@ -57,7 +59,7 @@ export function createHud({stage}){
   // AR photo (note #27): step 1 is a camera test; the module loads only when tapped.
   const ar=document.createElement('button');ar.type='button';ar.className='world-icon hud-tile hud-ar';ar.setAttribute('aria-label','AR photo');
   ar.innerHTML='<img class="px-ic world-px" src="assets/icons/ar.webp" alt="" aria-hidden="true" draggable="false"><span class="world-icon-caption" aria-hidden="true">AR photo</span>';
-  let lastHorse=null;ar.onclick=()=>import('./ar-photo.js?v=158').then(m=>m.openArPhoto({stage,horse:lastHorse}));grid.insertBefore(ar,grid.querySelector('#world-camera-toggle'));
+  let lastHorse=null;ar.onclick=()=>import('./ar-photo.js?v=160').then(m=>m.openArPhoto({stage,horse:lastHorse}));grid.insertBefore(ar,grid.querySelector('#world-camera-toggle'));
   // v113: Collections (horseshoes, wildflowers, bottles, bug jar, scrapbook). world.js listens for the event.
   const col=document.createElement('button');col.type='button';col.className='world-icon hud-tile hud-col';col.setAttribute('aria-label','Collections');
   col.innerHTML='<span class="world-px" aria-hidden="true" style="font-size:30px;line-height:44px">📖</span><span class="world-icon-caption" aria-hidden="true">Collections</span>';

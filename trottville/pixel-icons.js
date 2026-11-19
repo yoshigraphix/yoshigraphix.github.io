@@ -2,9 +2,26 @@
 // Wherever the UI writes one of these emoji, it is swapped for the matching pixel icon, including text that changes
 // later (a MutationObserver watches the page). Text fields, <option>s, SVG and anything marked data-no-icons keep the
 // plain emoji. Other icons (saddle, whistle, table, logos) are placed directly in the markup with pxIcon().
+// v160: most icons now live in a few sheets (scripts/pack-icons.py, icon-sheets.js) to stay under the artifact's file cap.
+// A sheet icon is still an <img class="px-ic"> (so every size/filter rule still applies): a blank 1x1 src, with the
+// icon as its background. Canvases ask pxImage() instead of pxSrc(). HUD and start-screen icons stay single files.
+import {SHEETS,SPRITES} from './icon-sheets.js?v=160';
 const BASE=new URL('./assets/icons/',import.meta.url).href;
-export const pxSrc=name=>BASE+name+'.webp';
-export const pxIcon=(name,cls='')=>`<img class="px-ic${cls?' '+cls:''}" src="${pxSrc(name)}" alt="" aria-hidden="true" draggable="false">`;
+const BLANK='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+export const pxSrc=name=>SPRITES[name]?BASE+'sheet-'+SPRITES[name][0]+'.webp':BASE+name+'.webp';
+const pct=(a,b)=>b?(a/b*100).toFixed(4)+'%':'0%';
+export const pxSprite=name=>{const sp=SPRITES[name];if(!sp)return '';const [k,x,y,n]=sp,[W,H]=SHEETS[k];
+  return `background:url(${BASE}sheet-${k}.webp) ${pct(x,W-n)} ${pct(y,H-n)}/${pct(W,n)} ${pct(H,n)} no-repeat!important`;};
+export const pxIcon=(name,cls='')=>SPRITES[name]?`<img class="px-ic${cls?' '+cls:''}" src="${BLANK}" style="${pxSprite(name)}" alt="" aria-hidden="true" draggable="false">`:`<img class="px-ic${cls?' '+cls:''}" src="${pxSrc(name)}" alt="" aria-hidden="true" draggable="false">`;
+// For canvases: an Image (single file) or a canvas holding the cut-out icon. Either way, check .complete && .naturalWidth,
+// or pass onload.
+const SHEET_IMG=new Map();
+export function pxImage(name,onload){const sp=SPRITES[name];
+  if(!sp){const im=new Image();if(onload)im.onload=()=>onload(im);im.src=pxSrc(name);return im;}
+  const [k,x,y,n]=sp,c=document.createElement('canvas');c.width=c.height=n;c.complete=false;c.naturalWidth=0;
+  let sh=SHEET_IMG.get(k);if(!sh){sh=new Image();sh.src=BASE+'sheet-'+k+'.webp';SHEET_IMG.set(k,sh);}
+  const cut=()=>{c.getContext('2d').drawImage(sh,x,y,n,n,0,0,n,n);c.complete=true;c.naturalWidth=n;onload?.(c);};
+  if(sh.complete&&sh.naturalWidth)cut();else sh.addEventListener('load',cut,{once:true});return c;}
 const SWAPS=[['🌈🥕','rainbow-carrot','rainbow carrot'],['✨🥕','golden-carrot','golden carrot'],['🪙','coin','Trotties'],['🥕','carrot','carrot'],['📖','book','book'],['🗺','map','map'],['🪮','brush','brush'],['⭐','star','star'],['🎁','gift','gift'],['🏆','trophy','trophy'],['🥇','medal-gold','gold medal'],['🥈','medal-silver','silver medal'],['🥉','medal-bronze','bronze medal'],['🔔','bell','bell'],['💬','chat','chat'],['🔊','sound-on','sound on'],['🔈','sound-on','sound'],['🔇','sound-off','sound off'],['🎵','music','music'],['🎼','item-sheet-music','music'],['🔒','lock','locked'],['🔓','unlock','unlocked'],['⏳','hourglass','time'],['📍','pin','pin'],['📌','pin','pin'],['💡','hint','hint'],['🛍','store','store'],['🛒','store','store'],['📅','calendar','calendar'],['⏱','stopwatch','stopwatch'],['💗','heart','heart'],['💖','heart','heart'],['💕','hearts','hearts'],['❤','heart','heart'],['🍎','apple','apple'],['🍏','apple','apple'],['🌾','hay','hay'],['🪣','water','water'],['💩','muck','muck'],['🧹','broom','broom'],['🍼','bottle','bottle'],['🩺','vet','vet'],['🦷','tooth','teeth'],['👁','eye','eyes'],['🌡','thermometer','temperature'],['💤','sleepy','sleepy'],['🥱','sleepy','sleepy'],['⚡','lively','lively'],['😟','rundown','run-down'],['🤝','trust','trust'],['🧲','horseshoe','horseshoe'],['✨','sparkles','sparkles'],['💫','sparkles','sparkles'],['🌟','sparkles','sparkles'],['🐴','horse-head','horse'],['🏇','game-derby','race'],['🏁','place-race','finish flag'],['🧺','item-basket','basket'],['💛','badge-treasure','golden heart'],['👋','wave','wave'],['🪪','id-card','ID card'],['💌','thanks','thank-you note'],['😋','mood-hungry','yum'],['🦄','legend-unicorn','unicorn'],['🪽','legend-pegasus','wings'],['🥒','legend-zucchini','zucchini'],['🌱','legend-sprout','sprout'],['🌿','legend-mint','mint'],['💐','item-bouquet','bouquet'],['☀','sun','sun'],['🌙','moon','moon'],['🌅','sunrise','sunrise'],['🌄','sunrise','sunrise'],['🌇','sunset','sunset'],['🌆','sunset','sunset'],['⛅','wx-partly','partly cloudy'],['☁','wx-cloudy','cloudy'],['🌫','wx-fog','fog'],['🌧','wx-rain','rain'],['⛈','wx-storm','storm'],['🌬','wx-wind','wind'],['🌨','wx-snow','snow'],['❄','wx-snow','snow'],['🌈','rainbow','rainbow'],['📷','camera','camera'],['📦','quest-deliver','parcel'],['📜','quest-new','quest'],['❗','quest-new','new'],['🔍','ui-search','search'],['🧒','quest-escort','child'],['👀','quest-visit','look'],['✅','quest-done','done'],['🗝','item-key','key'],['🎲','item-die','dice'],['🧩','game-stalls','puzzle'],['🖼','decor-meadow','picture'],['🪴','decor-fern','plant'],['🌼','decor-daisy','daisies'],['🌻','decor-sunflower','sunflowers'],['🌷','decor-tulip','tulips'],['🌵','decor-cactus','cactus'],['🕯','decor-candle','candle'],['🏮','decor-lantern','lantern'],['🧸','item-teddy-bear','teddy'],['🐚','item-seashell','shell'],['🌲','place-grove','pine grove'],['⛰','place-summit','peak'],['🍇','place-paddock','grapes'],['🪷','place-pond','pond'],['🥾','place-trail','trail'],['🏘','place-village','village'],['🗼','place-lighthouse','lighthouse'],['🏛','place-arch','ruins'],['🎯','game-fling','target'],['🃏','game-tackmatch','cards'],['🎀','item-blue-hair-ribbon','ribbon'],['👑','crown','crown'],['👕','place-togs','outfits'],['🪢','game-herd','lasso'],['🎾','decor-ball','ball'],['🧰','badge-oddjob','toolbox'],['🐝','badge-bee','bee'],['🏅','decor-rosette-gold','rosette'],['🎂','item-birthday-cake','cake'],['✉','item-letter','letter'],['🥚','item-egg','egg'],['🍓','item-wild-strawberry','strawberry'],['🔥','fireworks','hot streak'],['💧','water','water'],['🍀','item-clover-bunch','clover'],['🍬','sugar','sugar cube'],['🍃','season-leaf','leaf'],['📣','item-megaphone','megaphone'],['🏠','place-stables','stall'],['🏡','place-stables','home'],['🐎','horse-head','horse'],['🫧','care-bath','bubbles'],['😊','mood-happy','happy'],['🙂','mood-happy','happy']];
 const RE=new RegExp(SWAPS.map(s=>s[0]+'\\uFE0F?').join('|'),'gu'),BY=new Map(SWAPS.map(s=>[s[0],s]));
 
@@ -24,7 +41,7 @@ function skip(node){for(let el=node.parentElement;el;el=el.parentElement){if(SKI
 function swapText(node){const text=node.nodeValue;RE.lastIndex=0;if(!text||!RE.test(text)||skip(node))return;RE.lastIndex=0;
   const frag=document.createDocumentFragment();let last=0;
   for(const m of text.matchAll(RE)){if(m.index>last)frag.append(text.slice(last,m.index));const [,name,alt]=BY.get(m[0].replace(/\uFE0F$/,''));
-    const img=document.createElement('img');img.className='px-ic';img.src=pxSrc(name);img.alt=alt;img.draggable=false;frag.append(img);last=m.index+m[0].length;}
+    const img=document.createElement('img');img.className='px-ic';if(SPRITES[name]){img.src=BLANK;img.style.cssText=pxSprite(name);}else img.src=pxSrc(name);img.alt=alt;img.draggable=false;frag.append(img);last=m.index+m[0].length;}
   if(last<text.length)frag.append(text.slice(last));node.replaceWith(frag);}
 function scan(root){if(root.nodeType===3){swapText(root);return;}if(root.nodeType!==1&&root.nodeType!==11)return;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),list=[];while(w.nextNode())list.push(w.currentNode);list.forEach(swapText);}

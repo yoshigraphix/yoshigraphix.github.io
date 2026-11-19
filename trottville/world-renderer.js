@@ -1,7 +1,7 @@
 // Canvas compatibility renderer for browsers without a WebGL context.
 // It projects the same Three.js meshes, camera and animation into real 3D;
 // shadows and material effects are reduced to keep this path lightweight.
-import {Matrix4,Vector3,Color} from './vendor/three-0.180.0/three.module.js?v=158';
+import {Matrix4,Vector3,Color} from './vendor/three-0.180.0/three.module.js?v=160';
 export function clipNear(vertices,near){
   const output=[];
   for(let i=0;i<vertices.length;i++){const a=vertices[i],b=vertices[(i+1)%vertices.length],insideA=a.z<=-near,insideB=b.z<=-near;if(insideA)output.push(a);if(insideA!==insideB){const t=(-near-a.z)/(b.z-a.z);output.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:-near});}}

@@ -8,10 +8,10 @@
 //  · Walk-in = a real room in the world, no loading: walls with a doorway, a counter, the shopkeeper behind it.
 //    On foot only: a gate across each doorway stops horses (it is only solid while you ride).
 //  · Walls are axis-aligned boxes (world-logic blocked() has no rotation), so a door faces n, s, e or w.
-import {SQUARE,regionAt} from './world-regions.mjs?v=158';
-import {SERVICES,terrainHeight,BRIDGES,FIELDS,TOWN2} from './world-content.mjs?v=158';
-import {SHOWS,field,score,timeFaults} from './show-course.mjs?v=158';
-import {rng,hashSeed} from './steeple-course.mjs?v=158';
+import {SQUARE,regionAt} from './world-regions.mjs?v=160';
+import {SERVICES,terrainHeight,BRIDGES,FIELDS,TOWN2} from './world-content.mjs?v=160';
+import {SHOWS,field,score,timeFaults} from './show-course.mjs?v=160';
+import {rng,hashSeed} from './steeple-course.mjs?v=160';
 
 export const FOUNTAIN={x:SQUARE.x,z:SQUARE.z,r:3.4},PLAZA_R=15;
 const vet=SERVICES.find(s=>s.id==='vet');
@@ -443,10 +443,13 @@ export function buildActivities({T,outdoors,geo,mat,box,ico,label,groundY}){
   const pumpkins=PUMPKINS.map(p=>{const g=at(group(),p.x,p.z);const m=ico(g,'#e8762d',0,.38,0,.55,.42,.55,true);B(g,'#5f8f4e',0,.82,0,.08,.2,.08);return m;});
   for(let r=0;r<PATCH.rows;r++)strip([{x:PATCH.x0-2,z:PATCH.z0+r*PATCH.dz},{x:PATCH.x0+PATCH.cols*PATCH.dx+2,z:PATCH.z0+r*PATCH.dz}],1.6,'#8b6a45',.03);
   // Treehouse camp: a big tree with a platform and a ladder, two tents and a campfire.
-  {const t=at(group(),CAMP.tree.x,CAMP.tree.z);const trunk=new T.Mesh(geo(new T.CylinderGeometry(.8,1.1,12,8)),mat('#8a6a4a'));trunk.position.y=6;trunk.castShadow=true;t.add(trunk);
-    for(const [x,y,z,s] of [[0,11.5,0,4],[-2,10,1.5,3],[2.2,10.5,-1,3]])ico(t,'#5f8f4e',x,y,z,s,s*.8,s);
-    B(t,'#9c7350',0,6.5,0,5,.25,5,true);for(const [x,z] of [[-2.4,0],[2.4,0],[0,-2.4],[0,2.4]])B(t,'#7a5638',x,7.1,z,x?.12:5,1,z?.12:5);B(t,'#b5553f',0,8.6,0,3,2.2,3);
-    const lad=group();lad.position.set(-2.4,0,1.6);t.add(lad);for(const sd of [-.35,.35])B(lad,'#7a5638',sd,3.3,0,.1,6.6,.1);for(let i=0;i<11;i++)B(lad,'#9c7350',0,.4+i*.58,0,.8,.08,.1);}
+  {const t=at(group(),CAMP.tree.x,CAMP.tree.z);const trunk=new T.Mesh(geo(new T.CylinderGeometry(.8,1.1,14,8)),mat('#8a6a4a'));trunk.position.y=7;trunk.castShadow=true;t.add(trunk);
+    for(const [x,y,z,s] of [[0,14.2,0,4],[-2,13,1.5,3],[2.2,13.4,-1,3]])ico(t,'#5f8f4e',x,y,z,s,s*.8,s);   // v159: lifted 2.7–3 m so the platform under it has headroom
+    // v159: the platform is walkable (world.js CAMP_DECK); the ladder stands just off its edge with a gap in the rail
+    // (it used to run up into the platform and end against the rail).
+    B(t,'#9c7350',0,6.5,0,5,.25,5,true);for(const [x,z] of [[2.4,0],[0,-2.4],[0,2.4]])B(t,'#7a5638',x,7.1,z,x?.12:5,1,z?.12:5);B(t,'#7a5638',-2.4,7.1,-.75,.12,1,3.5);B(t,'#7a5638',-2.4,7.1,2.35,.12,1,.3);
+    for(const z of [1.02,2.18])B(t,'#7a5638',-2.4,7.25,z,.16,1.3,.16);B(t,'#b5553f',0,7.73,0,2.2,2.2,2.2);
+    const lad=group();lad.position.set(-2.72,0,1.6);t.add(lad);for(const sd of [-.35,.35])B(lad,'#7a5638',0,3.7,sd,.1,7.4,.1);for(let i=0;i<12;i++)B(lad,'#9c7350',0,.4+i*.55,0,.1,.08,.8);}
   for(const [dx,dz,c] of [[-7,4,'#d9a441'],[6,7,'#4f7fb8']]){const g=at(group(),CAMP.x+dx,CAMP.z+dz);const tent=new T.Mesh(geo(new T.ConeGeometry(1.9,2.2,4)),mat(c));tent.position.y=1.1;tent.rotation.y=Math.PI/4;tent.castShadow=true;g.add(tent);}
   const fire=at(group(),CAMP.x,CAMP.z);for(let k=0;k<6;k++)ico(fire,'#8d8a83',Math.sin(k)*1,.15,Math.cos(k)*1,.25,.2,.25);const flame=ico(fire,'#f39a4b',0,.45,0,.35,.6,.35);
   // Snowy Pines: instanced snowy pines (3 draw calls), the frozen pond, Magnus's shed and the sleigh.

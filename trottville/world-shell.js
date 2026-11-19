@@ -62,7 +62,7 @@
       const token=++revision;
       try{
         const started=performance.now();
-        const {createWorld}=await import('./world.js?v=158');
+        const {createWorld}=await import('./world.js?v=160');
         if(token!==revision||!host.isConnected)return;
         host.querySelector('#world-loading-status').textContent='Settling the horses…';
         instance=createWorld(host,options);

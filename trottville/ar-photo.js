@@ -3,9 +3,9 @@
 // (mouse: drag, wheel, shift+drag). Selfie camera: the horse's head sits beside your face; back camera: the horse
 // stands on the lower third. The shutter saves exactly what you see (mirrored selfie included) plus a small
 // "Trottville" stamp. If the camera is blocked, the horse still shows over a dark ground with the reason on a banner.
-import * as T from './vendor/three-0.180.0/three.module.js?v=158';
-import {makeSculptedHorse,SCULPT_COATS} from './horse-sculpt.js?v=158';
-import {COATS} from './ranch.mjs?v=158';
+import * as T from './vendor/three-0.180.0/three.module.js?v=160';
+import {makeSculptedHorse,SCULPT_COATS} from './horse-sculpt.js?v=160';
+import {COATS} from './ranch.mjs?v=160';
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const DEFAULT_HORSE={id:'ar-default-bay',name:'Your horse',coat:{...SCULPT_COATS.willow,...COATS.bay,blaze:false,socks:[0,0,0,0]}};

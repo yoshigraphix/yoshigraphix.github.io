@@ -1,10 +1,10 @@
 // Painted valley map: a full-screen overlay over the 3D world. The land is painted once from the same height field,
 // paths and obstacles the world uses; pins, labels and "you are here" are redrawn on top while you pan and pinch.
 // Tapping a pin opens a card with two ways to get there: ride (earns trust) or jump (5 free a day, then one every 20 min; never costs trust).
-import {LOCATIONS,MAP_PATHS,PASTURE,FARMS,RIVERS,BRIDGES,FIELDS,MILLS,TOWN2,terrainHeight,fogBits,fogHas,FOG_N,FOG_CELL} from './world-content.mjs?v=158';
-import {cloudstepAt,onCloudstep,STREAM} from './world-cloudstep.mjs?v=158';
-import {PX_NAMES,pxSrc,iconHTML} from './pixel-icons.js?v=158';
-import {REGIONS,R as regionPt,offsetOf,HALF,regionAt} from './world-regions.mjs?v=158';
+import {LOCATIONS,MAP_PATHS,PASTURE,FARMS,RIVERS,BRIDGES,FIELDS,MILLS,TOWN2,terrainHeight,fogBits,fogHas,FOG_N,FOG_CELL} from './world-content.mjs?v=160';
+import {cloudstepAt,onCloudstep,STREAM} from './world-cloudstep.mjs?v=160';
+import {PX_NAMES,pxImage,iconHTML} from './pixel-icons.js?v=160';
+import {REGIONS,R as regionPt,offsetOf,HALF,regionAt} from './world-regions.mjs?v=160';
 
 const EXTENT=HALF,PX=2,SIZE=EXTENT*2*PX; // world x,z in [-300,300] (nine regions); 2 px per metre on the painted sheet
 // Design spots of painted features → world (world-regions.mjs blocks).
@@ -15,7 +15,7 @@ const KIND={secret:'#4b4f63',barn:'#c8553d',gate:'#e2a93b',pond:'#3f8fc4',lookou
 const PLACE_PX={stable:'place-stables',gate:'place-gate',pond:'place-pond',ridge:'place-ridge',orchard:'place-orchard',home:'place-trail',mill:'place-windmill',village:'place-village',market:'place-market',race:'place-race',jump:'place-school',picnic:'place-picnic',beach:'place-shore',lighthouse:'place-lighthouse',flowers:'place-lavender',forest:'place-grove',falls:'place-falls',mountain:'place-trailhead',summit:'place-summit',ruins:'place-arch'};
 // Canvas pins draw the pixel icon once its image has loaded (the map redraws every frame), the emoji until then.
 const PIMG=new Map();
-function pinIcon(ctx,name,emoji,x,y,size){let im=PIMG.get(name);if(name&&!im&&PX_NAMES.has(name)){im=new Image();im.src=pxSrc(name);PIMG.set(name,im);}
+function pinIcon(ctx,name,emoji,x,y,size){let im=PIMG.get(name);if(name&&!im&&PX_NAMES.has(name)){im=pxImage(name);PIMG.set(name,im);}
   if(im&&im.complete&&im.naturalWidth){ctx.imageSmoothingEnabled=false;ctx.drawImage(im,x-size/2,y-size/2,size,size);ctx.imageSmoothingEnabled=true;}else ctx.fillText(emoji||'📍',x,y);}
 const ICON={farm:'🐷',stable:'🐴',gate:'✨',pond:'🪷',ridge:'🌅',orchard:'🍎',home:'🥾',mill:'🌾',village:'🏘️',market:'🥕',race:'🏁',jump:'🏇',picnic:'🧺',beach:'🐚',lighthouse:'🗼',flowers:'💐',forest:'🌲',falls:'💧',mountain:'⛰️',summit:'🚩',ruins:'🏛️'};
 const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);

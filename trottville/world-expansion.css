@@ -713,3 +713,13 @@ button.cdz-card:hover{filter:brightness(1.08)}button.cdz-card:focus-visible{outl
 /* The action pills live inside .world-controls; let that box cover the stage (tap-through) so they centre on screen. */
 .world-stage.hud-v2 .world-controls{inset:0!important;width:auto!important;height:auto!important;pointer-events:none}
 .world-stage.hud-v2 .world-controls :is(button,a){pointer-events:auto}
+/* v160: first-ride "Tap the saddle to get off" bubble, pinned to the saddle by world.js (no pointer capture: taps go through) */
+.saddle-hint{position:absolute;left:0;top:0;z-index:6;pointer-events:none;opacity:0;will-change:transform}
+.saddle-hint i{position:absolute;left:-22px;top:-22px;width:44px;height:44px;border-radius:50%;border:3px solid #ffe08a;box-shadow:0 0 12px #ffd36b;animation:saddlePulse 1.1s ease-out infinite}
+.saddle-hint b{position:absolute;left:0;top:-64px;transform:translateX(-50%);white-space:nowrap;font:700 14px/1.2 system-ui,sans-serif;color:#3d2a14;background:#fff6dc;padding:7px 12px;border-radius:14px;box-shadow:0 3px 10px #0004}
+@keyframes saddlePulse{0%{transform:scale(.55);opacity:1}100%{transform:scale(1.35);opacity:0}}
+/* v160: Quest Log book beside the place name (one row), 44 px target, so the left edge of the view stays clear */
+.hud-tl-row{display:flex;align-items:center;gap:6px;max-width:100%}
+.hud-tl-row .hud-place{min-width:0}
+.hud-v2 .hud-tl-row .wq-book{pointer-events:auto;width:44px!important;height:44px!important;min-height:44px;flex:none;border:0;cursor:pointer}
+.hud-v2 .hud-tl-row .wq-book .px-ic{width:42px;height:42px}

@@ -53,7 +53,7 @@ let homeHorse=null,homeHorseLoading=null,suggestMod=null,worldIntent=null;
 // import waterfall) and start the import before the ranch loads and the page draws.
 const HOME_3D=['vendor/three-0.180.0/three.core.js','vendor/three-0.180.0/three.module.js','horse-sculpt.js','stall-decor.mjs','stall-scene.js','character-looks.mjs','stall-ui.js','home-horse.js'];
 let homeHorseMod=null;
-const loadHomeHorse=()=>homeHorseMod||=import('./home-horse.js?v=158').catch(err=>{homeHorseMod=null;throw err;});
+const loadHomeHorse=()=>homeHorseMod||=import('./home-horse.js?v=160').catch(err=>{homeHorseMod=null;throw err;});
 if(/^#?(home|world.*)?$/.test(location.hash)){for(const href of [...HOME_3D,...(/^#?home$/.test(location.hash)?[]:['world.js'])]){if(document.querySelector(`link[href="${href}"]`))continue;const l=document.createElement('link');l.rel='modulepreload';l.href=href;document.head.append(l);}loadHomeHorse().catch(()=>{});}
 const HOME_CARE={pet:'bond',feed:'feed',groom:'groom'};
 // 2026-11-15 playtest: an unwell horse showed nothing at home. A red pill opens the vet (data-ranch="vet" is handled by ranch-ui).
@@ -103,7 +103,7 @@ function openStoreMenu(){$('.h3-sheet')?.remove();const d=document.createElement
   document.addEventListener('keydown',esc2);document.body.append(d);d.querySelector('.h3-x').focus();}
 document.addEventListener('click',e=>{const t=e.target.closest('.h3-today');if(!t){const p=$('#h3-today-panel');if(p&&!p.hidden&&!e.target.closest('.h3-today-panel')){p.hidden=true;$('.h3-today')?.setAttribute('aria-expanded','false');}return;}const p=$('#h3-today-panel'),on=p.hidden;p.hidden=!on;t.setAttribute('aria-expanded',on);});
 function homeSuggest(){const box=$('#home-next');if(!box)return;
-  if(!suggestMod){import('./home-suggestions.mjs?v=158').then(m=>{suggestMod=m;homeSuggest();}).catch(()=>{});return;}
+  if(!suggestMod){import('./home-suggestions.mjs?v=160').then(m=>{suggestMod=m;homeSuggest();}).catch(()=>{});return;}
   const read=k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}},key='horselandia-adventure-v1:'+(Cloud?.active?Cloud.user.id:'guest');
   const w=read('trottville-wallet-v1'),wallet={coins:200,stars:0,owned:['stablehand','meadow','trail','hoodie'],...(w||{})},adv=read(key)||{},trust={willow:68,atlas:81,sunny:54,...(read(key+':trust')||{})};
   const h=horse(selected),left=ranchMode()?['pet','feed','groom'].filter(k=>!TR.get().careDay[`${TR.R.dayNo()}:${h.id}:coin:${k}`]).map(k=>HOME_CARE[k]):['bond','feed','groom'].filter(a=>!cared(h.id,a));
@@ -122,7 +122,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-home-care]
 // for now, so it stays off while a cloud account is signed in (that stable's three horses are server-checked).
 let TR=null;
 const ranchMode=()=>!!TR&&(!Cloud?.active||!!window.TrottAccountRanch?.on);
-const ranchReady=import('./ranch-ui.js?v=158').then(m=>{TR=m;}).catch(()=>{});
+const ranchReady=import('./ranch-ui.js?v=160').then(m=>{TR=m;}).catch(()=>{});
 function applyRanch(){if(!ranchMode())return false;const r=TR.get();if(!r?.herd.length)return false;state.horses=r.herd;if(!r.herd.some(h=>h.id===selected))selected=(r.herd.find(h=>h.free)||r.herd[0]).id;return true;}
 const needsStarter=()=>ranchMode()&&!TR.get()?.herd.length;
 // Every horse picture is the same sculpted horse as the world (ranch-ui portrait); photos only if that can't load.
