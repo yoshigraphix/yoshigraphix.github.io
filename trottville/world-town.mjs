@@ -8,10 +8,10 @@
 //  · Walk-in = a real room in the world, no loading: walls with a doorway, a counter, the shopkeeper behind it.
 //    On foot only: a gate across each doorway stops horses (it is only solid while you ride).
 //  · Walls are axis-aligned boxes (world-logic blocked() has no rotation), so a door faces n, s, e or w.
-import {SQUARE,regionAt} from './world-regions.mjs?v=160';
-import {SERVICES,terrainHeight,BRIDGES,FIELDS,TOWN2} from './world-content.mjs?v=160';
-import {SHOWS,field,score,timeFaults} from './show-course.mjs?v=160';
-import {rng,hashSeed} from './steeple-course.mjs?v=160';
+import {SQUARE,regionAt} from './world-regions.mjs?v=161';
+import {SERVICES,terrainHeight,BRIDGES,FIELDS,TOWN2} from './world-content.mjs?v=161';
+import {SHOWS,field,score,timeFaults} from './show-course.mjs?v=161';
+import {rng,hashSeed} from './steeple-course.mjs?v=161';
 
 export const FOUNTAIN={x:SQUARE.x,z:SQUARE.z,r:3.4},PLAZA_R=15;
 const vet=SERVICES.find(s=>s.id==='vet');

@@ -2,15 +2,15 @@
 // the bell. Logic lives in ranch.mjs; this file draws it. horselandia.js loads it once and asks it for page
 // HTML; buttons here use data-ranch="…" (never data-action / data-route / data-tab, which horselandia's
 // global click handler owns). Device-only for now: the shared market and coins move to Supabase later.
-import * as R from './ranch.mjs?v=160';
-import {iconHTML} from './pixel-icons.js?v=160';
-import * as Coins from './coin-collect.js?v=160';
-import {loadWallet,saveWallet,coinHTML} from './character-looks.mjs?v=160';
-import * as F from './friends.js?v=160';
-import {GROUPS,sizeLabel,wikiUrl,searchText} from './breeds.mjs?v=160';
-import {horsePortrait} from './horse-portrait.js?v=160';
-import {horseLook} from './horse-sculpt.js?v=160';
-import * as G from './riding.mjs?v=160';
+import * as R from './ranch.mjs?v=161';
+import {iconHTML} from './pixel-icons.js?v=161';
+import * as Coins from './coin-collect.js?v=161';
+import {loadWallet,saveWallet,coinHTML} from './character-looks.mjs?v=161';
+import * as F from './friends.js?v=161';
+import {GROUPS,sizeLabel,wikiUrl,searchText} from './breeds.mjs?v=161';
+import {horsePortrait} from './horse-portrait.js?v=161';
+import {horseLook} from './horse-sculpt.js?v=161';
+import * as G from './riding.mjs?v=161';
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Math.round(n).toLocaleString('en-US');
@@ -97,7 +97,7 @@ export function mountStarter(){const slot=document.getElementById('rn-viewer-slo
     for(const s of R.STARTERS)if(!shots.has(shotKey(s.id))){shots.set(shotKey(s.id),viewer.snapshot(starterHorse(s.id,R.starterCoat(s.id))));}
     document.querySelectorAll('[data-shot]').forEach(img=>{img.src=shots.get(shotKey(img.dataset.shot));});};
   if(viewer)return show();
-  if(!viewerLoading)viewerLoading=import('./horse-viewer.js?v=160').then(m=>{viewer=m.createHorseViewer({horse:starterHorse(pickBreed,lookCoat()),label:'Your first horse. Drag to turn.'});viewerLoading=null;}).catch(()=>{viewerLoading=null;});
+  if(!viewerLoading)viewerLoading=import('./horse-viewer.js?v=161').then(m=>{viewer=m.createHorseViewer({horse:starterHorse(pickBreed,lookCoat()),label:'Your first horse. Drag to turn.'});viewerLoading=null;}).catch(()=>{viewerLoading=null;});
   viewerLoading?.then(()=>{if(document.getElementById('rn-viewer-slot'))mountStarter();});}
 export function disposeStarter(){viewer?.dispose();viewer=null;}
 

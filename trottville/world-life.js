@@ -1,9 +1,9 @@
 // Valley life in 3D (rules in world-life.mjs): grazing herds, trail riders, practice gallops and the noon Derby at
 // Clover Racecourse. Horses are built lazily when you come near a group and are only animated within ~95 m.
-import {makeSculptedHorse} from './horse-sculpt.js?v=160';
-import {addTackAndRider} from './rider-sculpt.js?v=160';
-import {lookFromSeed} from './character-looks.mjs?v=160';
-import * as V from './world-life.mjs?v=160';
+import {makeSculptedHorse} from './horse-sculpt.js?v=161';
+import {addTackAndRider} from './rider-sculpt.js?v=161';
+import {lookFromSeed} from './character-looks.mjs?v=161';
+import * as V from './world-life.mjs?v=161';
 
 // v158 lag fix: each sculpted horse is ~20 draws. Herds show within 115 m (was 170) and only horses within 28 m cast shadows.
 const BUILD_R=150,ANIM_R=95,SHOW_R=115,SHADOW_R=28,INK_R=30;   // past INK_R the black outline is dropped (half the draws)

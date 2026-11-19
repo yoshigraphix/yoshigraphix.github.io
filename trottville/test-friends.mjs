@@ -2,8 +2,8 @@
 // feature alone. It answers exactly like the real servers (hl_friends in 202611080006 and hl_room v2 in 202611080005),
 // so friends.js and world-network.js run their normal code; nothing here touches Echowing or any other server.
 // Pure: the clock, randomness, storage and the player's horses are passed in (tests/test-friends-check.mjs).
-import {MAP_PATHS} from './world-content.mjs?v=160';
-import {trailPoint,CLOUDSTEP} from './world-cloudstep.mjs?v=160';
+import {MAP_PATHS} from './world-content.mjs?v=161';
+import {trailPoint,CLOUDSTEP} from './world-cloudstep.mjs?v=161';
 
 export const TEST_ME='test-me',ROOM_ID='test-valley',STATE_KEY='trottville-test-friends-v1';
 export const ONLINE_BLOCK=12*60e3; // who is online changes every 12 minutes

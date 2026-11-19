@@ -1,8 +1,8 @@
-import {LOCATIONS,MAP_PATHS,RACE_GATES,SERVICES,terrainHeight,RIVERS,BRIDGES,MOUNTAINS,FIELDS,MILLS,TOWN2,SKYGATE,PASTURE,FARMS,riverWaterY,bridgeFloor,onBridge,mountainLift,COBBLE_SQUARE,COBBLE_STREETS,COBBLE_HALF} from './world-content.mjs?v=160';
-import {buildBarnInterior} from './barn-interior.js?v=160';
-import {R} from './world-regions.mjs?v=160';
-import {waterize} from './world-sky.js?v=160';
-import {realMat,realUV} from './world-tudor.js?v=160';
+import {LOCATIONS,MAP_PATHS,RACE_GATES,SERVICES,terrainHeight,RIVERS,BRIDGES,MOUNTAINS,FIELDS,MILLS,TOWN2,SKYGATE,PASTURE,FARMS,riverWaterY,bridgeFloor,onBridge,mountainLift,COBBLE_SQUARE,COBBLE_STREETS,COBBLE_HALF} from './world-content.mjs?v=161';
+import {buildBarnInterior} from './barn-interior.js?v=161';
+import {R} from './world-regions.mjs?v=161';
+import {waterize} from './world-sky.js?v=161';
+import {realMat,realUV} from './world-tudor.js?v=161';
 export function buildExpansion({T,outdoors,geo,mat,box,ico,label,tree,path}){
  const smoothTree=tree;   // v113: farm trees use the world's smooth, swaying trees (world.js tree)
  const addBox=(parent,c,x,y,z,sx,sy,sz)=>box(parent,c,x,y,z,sx,sy,sz,true);

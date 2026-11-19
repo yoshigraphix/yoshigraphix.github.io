@@ -1,8 +1,8 @@
 // Sounds + Music switches and music outside the 3D world (horselandia.js is a classic script, so it can't import).
 // Any button with data-audio="sounds" or data-audio="music" toggles that switch and repaints its own label.
 // Outside the world every page plays the home stall track; world.js picks the world's tracks itself.
-import {soundsOn,setSounds,sfx} from './sfx.js?v=160';
-import {musicOn,setMusic,want} from './music.js?v=160';
+import {soundsOn,setSounds,sfx} from './sfx.js?v=161';
+import {musicOn,setMusic,want} from './music.js?v=161';
 export const gfxOn=()=>{try{return localStorage.getItem('trottville-gfx')!=='lite';}catch{return true;}};
 export const audioLabel=kind=>kind==='gfx'?(gfxOn()?'✨ Pretty effects on':'✨ Pretty effects off'):kind==='music'?(musicOn()?'🎵 Music on':'🎵 Music off'):(soundsOn()?'🔊 Sounds on':'🔇 Sounds off');
 function paint(){for(const b of document.querySelectorAll('[data-audio]')){b.textContent=audioLabel(b.dataset.audio);b.setAttribute('aria-pressed',String(b.dataset.audio==='gfx'?gfxOn():b.dataset.audio==='music'?musicOn():soundsOn()));}}

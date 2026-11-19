@@ -1,8 +1,8 @@
 // Cloudstep in 3D: the mountain's own fine mesh (the streamed ground sinks out of sight under it), its water, the
 // trail furniture, the summit lookout and a ring of clouds round its shoulders. Every shape and height comes from
 // world-cloudstep.mjs, so what you see is exactly what you ride on.
-import {CLOUDSTEP as C,cloudstepAt,trailPoint,trailRadius,trailHeight,TRAIL_END,FALLS,STREAM} from './world-cloudstep.mjs?v=160';
-import {terrainHeight,POND} from './world-content.mjs?v=160';
+import {CLOUDSTEP as C,cloudstepAt,trailPoint,trailRadius,trailHeight,TRAIL_END,FALLS,STREAM} from './world-cloudstep.mjs?v=161';
+import {terrainHeight,POND} from './world-content.mjs?v=161';
 
 const TAU=Math.PI*2;
 // The mountain is a landmark from the whole valley, so fog only reaches it at a fraction of the real distance.

@@ -10,9 +10,9 @@
 //    easy ones, from the market, orchard, Lavender Fields), mint (Lily Lake) and a ZUCCHINI, the hard one: a seed
 //    found once at Buttercup Picnic, planted in the garden bed by the stable and watered 7 days in a row.
 // Rarity only really holds once this lives on the server; on a device it can be edited (flagged to Yoshi).
-import {rng,BREEDS,makeCoat,newHorse,COATS} from './ranch.mjs?v=160';
+import {rng,BREEDS,makeCoat,newHorse,COATS} from './ranch.mjs?v=161';
 
-import {R} from './world-regions.mjs?v=160';
+import {R} from './world-regions.mjs?v=161';
 export const LEGENDS_KEY='trottville-legends-v1';
 export const UNICORN_ODDS=8,PEGASUS_DIE=200,ZUCCHINI_DAYS=7;
 export const SALAD=[{id:'carrot',icon:'🥕',name:'Carrot',where:'Carrot Market basket'},{id:'apple',icon:'🍎',name:'Apple',where:'the orchard'},

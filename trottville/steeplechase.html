@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>Clover Steeplechase</title>
-<link rel="stylesheet" href="coin-collect.css?v=160">
+<link rel="stylesheet" href="coin-collect.css?v=161">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&display=swap">
 <style>
@@ -137,17 +137,17 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-actio
 </div>
 
 <script type="module">
-import * as T from './vendor/three-0.180.0/three.module.js?v=160';
-import {makeSculptedHorse} from './horse-sculpt.js?v=160';
-import {addTackAndRider} from './rider-sculpt.js?v=160';
-import {loadLook,lookFromSeed} from './character-looks.mjs?v=160';
-import {queueCoins,showCollect} from './coin-collect.js?v=160';
-import {convertRace} from './economy.mjs?v=160';
-import {markDone} from './world-today.mjs?v=160';
-import {buildCountry,planRoute,hashSeed,weekKey,segX,W,LEN} from './steeple-country.mjs?v=160';
-import {loadRanch,condition} from './ranch.mjs?v=160';
-import * as G from './riding.mjs?v=160';
-import {herdRoster,readWorldTrust,noneReadyText} from './steeple-herd.mjs?v=160';
+import * as T from './vendor/three-0.180.0/three.module.js?v=161';
+import {makeSculptedHorse} from './horse-sculpt.js?v=161';
+import {addTackAndRider} from './rider-sculpt.js?v=161';
+import {loadLook,lookFromSeed} from './character-looks.mjs?v=161';
+import {queueCoins,showCollect} from './coin-collect.js?v=161';
+import {convertRace} from './economy.mjs?v=161';
+import {markDone} from './world-today.mjs?v=161';
+import {buildCountry,planRoute,hashSeed,weekKey,segX,W,LEN} from './steeple-country.mjs?v=161';
+import {loadRanch,condition} from './ranch.mjs?v=161';
+import * as G from './riding.mjs?v=161';
+import {herdRoster,readWorldTrust,noneReadyText} from './steeple-herd.mjs?v=161';
 
 // ---------- Horses and their five stats (0–100). Step 2 will feed these from care, practice and condition. ----------
 const HORSES={
@@ -599,6 +599,6 @@ renderer.setAnimationLoop(()=>frame(Math.min(tclock.getDelta(),.05)));
 // The menu sits over a fly-over of this week's countryside.
 if(ROOM_SEED&&!NONE_READY)startRace(false);else loadCountry(weeklySeed());
 </script>
-<script type="module" src="pixel-icons.js?v=160"></script>
+<script type="module" src="pixel-icons.js?v=161"></script>
 </body>
 </html>

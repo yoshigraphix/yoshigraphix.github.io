@@ -5,8 +5,8 @@
 // The model loads once (async) and is cloned per person; until it has loaded, root is an empty group.
 // Root origin is between the feet, facing +z. Poses are bone rotations about the model's own axes (VRoid rest axes
 // are aligned with the world, see rot()).
-import {GLTFLoader} from './vendor/three-0.180.0/addons/loaders/GLTFLoader.js?v=160';
-import {normalizeLook,outfitOf,drawnSkin,drawnHair,hairModelOf} from './character-looks.mjs?v=160';
+import {GLTFLoader} from './vendor/three-0.180.0/addons/loaders/GLTFLoader.js?v=161';
+import {normalizeLook,outfitOf,drawnSkin,drawnHair,hairModelOf} from './character-looks.mjs?v=161';
 
 const SIZE=1.25;            // game units per metre: the old chibi stood ≈2.0 units, the girl is 1.6 m
 const AGE=14;               // default age; look.height (−1…1) moves it 11…16 (the Me designer's Height slider)

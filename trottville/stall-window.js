@@ -4,7 +4,7 @@
 // Light follows it: by day the ceiling lamp is off and the open window brightens the stall (shut it and the
 // room dims, slowly, as the shutters close); at night the lamp is on.
 // makeWindow(T,{x,y,z}) → {group, lamp, targets, toggle(), isOpen(), update(dt) → {room, lamp, win, flash}, label(), dispose()}
-import {gameHours,devHourNow,skyAt,weatherAt,WEATHER,skyLabel,smooth} from './world-weather.mjs?v=160';
+import {gameHours,devHourNow,skyAt,weatherAt,WEATHER,skyLabel,smooth} from './world-weather.mjs?v=161';
 
 const W=1.5,H=1.2;// window opening
 export function makeWindow(T,{x=1.35,y=4.2,z=-3.3,beamY=5.9,lampX=-.05}={}){

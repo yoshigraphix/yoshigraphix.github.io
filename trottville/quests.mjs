@@ -8,7 +8,7 @@
 //    sending that giver home on the new day.
 //  · After a giver's five, they offer one small odd job a day forever (not part of the 200).
 import {GIVERS,GIVER_BY_ID,QUESTS,QUEST_BY_ID,QUESTS_BY_GIVER,QUEST_TOTAL,HINTS,QUEST_GIVERS,CORN_GATE,CORN_ENTRANCE,CORN_SIGN,CORN_MAZE,CORN_KEEP_OUT,ODD_ITEMS,ODD_LOST,ODD_PARCELS,ODD_PLACES,
-  placeOf,spotNear,seeded,hashStr,rewardFor} from './quest-content.mjs?v=160';
+  placeOf,spotNear,seeded,hashStr,rewardFor} from './quest-content.mjs?v=161';
 
 export {GIVERS,GIVER_BY_ID,QUESTS,QUEST_BY_ID,QUEST_TOTAL,HINTS,QUEST_GIVERS,CORN_GATE,CORN_ENTRANCE,CORN_SIGN,CORN_MAZE,CORN_KEEP_OUT};
 export const QUEST_KEY='trottville-quests-v1';

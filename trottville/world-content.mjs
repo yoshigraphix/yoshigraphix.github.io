@@ -1,6 +1,6 @@
-import {blendHeight,roadX,roadZ} from './world-wild.mjs?v=160';
-import {R,HALF,SQUARE,REGIONS,regionAt} from './world-regions.mjs?v=160';
-import {cloudstepHeight,CLOUDSTEP,START,STREAM} from './world-cloudstep.mjs?v=160';
+import {blendHeight,roadX,roadZ} from './world-wild.mjs?v=161';
+import {R,HALF,SQUARE,REGIONS,regionAt} from './world-regions.mjs?v=161';
+import {cloudstepHeight,CLOUDSTEP,START,STREAM} from './world-cloudstep.mjs?v=161';
 const places=[
 ['stable','The Stables',-13,2,'barn','⌂','Step into the barn for six hands-on care games.'],
 ['gate','Meadow Gate',13,15,'gate','✦','The first golden marker on the Meadow Loop.'],

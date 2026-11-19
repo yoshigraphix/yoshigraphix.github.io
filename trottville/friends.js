@@ -4,12 +4,12 @@
 // players anywhere: usernames are the only words a player types, and the server refuses rude ones.
 // Signed-in (cloud) riders only. Loaded by ranch-ui.js (bell) and world.js (profiles, invites).
 // Buttons here use data-friends="…" (never data-action/route/tab, which horselandia's global click handler owns).
-import {horsePortrait} from './horse-portrait.js?v=160';
-import {paintCounters,paintChip} from './coin-collect.js?v=160';
-import {normalizeWallet,WALLET_KEY} from './character-looks.mjs?v=160';
-import {COATS,solidCoat,BADGE_DEFS,TIER_NAMES,PETS} from './ranch.mjs?v=160';
-import {testOn,testAllowed,testCall,setTest,resetTest,TEST_ME} from './test-friends.js?v=160';
-import {usernameProblem,friendsApi,RACES,raceName,activityText,profileFacts,levelFor,inviteTargets} from './friends-logic.mjs?v=160';
+import {horsePortrait} from './horse-portrait.js?v=161';
+import {paintCounters,paintChip} from './coin-collect.js?v=161';
+import {normalizeWallet,WALLET_KEY} from './character-looks.mjs?v=161';
+import {COATS,solidCoat,BADGE_DEFS,TIER_NAMES,PETS} from './ranch.mjs?v=161';
+import {testOn,testAllowed,testCall,setTest,resetTest,TEST_ME} from './test-friends.js?v=161';
+import {usernameProblem,friendsApi,RACES,raceName,activityText,profileFacts,levelFor,inviteTargets} from './friends-logic.mjs?v=161';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const HEARTBEAT_MS=10000;
 const cloud=()=>window.MeadowCloud;

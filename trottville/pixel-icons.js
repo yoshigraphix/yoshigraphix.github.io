@@ -5,7 +5,7 @@
 // v160: most icons now live in a few sheets (scripts/pack-icons.py, icon-sheets.js) to stay under the artifact's file cap.
 // A sheet icon is still an <img class="px-ic"> (so every size/filter rule still applies): a blank 1x1 src, with the
 // icon as its background. Canvases ask pxImage() instead of pxSrc(). HUD and start-screen icons stay single files.
-import {SHEETS,SPRITES} from './icon-sheets.js?v=160';
+import {SHEETS,SPRITES} from './icon-sheets.js?v=161';
 const BASE=new URL('./assets/icons/',import.meta.url).href;
 const BLANK='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 export const pxSrc=name=>SPRITES[name]?BASE+'sheet-'+SPRITES[name][0]+'.webp':BASE+name+'.webp';

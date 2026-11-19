@@ -3,7 +3,7 @@
 // Stats: riding.mjs raceStats (care, bond, age, today's condition) with full tack, then tack applies as in the 3D
 // world: the Complimentary saddle holds top speed to 86% (rideStats, the world's 9.4 × .86), the Complimentary
 // bridle turns slower. Trust is the 3D world's riding trust for that horse when there is one.
-import * as G from './riding.mjs?v=160';
+import * as G from './riding.mjs?v=161';
 
 // Free bridle in the race: turning at 80% (the world's 3.5 vs 9 is too harsh for a timed course).
 export const FREE_BRIDLE_TURN=.8;

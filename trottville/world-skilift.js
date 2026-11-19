@@ -8,7 +8,7 @@ const TAU=Math.PI*2;
 export const LIFT_SPEED=7,HANG=3.4,LINE=1.5,DECK=.55,SEAT_Z=.14;
 // The valley station: open grass between Little Leap School and the racecourse, on the summit's line (2026-11-10:
 // it used to stand at (70,72), inside the corn maze, so riders arrived boxed in by corn and couldn't walk off).
-import {LIFT_STATION} from './world-regions.mjs?v=160';
+import {LIFT_STATION} from './world-regions.mjs?v=161';
 export const VALLEY_STATION={...LIFT_STATION};   // was (34,35): the nine regions
 const IDLE_OFF=180;   // seconds running with nobody on it before it stops itself
 
@@ -46,7 +46,7 @@ export function loopPoint(lay,q){const {L,u}=lay;q=((q%(2*L))+2*L)%(2*L);const d
 // Where you step off at the far station: in front of the deck, beside the line, clear of the posts.
 export function exitSpot(lay,st,back){const {u}=lay,side={x:-u.z,z:u.x};return {x:st.x-u.x*back*1.5+side.x*4.4,z:st.z-u.z*back*1.5+side.z*4.4};}
 
-import {kit as mkKit,realMat} from './world-tudor.js?v=160';
+import {kit as mkKit,realMat} from './world-tudor.js?v=161';
 export function buildSkiLift({T,outdoors,groundHeight,stage,top,bottom,avoid,onToggle}){
   const lay=liftLayout({top,bottom,groundHeight,avoid});
   const group=new T.Group();outdoors.add(group);
