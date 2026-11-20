@@ -6,9 +6,9 @@
 // gate arch, scarecrow, hidden-corner picnic) + apples (1) + horseshoes (1) + glows (1) + gate plaque (1) + sign
 // plaque (1) = 8, plus a shadow pass for the props/items. The foal is the project's sculpted horse (its own
 // meshes, like any world horse).
-import {CORN,JUMP_H,cellCenter,inMaze,wallTiles,tileSpan,cornObstacles,foalStep,newFoal,whinny,FOUND_R} from './world-cornmaze.mjs?v=161';
-import {terrainHeight} from './world-content.mjs?v=161';
-import {makeSculptedHorse} from './horse-sculpt.js?v=161';
+import {CORN,JUMP_H,cellCenter,inMaze,wallTiles,tileSpan,cornObstacles,foalStep,newFoal,whinny,FOUND_R} from './world-cornmaze.mjs?v=162';
+import {terrainHeight} from './world-content.mjs?v=162';
+import {makeSculptedHorse} from './horse-sculpt.js?v=162';
 
 const FOAL_COAT={coat:'#b8683e',belly:'#cf8f62',muzzle:'#e3b38c',mane:'#7a3b22',white:'#f7ecd6',hoof:'#5a4a3c',ink:'#3e2214',iris:'#5b3a26',blaze:true,socks:[0,0,1,1]};
 const lcg=seed=>{let s=seed>>>0||1;return ()=>((s=Math.imul(s,1664525)+1013904223>>>0)/4294967296);};

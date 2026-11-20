@@ -2,11 +2,11 @@
 // them (economy.mjs keeps them in the wallet, so closing a game never loses them) and this shows a card with
 // a big Collect coins button. Pressing it flies coins into the Trotties counter, which ticks up to the new
 // total with a clink. Any element with [data-trottcoins] (containing a <b>) is a counter.
-import './pixel-icons.js?v=161';
-import {log as playLog} from './play-log.js?v=161';
-import {loadWallet,saveWallet,coinHTML,coinWords} from './character-looks.mjs?v=161';
-import {queue,collect,pendingTotal} from './economy.mjs?v=161';
-import {loadRanch,saveRanch,addFood,FOOD} from './ranch.mjs?v=161';
+import './pixel-icons.js?v=162';
+import {log as playLog} from './play-log.js?v=162';
+import {loadWallet,saveWallet,coinHTML,coinWords} from './character-looks.mjs?v=162';
+import {queue,collect,pendingTotal} from './economy.mjs?v=162';
+import {loadRanch,saveRanch,addFood,FOOD} from './ranch.mjs?v=162';
 
 const fmt=n=>Math.round(n).toLocaleString('en-US');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

@@ -8,10 +8,10 @@
 //  · Walk-in = a real room in the world, no loading: walls with a doorway, a counter, the shopkeeper behind it.
 //    On foot only: a gate across each doorway stops horses (it is only solid while you ride).
 //  · Walls are axis-aligned boxes (world-logic blocked() has no rotation), so a door faces n, s, e or w.
-import {SQUARE,regionAt} from './world-regions.mjs?v=161';
-import {SERVICES,terrainHeight,BRIDGES,FIELDS,TOWN2} from './world-content.mjs?v=161';
-import {SHOWS,field,score,timeFaults} from './show-course.mjs?v=161';
-import {rng,hashSeed} from './steeple-course.mjs?v=161';
+import {SQUARE,regionAt} from './world-regions.mjs?v=162';
+import {SERVICES,terrainHeight,BRIDGES,FIELDS,TOWN2} from './world-content.mjs?v=162';
+import {SHOWS,field,score,timeFaults} from './show-course.mjs?v=162';
+import {rng,hashSeed} from './steeple-course.mjs?v=162';
 
 export const FOUNTAIN={x:SQUARE.x,z:SQUARE.z,r:3.4},PLAZA_R=15;
 const vet=SERVICES.find(s=>s.id==='vet');
@@ -319,6 +319,8 @@ export const ARENA_PLANS=[
   {name:'the crossing diagonals',f:[[-14,-16,0],[-8,6,20],[6,24,70],[16,6,180],[16,-16,180],[4,-27,270],[-8,-25,315],[-1,-6,30],[9,12,20],[-12,24,270]]}];
 export const ARENA_CLASSES=[
   {id:'open',name:'Open Round',icon:'🎀',jumps:8,mix:{low:5,mid:3,high:0},pace:5.6,prize:[40,25,15,8],field:'clover',blurb:'Anyone can ride. Eight low and medium fences.'},
+  // v162: the Clover Cup's qualifier: the Cup's own course, free, no rivals; one clear round inside the time qualifies the horse for good.
+  {id:'cupq',name:SHOWS.clover.name+' Qualifier',icon:'🏅',jumps:8,mix:{low:1,mid:5,high:2},pace:6.2,prize:[0,0,0,0],field:'clover',course:'cup',qualifier:'clover',blurb:'The Cup’s own course. Jump it clear (no rails, no stops, inside the time) and your horse is qualified for the Clover Cup for good. Free.'},
   {id:'cup',name:SHOWS.clover.name,icon:'🏆',jumps:8,mix:{low:1,mid:5,high:2},pace:6.2,prize:SHOWS.clover.prize,fee:SHOWS.clover.fee,field:'clover',show:SHOWS.clover,blurb:'Eight fences, medium and high.'},
   {id:'grand',name:SHOWS.grand.name,icon:'👑',jumps:10,mix:{low:0,mid:4,high:6},pace:6.6,prize:SHOWS.grand.prize,fee:SHOWS.grand.fee,field:'grand',show:SHOWS.grand,blurb:'Ten fences, mostly high. The big one.'}];
 export const ARENA_CLASS=Object.fromEntries(ARENA_CLASSES.map(c=>[c.id,c]));
@@ -326,7 +328,7 @@ const FENCE_STYLES=['vertical','oxer','wall','flowers'];
 export const FENCE_COLORS=[['#d64541','#ffffff'],['#2f6fb5','#ffffff'],['#3c8f5a','#f2d15c'],['#e58a2e','#ffffff'],['#7b4fa8','#f4e3ff'],['#1f2a44','#f2c45d']];
 export function arenaCourse(day,clsId='open'){const cls=ARENA_CLASS[clsId]||ARENA_CLASS.open,R=rng(hashSeed('arena-'+day)),plan=ARENA_PLANS[Math.floor(R()*ARENA_PLANS.length)];
   const looks=plan.f.map(()=>({style:FENCE_STYLES[Math.floor(R()*FENCE_STYLES.length)],colors:FENCE_COLORS[Math.floor(R()*FENCE_COLORS.length)]}));
-  const H=rng(hashSeed('arena-'+day+'-'+cls.id)),bag=[];for(const k of ['low','mid','high'])for(let n=0;n<cls.mix[k];n++)bag.push(k);
+  const H=rng(hashSeed('arena-'+day+'-'+(cls.course||cls.id))),bag=[];for(const k of ['low','mid','high'])for(let n=0;n<cls.mix[k];n++)bag.push(k);
   for(let i=bag.length-1;i>0;i--){const j=Math.floor(H()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]];}
   if(bag[0]==='high'){const k=bag.findIndex(b=>b!=='high');if(k>0)[bag[0],bag[k]]=[bag[k],bag[0]];}   // a gentle first fence
   const fences=plan.f.map(([u,v,deg],i)=>{const a=deg*Math.PI/180,p=arenaWorld(u,v),height=i<cls.jumps?bag[i]:'low';
@@ -352,20 +354,21 @@ export const ARENA_STATIC=(()=>{const {x,z,hw,hl,gateU,gateW}=ARENA,H=1.6,t=.2,o
   return out;})();
 // Practice fences beside the ring: one of each height, jumped in either direction, judged with a tip.
 export const PRACTICE=[['low',40],['mid',57],['high',74]].map(([height,z],i)=>({n:i+1,x:205,z,dir:0,dx:0,dz:1,hw:2.3,height,...ARENA_HEIGHTS[height],style:'vertical',colors:FENCE_COLORS[i*2],inCourse:true}));
-export const PRACTICE_SIGN={x:205,z:31};
+export const PRACTICE_SIGN={x:198.5,z:31};   // v162: off to the side, not in the lane
 // Which way (±1) a rider crossed a fence's line between two frames, or 0.
 export function crossed(f,prev,pos,slack=.4){const a0=(prev.x-f.x)*f.dx+(prev.z-f.z)*f.dz,a1=(pos.x-f.x)*f.dx+(pos.z-f.z)*f.dz,lat=Math.abs((pos.x-f.x)*f.dz-(pos.z-f.z)*f.dx);
   return lat<f.hw+slack&&Math.sign(a0)!==Math.sign(a1)&&a1!==0?Math.sign(a1):0;}
 // How a fence went: 'refusal' (still on the ground), 'rail' (in the air but too slow for its height) or 'clear'.
-export const judgeJump=(f,{air,speed})=>!air?'refusal':speed<f.need?'rail':'clear';
+// v162: with the horse's real height over the rails (training.mjs), the height decides; without it, the old speed rule.
+export const judgeJump=(f,{air,speed,height})=>!air?'refusal':height!=null?(height>=f.h*.8?'clear':'rail'):speed<f.need?'rail':'clear';
 // ---- a round ----
 export function startRound(course,now){return {course,i:0,started:false,t0:now,knock:0,refuse:0,prev:null,done:false,log:[]};}
-export function stepRound(r,{x,z,air,speed},now){if(r.done)return null;const prev=r.prev;r.prev={x,z};if(!prev)return null;
+export function stepRound(r,{x,z,air,speed,height},now){if(r.done)return null;const prev=r.prev;r.prev={x,z};if(!prev)return null;
   const l0=arenaLocal(prev.x,prev.z),l1=arenaLocal(x,z);
   if(!r.started){if(l0.v<=ARENA.startV&&l1.v>ARENA.startV&&Math.abs(l1.u)<ARENA.hw){r.started=true;r.t0=now;return {type:'go'};}return null;}
   if(!inArena(x,z,1.5)){r.done=true;return {type:'retired'};}
   const f=r.course.fences[r.i];if(crossed(f,prev,{x,z})!==1)return null;
-  const how=judgeJump(f,{air,speed});r.log.push(how);
+  const how=judgeJump(f,{air,speed,height});r.log.push(how);
   if(how==='refusal'){r.refuse++;const back={x:f.x-f.dx*4,z:f.z-f.dz*4};r.prev={...back};
     if(r.refuse>=3){r.done=true;return {type:'out',f,back,result:arenaResult(r,now)};}return {type:'refusal',f,back};}
   if(how==='rail')r.knock++;r.i++;const ev={type:how,f};
@@ -583,7 +586,7 @@ export function buildArena({T,root,geo,mat,box,ico,label,groundY}){
   const arrow=new T.Group();{const c=new T.Mesh(geo(new T.ConeGeometry(.55,1.1,10)),mat('#f2c45d',{emissive:'#f2c45d',emissiveIntensity:.55}));c.rotation.x=Math.PI;arrow.add(c);
     const r=new T.Mesh(geo(new T.TorusGeometry(.75,.1,8,24)),mat('#f2c45d',{emissive:'#f2c45d',emissiveIntensity:.55}));r.rotation.x=Math.PI/2;r.position.y=.9;arrow.add(r);}arrow.visible=false;root.add(arrow);
   const practice=new T.Group();root.add(practice);PRACTICE.forEach(f=>fence(practice,f,{number:false}));
-  {const g=at(new T.Group(),PRACTICE_SIGN.x,PRACTICE_SIGN.z);B(g,'#7a5638',0,1.2,0,.16,2.4,.16);B(g,'#e5c76b',0,2.3,0,2.2,.6,.1);g.add(label('PRACTICE FENCES',0,3.1,0,5));
+  {const g=at(new T.Group(),PRACTICE_SIGN.x,PRACTICE_SIGN.z);B(g,'#7a5638',0,1.2,0,.16,2.4,.16);B(g,'#e5c76b',0,2.3,0,2.2,.6,.1);g.add(label('JUMP TRAINING',0,3.1,0,5));
     PRACTICE.forEach(f=>{const s=label(f.label.toUpperCase(),f.x+3.6,2.2,f.z,2.6);root.add(s);});}
   return {obstacles,setCourse,setNext,knock,resetRails,drawBoard,cheer(){cheerT=2.2;},
     tick(now,delta){const t=now*.001;if(arrow.visible){const a=arrow.userData.at;arrow.position.set(a.x,a.y+Math.sin(t*3)*.25,a.z);arrow.rotation.y+=delta*1.5;}

@@ -6,9 +6,9 @@
 //  · TRAIL RIDERS ride loops between the places by day (they go home at night).
 //  · THE NOON DERBY: every game day at high noon (real :15 past each hour) six horses race four laps of Clover
 //    Racecourse. They walk out to the start a minute early; riders nearby hear about it.
-import {rng,BREEDS,makeCoat,newHorse} from './ranch.mjs?v=161';
-import {R} from './world-regions.mjs?v=161';
-import {inWater} from './world-content.mjs?v=161';
+import {rng,BREEDS,makeCoat,newHorse} from './ranch.mjs?v=162';
+import {R} from './world-regions.mjs?v=162';
+import {inWater} from './world-content.mjs?v=162';
 
 // Open grass checked against the world's obstacles (radius 9+ clear, away from places, the maze and Cloudstep).
 export const PASTURES=[

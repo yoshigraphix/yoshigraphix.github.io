@@ -1,8 +1,8 @@
 // The valley's legends in 3D (note #19; rules in legends.mjs): the garden bed by the stable, the rainbow that
 // touches down after rain, the moonlit unicorn, the stargazing sheet and the pegasus that flies down on a 200.
-import {makeSculptedHorse} from './horse-sculpt.js?v=161';
-import {weatherAt,weatherSpellsAgo,gameHours} from './world-weather.mjs?v=161';
-import * as L from './legends.mjs?v=161';
+import {makeSculptedHorse} from './horse-sculpt.js?v=162';
+import {weatherAt,weatherSpellsAgo,gameHours} from './world-weather.mjs?v=162';
+import * as L from './legends.mjs?v=162';
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const WET=new Set(['rain','storm']),FALL=new Set(['rain','storm','snow']);// v139: snow clearing brings a rainbow too (winter had none)

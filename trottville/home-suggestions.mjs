@@ -1,7 +1,7 @@
 // "What to do next" for the home page. Pure: horselandia.js gathers the facts (wallet, places found, trust,
 // today's care) and this picks up to three friendly suggestions, each with one button. Goals are concrete
 // ("75 more coins for the Ranger Cape") so the player remembers why a game is worth playing.
-import {OUTFITS,coinWords} from './character-looks.mjs?v=161';
+import {OUTFITS,coinWords} from './character-looks.mjs?v=162';
 
 // Ways to earn coins, rotated by day so the home page doesn't always push the same game.
 const EARN=[

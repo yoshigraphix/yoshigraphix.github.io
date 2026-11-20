@@ -2,12 +2,12 @@
 // nose & mouth, outfits and the card shop. Outfits come in three tiers: free, coins (earned by playing) and
 // stars (from Trottville Game Cards). Locked outfits can be tried on; Done keeps only what you own.
 // Card sales are not switched on in this practice version: only practice codes redeem, saved on this device.
-import * as T from './vendor/three-0.180.0/three.module.js?v=161';
-import {makeChibiCharacter} from './chibi-character.js?v=161';
-import {makeSculptedHorse} from './horse-sculpt.js?v=161';
-import {canBuy,buyCard,claimStars,paymentsMode} from './star-shop.js?v=161';
-import {log as playLog,askWouldBuy} from './play-log.js?v=161';
-import {HAIR_STYLES,HAIR_GROUPS,HAIR_COLORS,HAIR_TIPS,EYE_SHAPES,EYE_COLORS,FACES,SKINS,NOSES,NOSE_SIZES,MOUTHS,BLUSHES,EYESHADOWS,LIPS,LINERS,OUTFITS,GAME_CARDS,normalizeLook,hairModelOf,loadLook,saveLook,coinHTML,loadWallet,saveWallet,owns,buyOutfit,redeemCard} from './character-looks.mjs?v=161';
+import * as T from './vendor/three-0.180.0/three.module.js?v=162';
+import {makeChibiCharacter} from './chibi-character.js?v=162';
+import {makeSculptedHorse} from './horse-sculpt.js?v=162';
+import {canBuy,buyCard,claimStars,paymentsMode} from './star-shop.js?v=162';
+import {log as playLog,askWouldBuy} from './play-log.js?v=162';
+import {HAIR_STYLES,HAIR_GROUPS,HAIR_COLORS,HAIR_TIPS,EYE_SHAPES,EYE_COLORS,FACES,SKINS,NOSES,NOSE_SIZES,MOUTHS,BLUSHES,EYESHADOWS,LIPS,LINERS,OUTFITS,GAME_CARDS,normalizeLook,hairModelOf,loadLook,saveLook,coinHTML,loadWallet,saveWallet,owns,buyOutfit,redeemCard} from './character-looks.mjs?v=162';
 
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // 2026-11-12 (Yoshi): only controls that change the 3D rider, everything live, no scrolling to reach a part. Five tabs that

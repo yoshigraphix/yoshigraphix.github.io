@@ -1,13 +1,13 @@
-import {LOCATIONS,BARN_GAMES,questList} from './world-content.mjs?v=161';
-import {startBarnGame,barnAction} from './barn-games.mjs?v=161';
-import {pxIcon,GAME_PX} from './pixel-icons.js?v=161';
-import {mountAppleConveyor} from './apple-conveyor-3d.js?v=161';
-import {mountHayFlinger} from './hay-flinger-3d.js?v=161';
-import {horsePortrait} from './horse-portrait.js?v=161';
-import {convertScore,foodFrom,logPlay,minutesToday,GAMES} from './economy.mjs?v=161';
-import {queueCoins,showCollect} from './coin-collect.js?v=161';
-import {loadWallet,saveWallet} from './character-looks.mjs?v=161';
-import {markDone} from './world-today.mjs?v=161';
+import {LOCATIONS,BARN_GAMES,questList} from './world-content.mjs?v=162';
+import {startBarnGame,barnAction} from './barn-games.mjs?v=162';
+import {pxIcon,GAME_PX} from './pixel-icons.js?v=162';
+import {mountAppleConveyor} from './apple-conveyor-3d.js?v=162';
+import {mountHayFlinger} from './hay-flinger-3d.js?v=162';
+import {horsePortrait} from './horse-portrait.js?v=162';
+import {convertScore,foodFrom,logPlay,minutesToday,GAMES} from './economy.mjs?v=162';
+import {queueCoins,showCollect} from './coin-collect.js?v=162';
+import {loadWallet,saveWallet} from './character-looks.mjs?v=162';
+import {markDone} from './world-today.mjs?v=162';
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tack=['🪮','🧲','🎀','🪣','🌾','🥕'];
 // Barn games menu: each game's colour identity is in world-expansion.css (.barn-<id>); art is emoji only.

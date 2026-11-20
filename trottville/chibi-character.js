@@ -7,8 +7,8 @@
 // and the designer preview. Built from look data (character-looks.mjs). Root origin is between the feet (soles on
 // y=0); the character faces +z. update(dt,{pose:'stand'|'walk'|'ride',fast,speed,air}) animates. In 'ride' the hips
 // are the seat point: put root at the saddle with seatOffset() so the pelvis sits on it.
-import {normalizeLook,outfitOf} from './character-looks.mjs?v=161';
-import {makeVroidCharacter} from './vroid-character.js?v=161';
+import {normalizeLook,outfitOf} from './character-looks.mjs?v=162';
+import {makeVroidCharacter} from './vroid-character.js?v=162';
 // 2026-11-11: every person in the game is the VRoid girl (vroid-character.js). opt.chibi keeps the old figure.
 export const USE_VROID=true;
 

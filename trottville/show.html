@@ -407,18 +407,18 @@ const REPLAY_KEY=`trottville-show-replay-v1:${SHOW.id}`,BEST_KEY=`trottville-sho
 const sel={horse:store.get('trottville.show.horse')};
 const lvl=h=>level(h.xp);
 const PAID_KEY=`trottville-show-paid-v1:${SHOW.id}`,paidToday=()=>store.get(PAID_KEY)===String(dayNo());
-const checks=h=>entryNeeds(SHOW,{tooOld:!!h&&G.tooOldToCompete(h),level:h?lvl(h):0,upgradedSaddle:!!h&&G.upgraded(G.tackOf(h).saddle),hasOutfit:G.canShow(loadWallet())});
+const checks=h=>entryNeeds(SHOW,{tooOld:!!h&&G.tooOldToCompete(h),level:h?lvl(h):0,upgradedSaddle:!!h&&G.upgraded(G.tackOf(h).saddle),hasOutfit:G.canShow(loadWallet()),qualified:!!h?.qual?.[SHOW.id]});
 function paintMenu(){
   if(!HERD.some(h=>h.id===sel.horse))sel.horse=(HERD.find(h=>!checks(h).length)||HERD[0])?.id;
   const h=HERD.find(x=>x.id===sel.horse),needs=checks(h),w=loadWallet(),saved=loadReplay();
   const reqRow=(ok,text,sub='')=>`<li class="${ok?'ok':''}"><b>${ok?'✓':'○'}</b><span>${text}${sub?`<small>${sub}</small>`:''}</span></li>`;
   const lvlNeed=h&&lvl(h)<SHOW.level?`About ${daysToLevel(h.xp,SHOW.level)} more days of care and games.`:'';
-  els.menuCard.innerHTML=`<span class="eyebrow">${forest?'Cross-country show':'Show jumping'} · Level ${SHOW.level}+</span><h1>${esc(SHOW.name)}</h1><p>${esc(SHOW.blurb)}</p>
+  els.menuCard.innerHTML=`<span class="eyebrow">${forest?'Cross-country show':'Show jumping'} · ${SHOW.qualifier?'Qualifier needed':'Level '+SHOW.level+'+'}</span><h1>${esc(SHOW.name)}</h1><p>${esc(SHOW.blurb)}</p>
     <p class="note-line rules">Jump the numbered fences in order. A rail or a stop is 4 faults; each second over ${fmt(C.timeAllowed).replace(/\.0$/,'')} is 1 more. Fewest faults wins, then fastest time.</p>
     <h2>To enter</h2><ul class="reqs">
       ${reqRow(!needs.some(n=>n.id==='outfit'),'Show Jacket','Navy coat, white breeches, helmet. Yours for good.')}
       ${reqRow(h&&!needs.some(n=>n.id==='saddle'),'An upgraded saddle',h?(G.upgraded(G.tackOf(h).saddle)?'':`${esc(h.name)} has the Free Saddle. Buy one in the stable profile.`):'')}
-      ${reqRow(h&&!needs.some(n=>n.id==='level'),`Horse level ${SHOW.level}`,h?`${esc(h.name)} is level ${lvl(h)}. ${lvlNeed}`:'')}
+      ${SHOW.qualifier?reqRow(h&&!needs.some(n=>n.id==='qual'),'Qualified for the '+esc(SHOW.name),h?(h.qual?.[SHOW.id]?`${esc(h.name)} jumped a clear qualifying round.`:`Ride a clear round in the Qualifier at the Clover Downs show ring. Train Jumping on the lane beside the ring first.`):''):reqRow(h&&!needs.some(n=>n.id==='level'),`Horse level ${SHOW.level}`,h?`${esc(h.name)} is level ${lvl(h)}. ${lvlNeed}`:'')}
       ${reqRow(h&&!needs.some(n=>n.id==='age'),'A horse under 15',h&&G.tooOldToCompete(h)?`${esc(h.name)} is too tired for shows now. Seniors can still ride the trails.`:'From 15 a horse’s stamina is too weak for shows.')}
       ${reqRow(paidToday()||w.coins>=(SHOW.fee||0),`Entry ${(SHOW.fee||0).toLocaleString('en-US')} 🪙`,paidToday()?'You won today’s prize, so more rounds are free practice.':`Win and the prize is ${SHOW.prize[0].toLocaleString('en-US')} 🪙. The prize pays once a day.`)}
     </ul>

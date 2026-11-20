@@ -1,4 +1,4 @@
-import {normalizeStreak} from './riding.mjs?v=161';
+import {normalizeStreak} from './riding.mjs?v=162';
 // Character looks, the outfit catalogue and the wallet. Pure data and rules (no DOM, no Three.js), so the
 // world, the steeplechase and the designer all agree, and tests can run it in Node.
 // Coins are earned by playing. Stars come only from Trottville Game Cards. Real card sales are NOT switched on:

@@ -3,7 +3,7 @@
 // Interact / Jump / Mount + the profile disc (bottom-right). The profile disc shows your horse, its level, and a
 // stamina ring while riding; tap it for the menu with the tools you only need now and then.
 // The original buttons are MOVED (not copied), so their ids and handlers in world.js keep working.
-import {horsePortrait} from './horse-portrait.js?v=161';
+import {horsePortrait} from './horse-portrait.js?v=162';
 
 const MENU=[['#world-companions-toggle','Horses'],['#world-journal','To-do'],['#world-barn','Barn games'],['#world-style','Me'],
   ['#world-friends','Friends'],['#world-camera-toggle','Camera'],['#world-fullscreen','Fullscreen'],['#world-exit','Exit']];
@@ -59,7 +59,7 @@ export function createHud({stage}){
   // AR photo (note #27): step 1 is a camera test; the module loads only when tapped.
   const ar=document.createElement('button');ar.type='button';ar.className='world-icon hud-tile hud-ar';ar.setAttribute('aria-label','AR photo');
   ar.innerHTML='<img class="px-ic world-px" src="assets/icons/ar.webp" alt="" aria-hidden="true" draggable="false"><span class="world-icon-caption" aria-hidden="true">AR photo</span>';
-  let lastHorse=null;ar.onclick=()=>import('./ar-photo.js?v=161').then(m=>m.openArPhoto({stage,horse:lastHorse}));grid.insertBefore(ar,grid.querySelector('#world-camera-toggle'));
+  let lastHorse=null;ar.onclick=()=>import('./ar-photo.js?v=162').then(m=>m.openArPhoto({stage,horse:lastHorse}));grid.insertBefore(ar,grid.querySelector('#world-camera-toggle'));
   // v113: Collections (horseshoes, wildflowers, bottles, bug jar, scrapbook). world.js listens for the event.
   const col=document.createElement('button');col.type='button';col.className='world-icon hud-tile hud-col';col.setAttribute('aria-label','Collections');
   col.innerHTML='<span class="world-px" aria-hidden="true" style="font-size:30px;line-height:44px">📖</span><span class="world-icon-caption" aria-hidden="true">Collections</span>';

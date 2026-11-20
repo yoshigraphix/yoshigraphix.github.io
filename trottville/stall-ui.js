@@ -1,9 +1,9 @@
 // Decorating sheets for the home stall: the slot picker (what goes in this spot) and the Decor store (buy with
 // Trotties from the same wallet the top-bar counter shows). Bottom sheets, no native dialogs. Buttons use
 // data-st="…" (never data-action / data-route / data-tab, which horselandia.js's global click handler owns).
-import {CATALOG,ITEM,SLOT,buy,itemsForSlot,slotOf,owns} from './stall-decor.mjs?v=161';
-import {iconHTML} from './pixel-icons.js?v=161';
-import {loadWallet,saveWallet,coinHTML} from './character-looks.mjs?v=161';
+import {CATALOG,ITEM,SLOT,buy,itemsForSlot,slotOf,owns} from './stall-decor.mjs?v=162';
+import {iconHTML} from './pixel-icons.js?v=162';
+import {loadWallet,saveWallet,coinHTML} from './character-looks.mjs?v=162';
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Math.round(n).toLocaleString('en-US');

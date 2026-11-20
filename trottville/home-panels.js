@@ -2,12 +2,12 @@
 // classic script; it calls window.TrottPanels.open(kind) and dispatches 'trottville:rendered' after every render).
 // Game pages (board games, valley games, the steeplechase) play in a full-screen frame over home and post
 // 'trottville:close-board' to come back, exactly as they do inside the 3D world.
-import {BARN_GAMES} from './world-content.mjs?v=161';
-import {iconHTML,GAME_PX} from './pixel-icons.js?v=161';
-import {BOARD_GAMES} from './board-games.mjs?v=161';
-import {VALLEY_GAMES} from './valley-games.mjs?v=161';
-import {log} from './play-log.js?v=161';
-import {devStatsBoot} from './test-friends.js?v=161';
+import {BARN_GAMES} from './world-content.mjs?v=162';
+import {iconHTML,GAME_PX} from './pixel-icons.js?v=162';
+import {BOARD_GAMES} from './board-games.mjs?v=162';
+import {VALLEY_GAMES} from './valley-games.mjs?v=162';
+import {log} from './play-log.js?v=162';
+import {devStatsBoot} from './test-friends.js?v=162';
 devStatsBoot();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let panel=null,frame=null;

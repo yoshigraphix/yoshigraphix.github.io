@@ -2,17 +2,17 @@
 // lead home, the pickups, the 10-minute timer pill and the Quest Log button. The rules live in quests.mjs (pure,
 // tested); the 200 quests and their givers in quest-content.mjs; the book and talk markup in quest-log.js.
 // world.js creates this once and calls update() every frame, near()/hit() for Talk, and complete() for the corn maze.
-import * as Q from './quests.mjs?v=161';
-import {iconHTML,PX_NAMES,pxImage} from './pixel-icons.js?v=161';
-import {GIVERS} from './quest-content.mjs?v=161';
-import {openQuestLog,talkHTML,badgeToastHTML,ensureQuestLogCss} from './quest-log.js?v=161';
-import {makeChibiCharacter} from './chibi-character.js?v=161';
-import {lookFromSeed} from './character-looks.mjs?v=161';
-import {makeSculptedHorse} from './horse-sculpt.js?v=161';
-import {inWater} from './world-content.mjs?v=161';
-import {LAKE} from './world-town.mjs?v=161';
-import {queueCoins} from './coin-collect.js?v=161';
-import {sfx,npcVoice,ambLoop} from './sfx.js?v=161';
+import * as Q from './quests.mjs?v=162';
+import {iconHTML,PX_NAMES,pxImage} from './pixel-icons.js?v=162';
+import {GIVERS} from './quest-content.mjs?v=162';
+import {openQuestLog,talkHTML,badgeToastHTML,ensureQuestLogCss} from './quest-log.js?v=162';
+import {makeChibiCharacter} from './chibi-character.js?v=162';
+import {lookFromSeed} from './character-looks.mjs?v=162';
+import {makeSculptedHorse} from './horse-sculpt.js?v=162';
+import {inWater} from './world-content.mjs?v=162';
+import {LAKE} from './world-town.mjs?v=162';
+import {queueCoins} from './coin-collect.js?v=162';
+import {sfx,npcVoice,ambLoop} from './sfx.js?v=162';
 // v132: each quest giver's wordless voice (woman / man / kid) and a small per-person pitch, so everyone sounds a bit different.
 const WOMEN=new Set(['marigold','orla','ingrid','bea','dottie','sunita','jo','vi','cora','agnes','petra','ramona','flo','elsie','edda','delphine','wilma']);
 function voiceOf(d){const role=d.role||'',age=/\b(\d+|seven|eight|nine|ten|eleven|twelve)[- ]?(years?|year-old)|years old|twelve and/i.test(role);
@@ -20,7 +20,7 @@ function voiceOf(d){const role=d.role||'',age=/\b(\d+|seven|eight|nine|ten|eleve
   return {who:age?'kid':WOMEN.has(first)?'woman':/^[^,]*\b(boy|girl)\b/i.test(role)&&!/mum|dad|mother|father/i.test(role)?'kid':'man',rate:.92+(h%17)/100};}
 // Mood from what happens: thanks/rewards = happy, a question = question, a new quest or first hello = greet, else thinking.
 function moodOf(res,text){if(res.kind==='turnin'||res.kind==='receive')return 'happy';if(/\?/.test(text))return 'question';if(res.kind==='offer')return 'greet';if(res.kind==='reminder')return 'think';return /!/.test(text)?'greet':'think';}
-import {log as playLog} from './play-log.js?v=161';
+import {log as playLog} from './play-log.js?v=162';
 // Compass words for a direction on the map (map top = north = −z).
 const dirWord=(dx,dz)=>['north','north-east','east','south-east','south','south-west','west','north-west'][((Math.round(Math.atan2(dx,-dz)/(Math.PI/4))%8)+8)%8];
 

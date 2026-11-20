@@ -1,8 +1,8 @@
 // Trottville Quest Log (the book) + markup for the world's Talk dialog and badge celebrations.
 // Original design: a stitched leather notebook with a ribbon, warm paper pages and stamp-like tiles.
 // Buttons use data-ql-* / data-quest-action only (horselandia.js listens globally for data-tab/route/action/…).
-import {activeList,log,badges,GIVER_BY_ID,QUEST_BY_ID,QUEST_TOTAL} from './quests.mjs?v=161';
-import {iconHTML} from './pixel-icons.js?v=161';
+import {activeList,log,badges,GIVER_BY_ID,QUEST_BY_ID,QUEST_TOTAL} from './quests.mjs?v=162';
+import {iconHTML} from './pixel-icons.js?v=162';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const mmss=s=>Math.floor(Math.max(0,s)/60)+':'+String(Math.max(0,s)%60).padStart(2,'0');

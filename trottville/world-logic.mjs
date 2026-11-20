@@ -1,8 +1,8 @@
-import {terrainHeight,inWater,mountainLift} from './world-content.mjs?v=161';
-import {mountainMask,VALLEY} from './world-wild.mjs?v=161';
-import {R} from './world-regions.mjs?v=161';
-import {cloudstepBlocked} from './world-cloudstep.mjs?v=161';
-import {stonePass} from './world-town.mjs?v=161';
+import {terrainHeight,inWater,mountainLift} from './world-content.mjs?v=162';
+import {mountainMask,VALLEY} from './world-wild.mjs?v=162';
+import {R} from './world-regions.mjs?v=162';
+import {cloudstepBlocked} from './world-cloudstep.mjs?v=162';
+import {stonePass} from './world-town.mjs?v=162';
 // The Meadow Loop stays round the stables (its places moved out to the regions, so its stamps are named for the loop itself).
 export const MARKERS=[{x:13,z:15,name:'The meadow gate'},{x:30,z:4,name:'The willow bend'},{x:29,z:-22,name:'The hilltop'},{x:3,z:-26,name:'The old oak'},{x:-19,z:20,name:'The home trail'}];
 export const OBSTACLES=[

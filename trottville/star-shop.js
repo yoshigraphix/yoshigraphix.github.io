@@ -3,7 +3,7 @@
 // 13+ check. The price list lives on the server (supabase/functions/_shared/cards.js); this file only asks for a
 // card by id, sends the player to Stripe's own Checkout page, and on return claims credited stars exactly once.
 // No secrets here: the Stripe keys live in Supabase's edge-function secrets.
-import {loadWallet,saveWallet} from './character-looks.mjs?v=161';
+import {loadWallet,saveWallet} from './character-looks.mjs?v=162';
 
 export const AGE_BLOCK_KEY='trottville-age-block',AGE_BLOCK_MS=24*36e5,MIN_AGE=13;
 export const paymentsMode=(cfg=globalThis.MEADOWGATE_SUPABASE)=>['test','live'].includes(cfg?.payments)?cfg.payments:'off';

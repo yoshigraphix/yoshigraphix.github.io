@@ -1,70 +1,71 @@
-import {makeChibiCharacter} from './chibi-character.js?v=161';import {setPeopleLight,resetPeopleLight,cullPeople} from './vroid-character.js?v=161';
-import {loadLook,saveLook,lookFromSeed} from './character-looks.mjs?v=161';
-import {queueCoins,showCollect,paintCounters} from './coin-collect.js?v=161';
-import {openDesigner} from './character-designer.js?v=161';
-import {watchReturn} from './star-shop.js?v=161';
-import {log as playLog} from './play-log.js?v=161';
-import {makeSculptedHorse} from './horse-sculpt.js?v=161';
-import {addTackAndRider} from './rider-sculpt.js?v=161';
-import {buildExpansion,buildSkyWorld,SKY} from './world-expansion.js?v=161';
-import {SQUARE} from './world-regions.mjs?v=161';
-import {CAMP,buildTown,doorNear,SHOP_PARTS,FOUNTAIN,PLAZA_R,buildActivities,ACTIVITIES,ACTIVITY_BY_ID,HOSTS,LOOKOUTS,FISHING,PUMPKINS,lakeStone,STONES,startRun,stepRun,runStatus,runAbandoned,pickFish,inSnow,ARENA,ARENA_POST,ARENA_STEWARD,ARENA_CLASSES,arenaCourse,arenaRivals,startRound,stepRound,roundStatus,inArena,PRACTICE,crossed,judgeJump,PLACE_NAME,ROSETTE} from './world-town.mjs?v=161';
+import {makeChibiCharacter} from './chibi-character.js?v=162';import {setPeopleLight,resetPeopleLight,cullPeople} from './vroid-character.js?v=162';
+import {loadLook,saveLook,lookFromSeed} from './character-looks.mjs?v=162';
+import {queueCoins,showCollect,paintCounters} from './coin-collect.js?v=162';
+import {openDesigner} from './character-designer.js?v=162';
+import {watchReturn} from './star-shop.js?v=162';
+import {log as playLog} from './play-log.js?v=162';
+import {makeSculptedHorse} from './horse-sculpt.js?v=162';
+import {addTackAndRider} from './rider-sculpt.js?v=162';
+import {buildExpansion,buildSkyWorld,SKY} from './world-expansion.js?v=162';
+import {SQUARE} from './world-regions.mjs?v=162';
+import {CAMP,buildTown,doorNear,SHOP_PARTS,FOUNTAIN,PLAZA_R,buildActivities,ACTIVITIES,ACTIVITY_BY_ID,HOSTS,LOOKOUTS,FISHING,PUMPKINS,lakeStone,STONES,startRun,stepRun,runStatus,runAbandoned,pickFish,inSnow,ARENA,ARENA_POST,ARENA_STEWARD,ARENA_CLASSES,arenaCourse,arenaRivals,startRound,stepRound,roundStatus,inArena,PRACTICE,PRACTICE_SIGN,crossed,judgeJump,PLACE_NAME,ROSETTE} from './world-town.mjs?v=162';
 // The walk-in shops on the map (they open from the village square; the vet is its own place by the home trail).
 // The step 3 activities on the map; fast travel takes you to the nearest named place.
 const nearestLoc=(x,z)=>LOCATIONS.reduce((b,l)=>Math.hypot(l.x-x,l.z-z)<Math.hypot(b.x-x,b.z-z)?l:b).id;
-const ACT_PINS=[{id:'act-arena',name:'Clover Downs Show Ring',x:ARENA.x,z:ARENA.z,kind:'activity',icon:'🎀',go:nearestLoc(ARENA_POST.x,ARENA_POST.z),seen:true,description:'Show jumping, open to all: ride in on your horse and jump the numbered fences in order for a rosette. Practice fences beside the ring.'},...ACTIVITIES.map(a=>{const p=a.host?HOSTS.find(h=>h.id===a.host):a.start;return {id:'act-'+a.id,name:a.name,x:p.x,z:p.z,kind:'activity',icon:a.icon,go:nearestLoc(p.x,p.z),seen:true,description:a.how+(a.night?' (after dark)':'')};}),
+const ACT_PINS=[{id:'act-arena',name:'Clover Downs Show Ring',x:ARENA.x,z:ARENA.z,kind:'activity',icon:'🎀',go:nearestLoc(ARENA_POST.x,ARENA_POST.z),seen:true,description:'Show jumping, open to all: ride in on your horse and jump the numbered fences in order for a rosette. The Jump Training lane is beside the ring.'},...ACTIVITIES.map(a=>{const p=a.host?HOSTS.find(h=>h.id===a.host):a.start;return {id:'act-'+a.id,name:a.name,x:p.x,z:p.z,kind:'activity',icon:a.icon,go:nearestLoc(p.x,p.z),seen:true,description:a.how+(a.night?' (after dark)':'')};}),
   {id:'act-stones',name:'Lily Lake stepping-stones',x:STONES[0].x,z:STONES[0].z,kind:'activity',icon:'🪨',go:'pond',seen:true,description:'Hop across the lake on foot, stone to stone.'},
   {id:'act-fish',name:'Fishing dock',x:FISHING.x,z:FISHING.z,kind:'activity',icon:'🎣',go:'pond',seen:true,description:'Cast off the end of the dock and tap when the float dips.'},
   {id:'act-tree',name:'Treehouse camp',x:LOOKOUTS[0].x,z:LOOKOUTS[0].z,kind:'activity',icon:'🌳',go:'forest',seen:true,description:'Climb the ladder for a view over Mosswood.'}];
 const SHOP_PINS=SHOP_PARTS.map(({shop:s})=>({id:'shop-'+s.id,name:s.name,x:s.x,z:s.z,kind:'village',icon:{bakery:'🥐',post:'✉️',hall:'🏛️',store:'🛒',vet:'🩺',hut:'🛖',dairy:'🐄',lighthouse:'🗼'}[s.kind]||'🏠',go:s.id==='vet'?'home':'village',seen:true,description:'Walk in on foot; your horse waits at the rail outside.'}));
-import {createAdventureUI} from './adventure-ui.js?v=161';
-import {buildStations} from './world-stations.js?v=161';
-import {BOARD_GAMES} from './board-games.mjs?v=161';
-import {VALLEY_GAMES} from './valley-games.mjs?v=161';
-import {createWorldQuests} from './world-quests.js?v=161';
-import {R,REGIONS,regionAt} from './world-regions.mjs?v=161';
-import {createHud} from './world-hud.js?v=161';
-import {cornLayout,CORN,inMaze} from './world-cornmaze.mjs?v=161';
-import {createCornMaze} from './world-cornmaze-3d.js?v=161';
-import {createWorldMap} from './world-map.js?v=161';
-import {todayActivities,loadDone,markDone} from './world-today.mjs?v=161';
-import {createWorldNetwork,roomError} from './world-network.js?v=161';
-import {openFriends,openProfile,openInvite} from './friends.js?v=161';
-import {testOn,TEST_ME} from './test-friends.js?v=161';
-import {sfx,hoofLoop,voiceRate,ambLoop,ambStop,npcVoice} from './sfx.js?v=161';
-import {want as wantMusic} from './music.js?v=161';
-import * as G from './riding.mjs?v=161';
-import * as RanchUI from './ranch-ui.js?v=161';
-import {newHorse,condition,level as horseLevel,marketStock,dayNo as dayNumber,makeCoat,breedOf,COATS} from './ranch.mjs?v=161';
-import {isMidnight,isSighting} from './legends.mjs?v=161';
-import {entryNeeds} from './show-course.mjs?v=161';
-import {loadWallet,saveWallet,buyOutfit,OUTFITS,outfitOf,buyGear,GEAR_ITEMS,coinWords,WINTER_GEAR} from './character-looks.mjs?v=161';
-import {BAYS,inStore,DOOR,COUNTER,KEEPER,STORE,HALL_X,MARKET,inMarketHall} from './barn-interior.js?v=161';
-import {SHOPKEEPER,greeting as shopGreeting,tip as shopTip,pitch as shopPitch,chatter as shopChatter,NO_HORSES} from './shop-talk.mjs?v=161';
-import {RACES,raceName,racePhase,standings,ordinal,raceTime,steepleSeed,safeName} from './friends-logic.mjs?v=161';
-import {FIELDS,RIVERS,riverAt,bridgeFloor,SKYGATE,TOWN2,FARMS,terrainHeight as farmGround,LOCATIONS,MAP_PATHS,BARN_GAMES,INDOOR_GAMES,RACE_GATES,SERVICES,normalizeAdventure,questList,fogBits,fogString,fogMark,onBridge,onCobbles} from './world-content.mjs?v=161';
-import {CLOUDSTEP,cloudstepAt,onCloudstep,trailPhi,climbRoute,trailPoint,trailRadius,START as CLIMB_START,TRAIL_END} from './world-cloudstep.mjs?v=161';
-import {terrainTextures,addTerrain,createGrass} from './world-terrain.js?v=161';
-import {buildCloudstep} from './world-cloudstep-3d.js?v=161';
-import {buildSkiLift,VALLEY_STATION} from './world-skilift.js?v=161';
-import {createValleyLife} from './world-life.js?v=161';
-import {createLegends} from './world-legends.js?v=161';
-import * as T from './vendor/three-0.180.0/three.module.js?v=161';
-import {MARKERS,OBSTACLES,groundHeight,movementVector,moveActor,blocked,normalizeStamps,collectMarkers,followCameraPosition,tooSteep,slopeAt,solidBlocked} from './world-logic.mjs?v=161';
-import {SoftwareRenderer} from './world-renderer.js?v=161';
-import {findGroundPath,steeringStep} from './world-navigation.mjs?v=161';
-import {createChunks,bakeTree,treeGeometry,treeOut,TREE_PALS} from './world-chunks.js?v=161';
-import {createLanterns} from './world-lanterns.js?v=161';
-import {buildTudorShop,detailTextures,detailKind,addDetail,squareProps,forestLogs} from './world-tudor.js?v=161';
-import {BIOMES,biomeAt,wildness,roadDistance,ROAD_HALF} from './world-wild.mjs?v=161';
-import {createSky,createGlow,createMotes,waterize,WATER_TIME,WATER_NIGHT} from './world-sky.js?v=161';
-import {buildStall} from './stall-scene.js?v=161';
-import {createHomeHorse} from './home-horse.js?v=161';
+import {createAdventureUI} from './adventure-ui.js?v=162';
+import {buildStations} from './world-stations.js?v=162';
+import {BOARD_GAMES} from './board-games.mjs?v=162';
+import {VALLEY_GAMES} from './valley-games.mjs?v=162';
+import {createWorldQuests} from './world-quests.js?v=162';
+import {R,REGIONS,regionAt} from './world-regions.mjs?v=162';
+import {createHud} from './world-hud.js?v=162';
+import {cornLayout,CORN,inMaze} from './world-cornmaze.mjs?v=162';
+import {createCornMaze} from './world-cornmaze-3d.js?v=162';
+import {createWorldMap} from './world-map.js?v=162';
+import {todayActivities,loadDone,markDone} from './world-today.mjs?v=162';
+import {createWorldNetwork,roomError} from './world-network.js?v=162';
+import {openFriends,openProfile,openInvite} from './friends.js?v=162';
+import {testOn,TEST_ME} from './test-friends.js?v=162';
+import {sfx,hoofLoop,voiceRate,ambLoop,ambStop,npcVoice} from './sfx.js?v=162';
+import {want as wantMusic} from './music.js?v=162';
+import * as G from './riding.mjs?v=162';
+import * as RanchUI from './ranch-ui.js?v=162';
+import {newHorse,condition,level as horseLevel,marketStock,dayNo as dayNumber,makeCoat,breedOf,COATS,horseStats} from './ranch.mjs?v=162';
+import * as TR from './training.mjs?v=162';
+import {isMidnight,isSighting} from './legends.mjs?v=162';
+import {entryNeeds} from './show-course.mjs?v=162';
+import {loadWallet,saveWallet,buyOutfit,OUTFITS,outfitOf,buyGear,GEAR_ITEMS,coinWords,WINTER_GEAR} from './character-looks.mjs?v=162';
+import {BAYS,inStore,DOOR,COUNTER,KEEPER,STORE,HALL_X,MARKET,inMarketHall} from './barn-interior.js?v=162';
+import {SHOPKEEPER,greeting as shopGreeting,tip as shopTip,pitch as shopPitch,chatter as shopChatter,NO_HORSES} from './shop-talk.mjs?v=162';
+import {RACES,raceName,racePhase,standings,ordinal,raceTime,steepleSeed,safeName} from './friends-logic.mjs?v=162';
+import {FIELDS,RIVERS,riverAt,bridgeFloor,SKYGATE,TOWN2,FARMS,terrainHeight as farmGround,LOCATIONS,MAP_PATHS,BARN_GAMES,INDOOR_GAMES,RACE_GATES,SERVICES,normalizeAdventure,questList,fogBits,fogString,fogMark,onBridge,onCobbles} from './world-content.mjs?v=162';
+import {CLOUDSTEP,cloudstepAt,onCloudstep,trailPhi,climbRoute,trailPoint,trailRadius,START as CLIMB_START,TRAIL_END} from './world-cloudstep.mjs?v=162';
+import {terrainTextures,addTerrain,createGrass} from './world-terrain.js?v=162';
+import {buildCloudstep} from './world-cloudstep-3d.js?v=162';
+import {buildSkiLift,VALLEY_STATION} from './world-skilift.js?v=162';
+import {createValleyLife} from './world-life.js?v=162';
+import {createLegends} from './world-legends.js?v=162';
+import * as T from './vendor/three-0.180.0/three.module.js?v=162';
+import {MARKERS,OBSTACLES,groundHeight,movementVector,moveActor,blocked,normalizeStamps,collectMarkers,followCameraPosition,tooSteep,slopeAt,solidBlocked} from './world-logic.mjs?v=162';
+import {SoftwareRenderer} from './world-renderer.js?v=162';
+import {findGroundPath,steeringStep} from './world-navigation.mjs?v=162';
+import {createChunks,bakeTree,treeGeometry,treeOut,TREE_PALS} from './world-chunks.js?v=162';
+import {createLanterns} from './world-lanterns.js?v=162';
+import {buildTudorShop,detailTextures,detailKind,addDetail,squareProps,forestLogs} from './world-tudor.js?v=162';
+import {BIOMES,biomeAt,wildness,roadDistance,ROAD_HALF} from './world-wild.mjs?v=162';
+import {createSky,createGlow,createMotes,waterize,WATER_TIME,WATER_NIGHT} from './world-sky.js?v=162';
+import {buildStall} from './stall-scene.js?v=162';
+import {createHomeHorse} from './home-horse.js?v=162';
 // What each collect activity calls the things you find (v106: it said “Owl” for everything).
 const FOUND_WORDS={owls:['Owl','Hoo-hoo.'],sheaves:['Sheaf',''],posies:['Posy',''],lanterns:['Lantern','It glows.'],eggs:['Egg','Careful, don’t drop it!'],piglets:['Piglet','It trots off home. Oink!']};
-import {loadStall} from './stall-decor.mjs?v=161';
-import {createHeights} from './world-heights.mjs?v=161';
-import {buildHouses} from './world-houses.js?v=161';
+import {loadStall} from './stall-decor.mjs?v=162';
+import {createHeights} from './world-heights.mjs?v=162';
+import {buildHouses} from './world-houses.js?v=162';
 const WEATHER_NEWS={clear:'The sky is clearing. Lovely riding weather.',partly:'The clouds are breaking up.',overcast:'Clouds are rolling in.',fog:'Fog is settling over the valley. Stay close to the paths.',rain:'Rain is rolling in. The trails are muddy, so you go a little slower.',storm:'A thunderstorm! Mud slows you down and the gusts push you about.',windy:'The wind is picking up. Gusts nudge you sideways.',snow:'Snow is falling. Deep snow slows you down a little.'};
 
 export function createWorld(host,{horses,storageKey='guest',preferredHorse='willow',onBarnCare=()=>{},intent=null}){
@@ -1403,7 +1404,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     // Tack comes first (Otis's counter in the barn's tack room), then taming.
     {const msg=rideBlockMsg(target);if(msg){tell(msg,7);return;}}
     ride=startRide(target.data);sfx('saddle');sfx('nicker',{delay:.6,rate:voiceRate(target.data.size)});mounted=target;called=target;target.arriving=null;horseFade(target,1);/* v150: mounting mid fade-in left the horse see-through */position.x=target.root.position.x;position.z=target.root.position.z;target.anchor.add(avatar.root);avatar.root.position.set(0,-.70,0);avatar.root.rotation.set(0,0,0);target.name.visible=false;avatar.root.visible=false;target.tack.rider.visible=true;target.area=area;jump=0;jumpVelocity=0;{const got=(stamps[target.data.id]||[]).length;tell(area!=='outdoor'?'You & '+target.data.name+'. Ride out through the big barn doors!':got<5?'You & '+target.data.name+'. Find the golden meadow rings! ('+got+' of 5)':'You & '+target.data.name+'. Happy riding!',5);};if(!target.loaner)saddleHintStart();updateHUD();view.focus({preventScroll:true});}
-  function doJump(){if(chair)return;if(jump<=.001){if(mounted&&!mounted.loaner)window.TrottStats?.add('jumps',1);sfx('whoosh',{vol:mounted?1:.6});jumpVelocity=mounted?5.7:4.4;mounted?.model.jump();tell(mounted?called.data.name+' takes a little leap!':'A little hop!',1.4);}}
+  function doJump(){if(chair)return;if(jump<=.001){if(mounted&&!mounted.loaner)window.TrottStats?.add('jumps',1);sfx('whoosh',{vol:mounted?1:.6});/* v162: at the show ring and training lane, speed and the Jumping stat set the spring (training.mjs) */jumpVelocity=mounted?(inJumpZone()?TR.jumpPower(groundV,jumpingOf(mounted.data)):5.7):4.4;lastTakeoff={speed:groundV};mounted?.model.jump();tell(mounted?called.data.name+' takes a little leap!':'A little hop!',1.4);}}
   function on(target,event,fn,options){target.addEventListener(event,fn,options);listeners.push(()=>target.removeEventListener(event,fn,options));}
   on($('#world-mount'),'click',()=>mount());
   on($('#world-sky-time'),'change',e=>{sky.preview.hours=e.target.value===''?null:+e.target.value;});on($('#world-sky-weather'),'change',e=>{sky.preview.weather=e.target.value||null;});
@@ -1527,7 +1528,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   const nearMarketDoor=()=>inMarket()&&position.z>MARKET.z+MARKET.door.z-MARKET.door.reach&&Math.abs(position.x-MARKET.x)<4.5;
   const nearMarketBook=()=>inMarket()&&Math.hypot(position.x-MARKET.x-MARKET.book.x,position.z-MARKET.z-MARKET.book.z)<2.4;
   function nearStallHorse(){if(!inMarket())return null;let best=null,bd=2.6;for(const m of marketHorses){const d=Math.hypot(position.x-(MARKET.x+m.side*(MARKET.front-.6)),position.z-(MARKET.z+MARKET.stallZ(m.row)));if(d<bd){bd=d;best=m;}}return best;}
-  function fillMarket(){return import('./ranch-ui.js?v=161').then(m=>{if(disposed)return;const r=m.get(),{shelf}=marketStock(dayNumber(),r?.bought||[]),key=dayNumber()+':'+shelf.map(l=>l.id).join(',');if(key===marketKey)return;marketKey=key;
+  function fillMarket(){return import('./ranch-ui.js?v=162').then(m=>{if(disposed)return;const r=m.get(),{shelf}=marketStock(dayNumber(),r?.bought||[]),key=dayNumber()+':'+shelf.map(l=>l.id).join(',');if(key===marketKey)return;marketKey=key;
       for(const h of marketHorses){h.model.root.parent?.remove(h.model.root);h.model.dispose?.();}marketHorses=[];
       for(let i=0;i<20;i++){const l=shelf[i],side=i<10?-1:1,row=i%10;expansion.setPlate(i,l?l.name:'');if(!l)continue;
         const model=makeSculptedHorse(T,{id:l.id,name:l.name,breedId:l.breedId,coat:l.coat,size:l.size},{geometry:geo});model.setGait?.('stand');
@@ -1539,7 +1540,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     let waits='';if(mounted){const name=mounted.data.name;if(dismount()===false)return;waits=' '+name+' waits outside.';}
     iris(()=>{setArea('barn');yaw=0;pitch=.22;moveTo(MARKET.x,MARKET.z+18);tell('Welcome to Hoofhaven!'+waits+' Walk up to any horse: test rides are free.',6);return fillMarket();},'fade');}
   function leaveMarket(){iris(()=>{setArea('outdoor');yaw=0;pitch=.3;const o=hoofOut();moveTo(o.x,o.z);tell('Back in the valley, outside Hoofhaven.',3);},'fade');}
-  function openStall(st){if(st.listing.id===keepOffer)keepOffer=null;import('./ranch-ui.js?v=161').then(m=>{clearInput();m.openListing(st.listing.id);}).catch(()=>tell('The market is closed right now. Try again in a moment.'));}
+  function openStall(st){if(st.listing.id===keepOffer)keepOffer=null;import('./ranch-ui.js?v=162').then(m=>{clearInput();m.openListing(st.listing.id);}).catch(()=>tell('The market is closed right now. Try again in a moment.'));}
   function startTestRide(id){const st=marketHorses.find(m=>m.listing.id===id);if(!st||loaner)return;const l=st.listing;
     iris(()=>{setArea('outdoor');const o={x:hoofOut().x,z:hoofOut().z-9};yaw=0;pitch=.3;moveTo(o.x,o.z);/* v102: the doors face the path (-z) now. v161: start 9 m down the path, so the camera behind the horse is clear of the market (it sat inside the wall: "still in the store") */
       const h=makeHorse({id:'loan-'+l.id,name:l.name,breedId:l.breedId,coat:l.coat,months:l.months,size:l.size},companions.length);h.loaner=true;h.tack.saddleGroup.visible=true;
@@ -1663,7 +1664,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     adventureUI.dialog.querySelectorAll('[data-board]').forEach(b=>b.onclick=()=>{const g=[...BOARD_GAMES,...VALLEY_GAMES].find(x=>x.id===b.dataset.board);adventureUI.close();openSteeple(g.file+'?in=world',g.name,'Back at the Games Gazebo.');});}
   // Vet, horse market and feed store screens come from ranch-ui.js (the same ones the website uses).
   let nearService=null;
-  function openService(id){import('./ranch-ui.js?v=161').then(m=>{if(!m.get()?.herd.length){tell('Choose your first horse on the home page, then come back.',5);return;}clearInput();({vet:m.openVet,hoofhaven:m.openMarket,store:m.openStore})[id]?.();}).catch(()=>tell('That shop is closed right now. Try again in a moment.'));}
+  function openService(id){import('./ranch-ui.js?v=162').then(m=>{if(!m.get()?.herd.length){tell('Choose your first horse on the home page, then come back.',5);return;}clearInput();({vet:m.openVet,hoofhaven:m.openMarket,store:m.openStore})[id]?.();}).catch(()=>tell('That shop is closed right now. Try again in a moment.'));}
   function raceMenu(){adventureUI.open('A little friendly competition',`<p>Jump farm fences across open countryside, or ride the racecourse checkpoints.</p><button class="primary full" id="steeple-race">Countryside steeplechase</button><button class="secondary full" id="practice-race" style="margin-top:12px">Start practice lap</button><button class="secondary full" id="climb-race" style="margin-top:12px">Race to Cloudstep Summit</button><button class="primary full" id="friends-race" style="margin-top:12px">Race with friends</button>`);const gated=fn=>()=>{adventureUI.close();if(!mounted){tell('Races are on horseback. Ride here on your horse, then come back.',5);sfx('bonk');return;}needGear(()=>raceReady(fn));};adventureUI.dialog.querySelector('#steeple-race').onclick=gated(()=>openSteeple());adventureUI.dialog.querySelector('#practice-race').onclick=gated(startPractice);adventureUI.dialog.querySelector('#climb-race').onclick=gated(raceClimb);adventureUI.dialog.querySelector('#friends-race').onclick=gated(()=>{if(!network.v2){showFriends();return;}openInvite({race:'lap'});});}
   // ---------- Friends races: invites, Join, countdown, results for every race kind (friends.js, docs/friends-races-plan.md) ----------
   const myId=()=>testOn()?TEST_ME:window.MeadowCloud?.user?.id;
@@ -1824,6 +1825,7 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     const look=!mounted&&LOOKOUTS.find(l=>l.id!=='clocktower'&&l.id!=='treehouse'&&d(l.x,l.z)<l.reach);if(look)return {kind:'look',look,label:'Climb up to '+look.name};
     if(!mounted&&d(FISHING.x,FISHING.z)<FISHING.reach)return {kind:'fish',label:'Fish off the dock'};
     if(d(ARENA_POST.x,ARENA_POST.z)<4||d(ARENA_STEWARD.x,ARENA_STEWARD.z)<3.6)return {kind:'arena',label:'Show ring entries'};
+    if(d(PRACTICE_SIGN.x,PRACTICE_SIGN.z)<4)return {kind:'train',label:'Jump training'};
     const h=HOSTS.find(h=>d(h.x,h.z)<3.4);if(h)return {kind:'host',h,label:h.activity?ACTIVITY_BY_ID[h.activity].name+' with '+h.name:'Talk to '+h.name};
     const a=ACTIVITIES.find(a=>!a.host&&d(a.start.x,a.start.z)<4);if(a)return {kind:'start',a,label:(run?.id===a.id?'Restart ':'')+a.name};
     const p=PUMPKINS.findIndex(p=>d(p.x,p.z)<1.9);if(p>=0)return {kind:'pumpkin',p,label:'Check this pumpkin'};
@@ -1835,12 +1837,12 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
   function paintArenaBoard(c){const t=arenaSave.today.day===today()?arenaSave.today[c.cls.id]:null,rows=arenaRivals(c).map(r=>({name:r.name,faults:r.faults,time:r.time}));
     if(t&&t.place)rows.push({name:'You',me:true,faults:t.faults,time:t.time});rows.sort((a,b)=>a.faults-b.faults||a.time-b.time);
     acts.arena.drawBoard({title:c.cls.name.toUpperCase(),sub:`${c.jumps} fences · ${c.allowed} s allowed · ${c.plan}`,rows:rows.map((r,i)=>({place:PLACE_NAME[i+1],name:r.name,me:r.me,score:`${r.faults} flt · ${r.time.toFixed(1)}s`}))});}
-  function arenaNeeds(cls){if(!cls.show)return [];const h=(mounted||called)?.data;return entryNeeds(cls.show,{tooOld:!!h&&G.tooOldToCompete(RanchUI.horse(h.id)||h),level:h?horseLevel(h.xp):0,upgradedSaddle:!!h&&G.upgraded(G.tackOf(h).saddle),hasOutfit:G.canShow(loadWallet())});}
+  function arenaNeeds(cls){if(!cls.show)return [];const h=(mounted||called)?.data;return entryNeeds(cls.show,{tooOld:!!h&&G.tooOldToCompete(RanchUI.horse(h.id)||h),level:h?horseLevel(h.xp):0,upgradedSaddle:!!h&&G.upgraded(G.tackOf(h).saddle),hasOutfit:G.canShow(loadWallet()),qualified:!!h&&TR.qualified(horseRec(h),cls.show.id)});}
   const ARENA_CSS='<style>.ar-cls{border:2px solid #e3cf9f;border-radius:14px;padding:10px 12px;margin:10px 0;display:grid;gap:6px}.ar-cls b{font-size:17px}.ar-cls span{font-size:14px;line-height:1.35}.ar-lock{color:#8a5a3c}.ar-shelf{font-weight:700;text-align:center}.ar-ros{--a:#2f6fb5;--b:#7fb0e8;--ink:#fff;width:124px;height:124px;margin:6px auto 30px;border-radius:50%;background:repeating-conic-gradient(var(--a) 0 10deg,var(--b) 10deg 20deg);display:grid;place-items:center;position:relative}.ar-ros span{width:74px;height:74px;border-radius:50%;background:var(--a);color:var(--ink);display:grid;place-items:center;font:800 20px system-ui,sans-serif;border:3px solid #ffffffaa;z-index:1}.ar-ros:before,.ar-ros:after{content:"";position:absolute;top:96px;width:28px;height:50px;background:var(--a);clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%)}.ar-ros:before{left:34px;transform:rotate(14deg)}.ar-ros:after{right:34px;transform:rotate(-14deg)}.ar-tab{width:100%;border-collapse:collapse;font-size:15px}.ar-tab td{padding:6px 4px;border-bottom:1px solid #eadfca}.ar-tab tr.me td{font-weight:800;background:#fff3cf}.ar-tab td:last-child{text-align:right}</style>';
   function openArena(){const d=today(),t=arenaSave.today.day===d?arenaSave.today:{},c=arenaCourse(d,'open'),ros=arenaSave.rosettes;
     const rows=ARENA_CLASSES.map(k=>{const needs=arenaNeeds(k),r=t[k.id],cc=arenaCourse(d,k.id),paid=arenaSave.paid[k.id]===d;
-      return `<div class="ar-cls"><b>${k.icon} ${k.name}</b><span>${k.blurb} ${cc.allowed} s allowed. Prizes ${k.prize.join(' / ')} 🪙${paid?' (today’s prize already won)':''}.</span>${r?`<span>Your best today: ${PLACE_NAME[r.place]} · ${r.faults} faults · ${r.time.toFixed(1)} s</span>`:''}${needs.length?`<span class="ar-lock">🔒 Needs ${needs.map(n=>n.id==='outfit'?'a '+n.text:n.text[0].toLowerCase()+n.text.slice(1)).join(', ')}</span>`:`<button class="primary full" data-cls="${k.id}">${round?.course.cls.id===k.id?'Start again':'Enter the '+k.name}${k.fee?(paid?' · free practice':` · ${k.fee.toLocaleString('en-US')} 🪙`):''}</button>`}</div>`;}).join('');
-    adventureUI.open('Clover Downs Show Ring',`${ARENA_CSS}<p>Marigold, the ring steward: “Today’s course is ${c.plan}. Jump the numbered fences in order, and tap Jump just before each one. The higher the fence, the faster you need to go. A rail down or a stop costs 4 faults, and each second over the time costs 1 more. Three stops and you’re out!”</p>${rows}<p class="ar-shelf">Rosettes: 🔵 ${ros[0]} · 🔴 ${ros[1]} · ⚪ ${ros[2]} · 🟡 ${ros[3]} · Clear rounds: ${arenaSave.clears}</p>`);
+      return `<div class="ar-cls"><b>${k.icon} ${k.name}</b><span>${k.blurb} ${cc.allowed} s allowed. ${k.qualifier?'No prize: this round is for the ticket.':`Prizes ${k.prize.join(' / ')} 🪙${paid?' (today’s prize already won)':''}.`}</span>${r&&!k.qualifier?`<span>Your best today: ${PLACE_NAME[r.place]} · ${r.faults} faults · ${r.time.toFixed(1)} s</span>`:''}${k.qualifier&&(mounted||called)?(TR.qualified(horseRec((mounted||called).data),k.qualifier)?`<span>✓ ${(mounted||called).data.name} is qualified for the ${SHOWS_BY[k.qualifier]}.</span>`:`<span>${(mounted||called).data.name} isn’t qualified yet.</span>`):''}${needs.length?`<span class="ar-lock">🔒 Needs ${needs.map(n=>n.id==='outfit'?'a '+n.text:n.text[0].toLowerCase()+n.text.slice(1)).join(', ')}</span>`:`<button class="primary full" data-cls="${k.id}">${round?.course.cls.id===k.id?'Start again':'Enter the '+k.name}${k.fee?(paid?' · free practice':` · ${k.fee.toLocaleString('en-US')} 🪙`):''}</button>`}</div>`;}).join('');
+    adventureUI.open('Clover Downs Show Ring',`${ARENA_CSS}<p>Marigold, the ring steward: “Today’s course is ${c.plan}. Jump the numbered fences in order. Tap Jump on the gold strip in front of each one: the faster you go, the higher you jump. A red strip means you can’t clear it at that speed. A rail down or a stop costs 4 faults, and each second over the time costs 1 more. Three stops and you’re out!”</p>${rows}<p class="ar-shelf">Rosettes: 🔵 ${ros[0]} · 🔴 ${ros[1]} · ⚪ ${ros[2]} · 🟡 ${ros[3]} · Clear rounds: ${arenaSave.clears}</p>`);
     adventureUI.dialog.querySelectorAll('[data-cls]').forEach(b=>b.onclick=()=>{adventureUI.close();enterClass(b.dataset.cls);});}
   function enterClass(id){if(!mounted){tell('The show ring is ridden. Saddle up and come back to Marigold!',4);sfx('bonk');return;}
     {const k=ARENA_CLASSES.find(x=>x.id===id);if(k?.show&&arenaNeeds(k).length){tell(`Marigold: Not today. Needs ${arenaNeeds(k).map(n=>n.text).join(', ')}.`,5);sfx('bonk');return;}
@@ -1849,15 +1851,14 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
     if(run)endRun(null);const c=showArenaClass(id);acts.arena.resetRails();round=startRound(c,performance.now());round.prev={x:position.x,z:position.z};acts.arena.setNext(0);sfx('chime');
     tell(`${c.cls.icon} ${c.cls.name}: ${c.jumps} fences, ${c.allowed} s allowed. Ride in through the gate. The clock starts at the flags!`,6);}
   function endRound(note){round=null;acts.arena.setNext(-1);$('#world-quest-hint').textContent='';if(note)tell(note,5);}
-  const paceWord=f=>f.need>7?'a full gallop':f.need>5?'a canter':'a trot';
   let practiceRefused=null,settleUntil=0;
   function arenaTick(now){
     if(round){if(area!=='outdoor'||!mounted){endRound('Round stopped: you got off your horse.');return;}
       if(!round.started&&!inArena(position.x,position.z,60)){endRound('Entry cancelled: you rode away from the show ring.');return;}
-      const ev=stepRound(round,{x:position.x,z:position.z,air:jump>.25,speed:moveSpeed},now);if(ev)arenaEvent(ev);return;}
+      const ev=stepRound(round,{x:position.x,z:position.z,air:jump>.25,speed:moveSpeed,height:jump},now);if(ev)arenaEvent(ev);paintTakeoff();return;}
     // Practice fences: judged either way, with a tip. Only on horseback.
     const here={x:position.x,z:position.z};
-    if(mounted&&area==='outdoor'&&practicePrev&&Math.abs(here.x-PRACTICE[0].x)<10)for(const f of PRACTICE){const s=crossed(f,practicePrev,here);if(!s)continue;let how=judgeJump(f,{air:jump>.25,speed:moveSpeed});const name=mounted.data.name;
+    if(mounted&&area==='outdoor'&&practicePrev&&Math.abs(here.x-PRACTICE[0].x)<10)for(const f of PRACTICE){const s=crossed(f,practicePrev,here);if(!s)continue;let how=judgeJump(f,{air:jump>.25,speed:moveSpeed,height:jump});const name=mounted.data.name;
       // v124: at speed and in the air, a horse that doesn't trust you yet may still stop. First approach only, never twice running.
       // v134: instead of losing trust, a horse that refused needs a 30-second breather before it takes any practice fence.
       const settle=Math.ceil((settleUntil-Date.now())/1000);
@@ -1866,17 +1867,19 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
       else if(how!=='refusal'&&how!=='settle')practiceRefused=null;
       if(how==='settle'){moveTo(f.x,f.z-s*4);moveSpeed=0;sfx('snort',{rate:voiceRate(mounted?.data?.size)});tell(`${name} is still settling after that stop. Walk a little circle: ready in ${settle} s.`,3);here.x=position.x;here.z=position.z;}
       else if(how==='refusal'){moveTo(f.x,f.z-s*4);moveSpeed=0;sfx('snort',{rate:voiceRate(mounted?.data?.size)});tell(practiceRefused===f?`${name} wasn’t sure and stopped at the ${f.label} fence. Give them 30 seconds to settle, then try again.`:`${name} stopped at the ${f.label} fence. Tap Jump just before the rails!`,3);here.x=position.x;here.z=position.z;}
-      else if(how==='rail'){sfx('wood');tell(`Rail down! The ${f.label} fence needs ${paceWord(f)}.`,3);}
-      else{sfx('sparkle');tell(`Clean over the ${f.label} fence!`,2);}break;}
-    practicePrev=here;}
+      else if(how==='rail'){sfx('wood');tell(`Rail down at the ${f.label} fence! ${railTip(f)}`,4);}
+      else{sfx('sparkle');tell(`Clean over the ${f.label} fence!`,2);}
+      if(how==='clear'||how==='rail')laneJudged(f,s,how);break;}
+    practicePrev=here;paintTakeoff();}
   function arenaEvent(ev){const name=(mounted||called).data.name;
     if(ev.type==='go'){sfx('go');tell('The clock is running! Follow the gold arrow to fence 1.',3);return;}
     if(ev.type==='retired'){sfx('bonk');endRound('You rode out of the ring, so the judges retired you. See Marigold to try again.');return;}
     if(ev.type==='clear'){sfx('sparkle');acts.arena.cheer();if(!ev.result)tell(`Clear over fence ${ev.f.n}!`,1.6);}
-    else if(ev.type==='rail'){sfx('wood');acts.arena.knock(ev.f.n-1);tell(`Rail down at fence ${ev.f.n}: 4 faults. The ${ev.f.label} ones need ${paceWord(ev.f)}.`,3);}
+    else if(ev.type==='rail'){sfx('wood');acts.arena.knock(ev.f.n-1);tell(`Rail down at fence ${ev.f.n}: 4 faults. ${railTip(ev.f)}`,4);}
     else{sfx('snort',{rate:voiceRate(mounted?.data?.size)});moveTo(ev.back.x,ev.back.z);moveSpeed=0;round.prev={...ev.back};if(ev.type==='refusal')tell(`${name} stopped at fence ${ev.f.n}! That’s a refusal: 4 faults. Circle round and tap Jump just before the rails.`,4);}
     if(ev.result){finishRound(ev.result);return;}acts.arena.setNext(round.i);}
   function finishRound(res){const c=round.course,cls=c.cls,d=today();endRound(null);
+    if(cls.qualifier){finishQualifier(res,cls);return;}
     if(arenaSave.today.day!==d)arenaSave.today={day:d};const prev=arenaSave.today[cls.id],beats=(a,b)=>!b||!b.place||a.faults<b.faults||(a.faults===b.faults&&a.time<b.time);
     if(!res.eliminated&&beats(res,prev))arenaSave.today[cls.id]={place:res.place,faults:res.faults,time:res.time};
     const best=arenaSave.best[cls.id],fresh=!res.eliminated&&(!best||res.faults<best.faults||(res.faults===best.faults&&res.time<best.time));if(fresh)arenaSave.best[cls.id]={faults:res.faults,time:res.time,day:d};
@@ -1892,11 +1895,58 @@ export function createWorld(host,{horses,storageKey='guest',preferredHorse='will
       <table class="ar-tab">${table}</table>${pay?`<button class="primary full" id="ar-collect" style="margin-top:14px">Collect ${res.prize} Trotties</button>`:res.place&&res.prize?'<p style="text-align:center">You already won today’s prize in this class. Come back tomorrow!</p>':''}<button class="secondary full" id="ar-again" style="margin-top:10px">Go again</button>`);
     adventureUI.dialog.querySelector('#ar-again').onclick=()=>{adventureUI.close();enterClass(cls.id);};
     const col=adventureUI.dialog.querySelector('#ar-collect');if(col)col.onclick=()=>{adventureUI.close();if(cid)showCollect({title:`${cls.icon} ${PLACE_NAME[res.place]} in the ${cls.name}!`,ids:[cid]});};}
+  // ---- v162 Jump Training (note #49, step C): real jump height, the take-off strip, the training lane, the Cup qualifier ----
+  const SHOWS_BY={clover:'Clover Cup'};let lastTakeoff=null,laneRun=[],autoJump=false,groundV=0;
+  function horseRec(d){return RanchUI.horse(d.id)||d;}
+  function jumpingOf(d){return horseStats(horseRec(d)).jumping;}
+  function inJumpZone(){return area==='outdoor'&&(inArena(position.x,position.z,6)||(Math.abs(position.x-PRACTICE[0].x)<12&&position.z>PRACTICE[0].z-18&&position.z<PRACTICE[2].z+18));}
+  const topSpeedNow=()=>9.4*(ride?.stats?.speed||1)*(mounted&&!mounted.loaner?G.trustSpeed(trustOf(mounted.data.id)):1);
+  const gaitWord=s=>s<4.6?'a trot':s<7.2?'a canter':'a gallop';
+  function railTip(f){const j=jumpingOf((mounted||called).data),ms=TR.minSpeed(j,f.h);
+    if(ms>topSpeedNow())return `The ${f.label} fences are too high for Jumping ${j} yet. Train on the Jump Training lane!`;
+    if(lastTakeoff&&lastTakeoff.speed<ms-.2)return `Not enough speed: ${f.label} fences need ${gaitWord(ms)} at Jumping ${j}.`;
+    return jumpVelocity>0?'You took off a little late. Jump on the gold strip!':'You took off a little early. Wait for the gold strip!';}
+  // The take-off strip: a gold band on the ground in front of the next fence, where to press Jump at your speed now.
+  // Its depth is your take-off window (wider for a better jumper). Red = you can't clear it at this speed.
+  const takeoff=new T.Mesh(new T.BoxGeometry(1,.05,1),new T.MeshBasicMaterial({color:'#ffa51f',transparent:true,opacity:.92,depthWrite:false,toneMapped:false}));takeoff.visible=false;takeoff.renderOrder=2;outdoors.add(takeoff);
+  function paintTakeoff(){takeoff.visible=false;if(!mounted||area!=='outdoor'||jump>.001)return;
+    const list=round?(round.started?[round.course.fences[round.i]]:[]):inJumpZone()?PRACTICE:[];const fy=mounted.root.rotation.y,fx=Math.sin(fy),fz=Math.cos(fy);let best=null,bd=1e9;
+    for(const c of list){if(!c)continue;const ax=c.x-position.x,az=c.z-position.z,along=ax*c.dx+az*c.dz,lat=Math.abs(ax*c.dz-az*c.dx),dist=Math.hypot(ax,az);
+      if(lat>c.hw+4||dist>26||dist<.8||ax*fx+az*fz<=0)continue;if(round&&along<=0)continue;if(dist<bd){bd=dist;best={c,s:along>0?-1:1};}}
+    if(!best)return;const {c,s}=best,sp=Math.max(groundV,2.5),j=jumpingOf(mounted.data),dd=TR.idealTakeoff(sp,j),w=sp*TR.takeoffWindow(sp,j,c.h),px=c.x+c.dx*s*dd,pz=c.z+c.dz*s*dd;
+    takeoff.position.set(px,groundY(px,pz)+.1,pz);takeoff.rotation.y=c.dir;takeoff.scale.set(4.4,1,Math.max(.35,w));takeoff.material.color.set(w>0?'#ffa51f':'#e8402f');takeoff.visible=true;
+    if(autoJump&&Math.abs((px-position.x)*c.dx+(pz-position.z)*c.dz)<.25)doJump();}   // test hook only
+  // A training session: all three lane fences in a row, one way or the other.
+  function laneJudged(f,s,how){const e={n:f.n,s,height:f.height,how},start=s>0?1:PRACTICE.length;
+    if(laneRun.length&&laneRun[0].s===s&&f.n===laneRun.at(-1).n+s)laneRun.push(e);else laneRun=f.n===start?[e]:[];
+    if(laneRun.length===PRACTICE.length){const res=laneRun;laneRun=[];finishSession(res);}}
+  function finishSession(res){const d=mounted.data,name=d.name,clears=res.filter(r=>r.how==='clear').length;
+    if(mounted.loaner){tell(`${clears} of 3 clear! Test-ride horses can’t train. Your own horse can.`,4);return;}
+    const r=RanchUI.get(),h=horseRec(d);if(!r||!r.herd.some(x=>x.id===h.id))return;
+    const day=dayNumber(),left=TR.sessionsLeft(h,day),j=jumpingOf(d);
+    if(left<=0){tell(`${clears} of 3 clear. ${name} has trained three times today: Jumping grows again tomorrow. Practice is still fine!`,5);return;}
+    const gain=TR.sessionGain(res,j);if(!gain){tell(`No clear fences that time, so no training points. Try again!`,4);return;}
+    RanchUI.set({...r,herd:r.herd.map(x=>x.id===h.id?TR.addSession(x,gain,day,j):x)},{quiet:true});const nj=jumpingOf(d);
+    sfx('chime');tell(`🏋️ Training done: ${clears} of 3 clear · Jumping ${j} → ${nj} · ${left-1} session${left-1===1?'':'s'} left today`,6);}
+  function openTraining(){const d=(mounted||called)?.data;if(!d){tell('Bring your horse to train!',3);return;}
+    const h=horseRec(d),j=jumpingOf(d),left=TR.sessionsLeft(h,dayNumber()),top=topSpeedNow(),q=TR.qualified(h,'clover');
+    const rows=PRACTICE.map(f=>{const ms=TR.minSpeed(j,f.h);return `<li><b>${f.label[0].toUpperCase()+f.label.slice(1)}</b>: ${ms<=top?`clears from ${gaitWord(ms)}`:'too high for now'}</li>`;}).join('');
+    adventureUI.open('Jump Training',`${ARENA_CSS}<p>The sign reads: “Ride down the lane over all three fences in a row, either way. Take off on the gold strip: the faster you go, the further back it is. Every clear fence trains Jumping, and the high one counts most.”</p>
+      <div class="ar-cls"><b>${d.name} · Jumping ${j}/100</b><div style="height:12px;border-radius:6px;background:#eee;overflow:hidden"><i style="display:block;height:100%;width:${j}%;background:#2f6fb5"></i></div>
+      <span>${d.loaner?'Test-ride horses can’t train.':`Training sessions left today: ${left} of ${TR.SESSIONS_PER_DAY}`}</span><ul style="margin:4px 0 0 18px;padding:0;font-size:14px;line-height:1.5">${rows}</ul></div>
+      <div class="ar-cls"><b>🏅 Clover Cup Qualifier</b><span>${q?`✓ ${d.name} is qualified for the Clover Cup.`:'Jump the Cup’s course clear (no rails, no stops, inside the time) at the show ring, and your horse is qualified for good. The two high fences need a well-trained jumper.'}</span></div>`);}
+  function finishQualifier(res,cls){const d=(mounted||called).data,name=d.name,ok=res.clear&&!res.eliminated,h=horseRec(d);
+    if(ok&&!TR.qualified(h,cls.qualifier)){const r=RanchUI.get();if(r&&r.herd.some(x=>x.id===h.id))RanchUI.set({...r,herd:r.herd.map(x=>x.id===h.id?TR.withQual(x,cls.qualifier,dayNumber()):x)},{quiet:true});}
+    const saved=ok&&TR.qualified(horseRec(d),cls.qualifier);if(ok){sfx('fanfare');acts.arena.cheer();}else sfx('bonk');
+    const parts=[res.knock?`${res.knock} rail${res.knock>1?'s':''} down`:'',res.refuse?`${res.refuse} stop${res.refuse>1?'s':''}`:'',res.timeFaults?`${res.timeFaults} s over the time`:''].filter(Boolean).join(' · ');
+    adventureUI.open(ok?'Qualified! 🏅':'Not qualified yet',`${ARENA_CSS}<p style="text-align:center">${ok?(saved?`${name} jumped clear in ${res.time.toFixed(1)} s (${res.allowed} s allowed). ${name} can enter the ${SHOWS_BY[cls.qualifier]} now, for good!`:`Clear in ${res.time.toFixed(1)} s! Only your own horses can qualify, though.`):`${res.eliminated?name+' stopped three times':parts}. A qualifier needs a clear round: no rails, no stops, inside ${res.allowed} s.`}</p>${ok?'':'<p style="text-align:center">Tip: train Jumping on the lane beside the ring (three sessions a day). A better jumper clears the high fences without a flat-out gallop.</p>'}<button class="secondary full" id="ar-again" style="margin-top:10px">${ok?'Ride it again':'Try again'}</button>`);
+    adventureUI.dialog.querySelector('#ar-again').onclick=()=>{adventureUI.close();enterClass(cls.id);};}
   showArenaClass('open');
   function actInteract(n){if(n.kind==='climb'){if(mounted&&n.c.ground){tell('Hop down first. Horses can’t climb!',3);return;}n.c.go();return;}if(n.kind==='look'){openVista(n.look);return;}if(n.kind==='fish'){openFishing();return;}
     if(n.kind==='host'){if(!n.h.activity){n.h.k=(n.h.k??-1)+1;tell(n.h.name+': '+n.h.lines[n.h.k%n.h.lines.length],6);return;}tell(n.h.name+': '+n.h.lines[Math.floor(Date.now()/9000)%n.h.lines.length],4);beginActivity(ACTIVITY_BY_ID[n.h.activity]);return;}
     if(n.kind==='start'){beginActivity(n.a);return;}
     if(n.kind==='arena'){openArena();return;}
+    if(n.kind==='train'){openTraining();return;}
     if(n.kind==='pumpkin'){const a=ACTIVITY_BY_ID.pumpkins,g=acts.golden(today());if(n.p===g){finishRun(a,run?.id==='pumpkins'?performance.now()-run.t0:0);return;}
       const gp=PUMPKINS[g],me=PUMPKINS[n.p],dist=Math.hypot(gp.x-me.x,gp.z-me.z);tell(dist<6?'Just orange… but you’re very warm!':dist<14?'Plain orange. Warmer…':'Just a pumpkin. Colder!',3);sfx('bonk');}}
   // ---- v104: flying above the clouds on a pegasus (your own horse, with wings), from Pegasus Perch ----
@@ -2100,7 +2150,7 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
     on(fullButton,'click',async()=>{if(document.fullscreenElement===host){await document.exitFullscreen();}else if(host.classList.contains('world-fullscreen'))host.classList.remove('world-fullscreen');else{try{if(!host.requestFullscreen)throw Error();await host.requestFullscreen();}catch{host.classList.add('world-fullscreen');}}fullLabel();});on(document,'fullscreenchange',fullLabel);
     // On phones the world goes properly full screen as it opens (the tap that opened it still counts as a gesture); quietly skipped if refused.
     if(matchMedia('(pointer:coarse)').matches&&!document.fullscreenElement&&host.requestFullscreen)host.requestFullscreen({navigationUI:'hide'}).then(fullLabel,()=>{});on(window,'keydown',event=>{if(event.key==='Escape'&&host.classList.contains('world-fullscreen')){host.classList.remove('world-fullscreen');fullLabel();}});
-    paintCounters();host.__world={npcs:()=>quests?.life?.()||[],callHorse:id=>callHorse(id),horses:()=>companions.map(h=>{let op=1;h.root.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material))op=Math.min(op,o.material.opacity);});return {id:h.data.id,vis:h.root.visible,arr:h.arriving?.gait||null,fade:h.arriving?.fade??null,op:+op.toFixed(2),d:+Math.hypot(h.root.position.x-position.x,h.root.position.z-position.z).toFixed(1)};}),tp:()=>TP.info(),tpSet:o=>TP._set(o),tpOpen:t=>TP.open(t),tpBuy:(id,f)=>TP.buy(id,f),tpDraw:(id,n)=>TP._draw(id,n),wb:()=>WB.info(),wc:()=>WC.info(),tt:()=>TT.info(),wd:()=>WD.info(),wn:()=>WN.info(),gt:()=>GT.info(),gtSet:o=>GT._set(o),gtTap:c=>({p:GT.prompt(c),r:GT.tap(c)}),wnSet:o=>WN._set(o),wnTap:c=>({p:WN.prompt(c),r:WN.tap(c)}),wnGo:(x,z)=>{position.x=x;position.z=z;},wdTap:c=>({p:WD.prompt(c),r:WD.tap(c)}),wdSet:o=>WD._set(o),ttKeeper:()=>TT.keeper(),ttSet:o=>TT._set(o),wcStar:()=>WC.starNow(),wcFox:()=>WC.foxSummon(),collections:()=>WB.open(),wa:()=>WA.info(),gust:()=>WA.gustNow(),moon:()=>moonPeg&&{state:moonPeg.state,t:moonPeg.t,vis:moonPeg.m.root.visible,p:moonPeg.m.root.position.toArray().map(v=>+v.toFixed(1))},state:()=>({area,mounted:mounted?.data.name,pos:{...position},horse:mounted?{...mounted.root.position,vis:mounted.root.visible,parent:mounted.root.parent?.type}:null,yaw,pitch}),market:(x,z,y,p)=>{if(caring)leaveCare();setArea("barn");moveTo(MARKET.x+x,MARKET.z+z);yaw=y;pitch=p;fillMarket();},barn:(x,z,y,p)=>{if(caring)leaveCare();setArea("barn");moveTo(x,z);yaw=y;pitch=p;},loanLeft:v=>{if(v!=null)loanLeft=v;return loanLeft;},enterMarket:()=>enterMarket(),dismount:()=>dismount(),backToStall:()=>backToStall(),interact:()=>interact(),companions:()=>companions.map(c=>c.data.name),testRide:id=>startTestRide(id??marketHorses[0]?.listing.id),vista:id=>openVista(LOOKOUTS.find(l=>l.id===id)),view:(x,z,y,p)=>{setArea("outdoor");moveTo(x,z);yaw=y;pitch=p;},heights:()=>({upY,climbing:!!upClimb,x:position.x,z:position.z,prompt:pillText,climbs:CLIMBS.map(c=>c.id)}),climb:id=>{const c=CLIMBS.find(c=>c.id===id);if(!c)return false;moveTo(c.x,c.z);if(!c.ground)upY=c.y;c.go();return true;},yawTo:(y,p)=>{yaw=y;if(p!=null)pitch=p;},upAt:(x,z,y)=>{moveTo(x,z);upClimb=null;upY=y;},surfs:()=>HT.surfaces.map(s=>({...s,block:undefined})),houseList:()=>houses?.list.map(l=>({i:l.h.i,door:l.door,yaw:l.h.yaw,x:l.h.x,z:l.h.z}))||[],inside:()=>houses?.inside()?.h.i??null,obsAt:(x,z,r)=>outdoorObstacles.filter(o=>blocked(x,z,r,0,[o])).map(o=>JSON.parse(JSON.stringify(o))),leaveBarn:()=>leaveBarn(),enterBarn:()=>enterBarn(),outdoorsGroup:outdoors,arenaDemo(rails=[]){if(!round)return null;const c=round.course,go=(x,z,o,t)=>{const ev=stepRound(round,{x,z,...o},t);if(ev)arenaEvent(ev);return ev;};go(ARENA.x+ARENA.gateU,ARENA.z+ARENA.startV-1,{},0);go(ARENA.x+ARENA.gateU,ARENA.z+ARENA.startV+1,{},performance.now()-30000);let last;for(const f of c.fences.slice(0,c.jumps)){if(!round)break;const o={air:true,speed:rails.includes(f.n)?f.need-1:9};go(f.x-f.dx*.5,f.z-f.dz*.5,o,0);last=go(f.x+f.dx*.5,f.z+f.dz*.5,o,performance.now());}return last?.result||null;},setHours(h){sky.preview.hours=h;},advance(steps=1,dt=1/30){for(let i=0;i<steps;i++){const t=performance.now();lastTime=t-dt*1000;frame(t);cancelAnimationFrame(raf);}},snap(){renderer.render(scene,camera);return renderer.domElement.toDataURL('image/jpeg',.7);},legends:legendsWorld,sky,actorObj:()=>mounted?mounted.root:avatar.root,mountCalled:()=>{const h=called;h.root.position.set(position.x+1.5,groundY(position.x+1.5,position.z),position.z);mount(h);return mounted?.data.id||null;},walkTo:(x,z)=>walkTo({x,z}),tap:(x,y)=>requestWalk(x,y),gfxInfo:()=>{renderer.info.autoReset=false;renderer.info.reset();renderer.render(scene,camera);const i=renderer.info.render;renderer.info.autoReset=true;return {calls:i.calls,tris:i.triangles,pretty};},rideParts(){if(!mounted)return null;const r=renderer.domElement.getBoundingClientRect(),h=mounted,sc=v=>{v.project(camera);return {x:Math.round(r.left+(v.x+1)/2*r.width),y:Math.round(r.top+(1-v.y)/2*r.height)};};const a=new T.Vector3();h.anchor.getWorldPosition(a);a.y+=.75*(h.scale||1);return {rider:sc(a),head:sc(h.head.localToWorld(new T.Vector3(0,-.25,.38))),whinnying:h.model.whinnying};},walking:()=>!!walkGoal,enterSky:()=>enterSky(),skyTo:(x,y,z)=>{if(skyRide){skyRide.x=x;skyRide.y=y;skyRide.z=z;}},skyRings:()=>skyWorld?.rings.map(r=>[r.x,r.y,r.z]),leaveSky:()=>leaveSky(),skyState:()=>skyRide&&{x:+skyRide.x.toFixed(1),y:+skyRide.y.toFixed(1),z:+skyRide.z.toFixed(1),ring:skyRide.ring,stars:skyRide.stars},camera,cam:()=>({x:+camera.position.x.toFixed(1),y:+camera.position.y.toFixed(1),z:+camera.position.z.toFixed(1)}),teleport:(x,z,y)=>{setArea('outdoor');moveTo(x,z);if(y!=null)yaw=y;},cave:CAVE,blocked:(x,z,r=.6)=>isBlocked(x,z,r),life:valleyLife,lift:()=>({on:skiLift.isOn(),chair:chair?{end:chair.end,p:+chair.ride.progress().toFixed(3),y:+chairY.toFixed(1)}:null,near:skiLift.near(position.x,position.z),L:skiLift.layout.L}),skiLift,boardLift,actor(){const a=mounted?mounted.root:avatar.root;return {y:+a.position.y.toFixed(2),g:+groundY(position.x,position.z).toFixed(2),x:+position.x.toFixed(1),z:+position.z.toFixed(1),yaw:+yaw.toFixed(2),area,climb:!!climb,phi:climbPhi};},race:()=>raceClimb(),probe(x,z){const rc=new T.Raycaster(new T.Vector3(x,400,z),new T.Vector3(0,-1,0));rc.camera=camera;const hits=rc.intersectObjects(scene.children,true).filter(h=>h.object.isMesh&&h.object.visible&&!h.object.isSprite).slice(0,3).map(h=>({y:+h.point.y.toFixed(2),n:h.object.name||h.object.parent?.name||h.object.geometry?.type}));return {g:+groundY(x,z).toFixed(2),hits};},moveTo,interact,outdoor:()=>setArea('outdoor'),barnDoor:()=>expansion.door,sliding:()=>!!slide,look:(y,p)=>{yaw=y;if(p!=null)pitch=p;},riding:()=>mounted?.data.id||null,saddleScreen:(dy=0)=>{if(!mounted)return null;mounted.anchor.getWorldPosition(_sp);_sp.y+=dy;_sp.project(camera);const r=renderer.domElement.getBoundingClientRect();return {x:r.left+(_sp.x+1)/2*r.width,y:r.top+(1-_sp.y)/2*r.height};},saddleHint:()=>!!saddleHint,screenOf:(x,y,z)=>{_sp.set(x,y,z).project(camera);const r=renderer.domElement.getBoundingClientRect();return {x:r.left+(_sp.x+1)/2*r.width,y:r.top+(1-_sp.y)/2*r.height,front:_sp.z<1};},motion:()=>({speed:+moveSpeed.toFixed(2),gait:(mounted||called).model.gait,stick:!!stick,x:+position.x.toFixed(1),z:+position.z.toFixed(1)}),peerOnScreen(name){const p=[...peers.values()].find(q=>q.name===name&&q.group.visible);if(!p)return null;const r=renderer.domElement.getBoundingClientRect(),v=new T.Vector3(p.group.position.x,p.group.position.y+(p.mounted?1.6:1),p.group.position.z).project(camera);return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height};},horseOnScreen(id){const h=companions.find(c=>c.data.id===id)||called,r=renderer.domElement.getBoundingClientRect(),v=new T.Vector3(h.root.position.x,h.root.position.y+1.9*h.scale,h.root.position.z).project(camera);return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height,id:h.data.id};}};markVisit(LOCATIONS[0]);startInStall();if(enterCare())startNote='';void network.loadProgress(adventure);{let pending=null;try{pending=JSON.parse(sessionStorage.getItem('trottville-join')||'null');sessionStorage.removeItem('trottville-join');}catch{}if(pending&&Date.now()-pending.at<120000)void joinRace(pending);else void network.resume();}updateAdventureHUD();if(intent){const [kind,id]=intent.split(':');if(kind==='game'){const g=BARN_GAMES.find(x=>x.id===id);if(g?.where==='outdoor')worldMap.open({x:g.x,z:g.z});else adventureUI.showGame(id);}else if(kind==='map')worldMap.open();else if(kind==='me')$('#world-style').click();else if(kind==='tackroom'){if(walkTo(TACK_SPOT)){doOnArrival=()=>talkToOtis();tell('Walking to Otis in the Tack Room.',3);}}else if(kind==='steeple')openSteeple();else if(kind==='barn')adventureUI.showBarn();}
+    paintCounters();host.__world={npcs:()=>quests?.life?.()||[],callHorse:id=>callHorse(id),horses:()=>companions.map(h=>{let op=1;h.root.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material))op=Math.min(op,o.material.opacity);});return {id:h.data.id,vis:h.root.visible,arr:h.arriving?.gait||null,fade:h.arriving?.fade??null,op:+op.toFixed(2),d:+Math.hypot(h.root.position.x-position.x,h.root.position.z-position.z).toFixed(1)};}),tp:()=>TP.info(),tpSet:o=>TP._set(o),tpOpen:t=>TP.open(t),tpBuy:(id,f)=>TP.buy(id,f),tpDraw:(id,n)=>TP._draw(id,n),wb:()=>WB.info(),wc:()=>WC.info(),tt:()=>TT.info(),wd:()=>WD.info(),wn:()=>WN.info(),gt:()=>GT.info(),gtSet:o=>GT._set(o),gtTap:c=>({p:GT.prompt(c),r:GT.tap(c)}),wnSet:o=>WN._set(o),wnTap:c=>({p:WN.prompt(c),r:WN.tap(c)}),wnGo:(x,z)=>{position.x=x;position.z=z;},wdTap:c=>({p:WD.prompt(c),r:WD.tap(c)}),wdSet:o=>WD._set(o),ttKeeper:()=>TT.keeper(),ttSet:o=>TT._set(o),wcStar:()=>WC.starNow(),wcFox:()=>WC.foxSummon(),collections:()=>WB.open(),wa:()=>WA.info(),gust:()=>WA.gustNow(),moon:()=>moonPeg&&{state:moonPeg.state,t:moonPeg.t,vis:moonPeg.m.root.visible,p:moonPeg.m.root.position.toArray().map(v=>+v.toFixed(1))},state:()=>({area,mounted:mounted?.data.name,pos:{...position},horse:mounted?{...mounted.root.position,vis:mounted.root.visible,parent:mounted.root.parent?.type}:null,yaw,pitch}),market:(x,z,y,p)=>{if(caring)leaveCare();setArea("barn");moveTo(MARKET.x+x,MARKET.z+z);yaw=y;pitch=p;fillMarket();},barn:(x,z,y,p)=>{if(caring)leaveCare();setArea("barn");moveTo(x,z);yaw=y;pitch=p;},loanLeft:v=>{if(v!=null)loanLeft=v;return loanLeft;},enterMarket:()=>enterMarket(),dismount:()=>dismount(),backToStall:()=>backToStall(),interact:()=>interact(),companions:()=>companions.map(c=>c.data.name),testRide:id=>startTestRide(id??marketHorses[0]?.listing.id),vista:id=>openVista(LOOKOUTS.find(l=>l.id===id)),view:(x,z,y,p)=>{setArea("outdoor");moveTo(x,z);yaw=y;pitch=p;},heights:()=>({upY,climbing:!!upClimb,x:position.x,z:position.z,prompt:pillText,climbs:CLIMBS.map(c=>c.id)}),climb:id=>{const c=CLIMBS.find(c=>c.id===id);if(!c)return false;moveTo(c.x,c.z);if(!c.ground)upY=c.y;c.go();return true;},yawTo:(y,p)=>{yaw=y;if(p!=null)pitch=p;},upAt:(x,z,y)=>{moveTo(x,z);upClimb=null;upY=y;},surfs:()=>HT.surfaces.map(s=>({...s,block:undefined})),houseList:()=>houses?.list.map(l=>({i:l.h.i,door:l.door,yaw:l.h.yaw,x:l.h.x,z:l.h.z}))||[],inside:()=>houses?.inside()?.h.i??null,obsAt:(x,z,r)=>outdoorObstacles.filter(o=>blocked(x,z,r,0,[o])).map(o=>JSON.parse(JSON.stringify(o))),leaveBarn:()=>leaveBarn(),enterBarn:()=>enterBarn(),outdoorsGroup:outdoors,arenaDemo(rails=[]){if(!round)return null;const c=round.course,go=(x,z,o,t)=>{const ev=stepRound(round,{x,z,...o},t);if(ev)arenaEvent(ev);return ev;};go(ARENA.x+ARENA.gateU,ARENA.z+ARENA.startV-1,{},0);go(ARENA.x+ARENA.gateU,ARENA.z+ARENA.startV+1,{},performance.now()-30000);let last;for(const f of c.fences.slice(0,c.jumps)){if(!round)break;const o={air:true,speed:rails.includes(f.n)?f.need-1:9};go(f.x-f.dx*.5,f.z-f.dz*.5,o,0);last=go(f.x+f.dx*.5,f.z+f.dz*.5,o,performance.now());}return last?.result||null;},setHours(h){sky.preview.hours=h;},advance(steps=1,dt=1/30){for(let i=0;i<steps;i++){const t=performance.now();lastTime=t-dt*1000;frame(t);cancelAnimationFrame(raf);}},snap(){renderer.render(scene,camera);return renderer.domElement.toDataURL('image/jpeg',.7);},legends:legendsWorld,sky,actorObj:()=>mounted?mounted.root:avatar.root,mountCalled:()=>{const h=called;h.root.position.set(position.x+1.5,groundY(position.x+1.5,position.z),position.z);mount(h);return mounted?.data.id||null;},walkTo:(x,z)=>walkTo({x,z}),tap:(x,y)=>requestWalk(x,y),gfxInfo:()=>{renderer.info.autoReset=false;renderer.info.reset();renderer.render(scene,camera);const i=renderer.info.render;renderer.info.autoReset=true;return {calls:i.calls,tris:i.triangles,pretty};},rideParts(){if(!mounted)return null;const r=renderer.domElement.getBoundingClientRect(),h=mounted,sc=v=>{v.project(camera);return {x:Math.round(r.left+(v.x+1)/2*r.width),y:Math.round(r.top+(1-v.y)/2*r.height)};};const a=new T.Vector3();h.anchor.getWorldPosition(a);a.y+=.75*(h.scale||1);return {rider:sc(a),head:sc(h.head.localToWorld(new T.Vector3(0,-.25,.38))),whinnying:h.model.whinnying};},walking:()=>!!walkGoal,enterSky:()=>enterSky(),skyTo:(x,y,z)=>{if(skyRide){skyRide.x=x;skyRide.y=y;skyRide.z=z;}},skyRings:()=>skyWorld?.rings.map(r=>[r.x,r.y,r.z]),leaveSky:()=>leaveSky(),skyState:()=>skyRide&&{x:+skyRide.x.toFixed(1),y:+skyRide.y.toFixed(1),z:+skyRide.z.toFixed(1),ring:skyRide.ring,stars:skyRide.stars},camera,cam:()=>({x:+camera.position.x.toFixed(1),y:+camera.position.y.toFixed(1),z:+camera.position.z.toFixed(1)}),teleport:(x,z,y)=>{setArea('outdoor');moveTo(x,z);if(y!=null)yaw=y;},cave:CAVE,blocked:(x,z,r=.6)=>isBlocked(x,z,r),life:valleyLife,lift:()=>({on:skiLift.isOn(),chair:chair?{end:chair.end,p:+chair.ride.progress().toFixed(3),y:+chairY.toFixed(1)}:null,near:skiLift.near(position.x,position.z),L:skiLift.layout.L}),skiLift,boardLift,actor(){const a=mounted?mounted.root:avatar.root;return {y:+a.position.y.toFixed(2),g:+groundY(position.x,position.z).toFixed(2),x:+position.x.toFixed(1),z:+position.z.toFixed(1),yaw:+yaw.toFixed(2),area,climb:!!climb,phi:climbPhi};},race:()=>raceClimb(),probe(x,z){const rc=new T.Raycaster(new T.Vector3(x,400,z),new T.Vector3(0,-1,0));rc.camera=camera;const hits=rc.intersectObjects(scene.children,true).filter(h=>h.object.isMesh&&h.object.visible&&!h.object.isSprite).slice(0,3).map(h=>({y:+h.point.y.toFixed(2),n:h.object.name||h.object.parent?.name||h.object.geometry?.type}));return {g:+groundY(x,z).toFixed(2),hits};},moveTo,interact,outdoor:()=>setArea('outdoor'),barnDoor:()=>expansion.door,sliding:()=>!!slide,look:(y,p)=>{yaw=y;if(p!=null)pitch=p;},riding:()=>mounted?.data.id||null,saddleScreen:(dy=0)=>{if(!mounted)return null;mounted.anchor.getWorldPosition(_sp);_sp.y+=dy;_sp.project(camera);const r=renderer.domElement.getBoundingClientRect();return {x:r.left+(_sp.x+1)/2*r.width,y:r.top+(1-_sp.y)/2*r.height};},saddleHint:()=>!!saddleHint,autoJump:v=>{autoJump=!!v;},train:()=>{const d=(mounted||called)?.data;if(!d)return null;const h=horseRec(d);return {j:jumpingOf(d),train:h.train||null,qual:h.qual||null,left:TR.sessionsLeft(h,dayNumber()),strip:takeoff.visible?{x:+takeoff.position.x.toFixed(1),z:+takeoff.position.z.toFixed(1),depth:+takeoff.scale.z.toFixed(2),red:takeoff.material.color.getHexString()!=='ffa51f'}:null,msg:document.querySelector('#world-message')?.textContent||''};},trainSet:n=>{const d=(mounted||called).data,r=RanchUI.get();RanchUI.set({...r,herd:r.herd.map(x=>x.id===d.id?{...x,train:{jumping:n,day:-1,n:0}}:x)},{quiet:true});return jumpingOf(d);},enterClass:id=>enterClass(id),openTraining:()=>openTraining(),screenOf:(x,y,z)=>{_sp.set(x,y,z).project(camera);const r=renderer.domElement.getBoundingClientRect();return {x:r.left+(_sp.x+1)/2*r.width,y:r.top+(1-_sp.y)/2*r.height,front:_sp.z<1};},motion:()=>({speed:+moveSpeed.toFixed(2),gait:(mounted||called).model.gait,stick:!!stick,x:+position.x.toFixed(1),z:+position.z.toFixed(1)}),peerOnScreen(name){const p=[...peers.values()].find(q=>q.name===name&&q.group.visible);if(!p)return null;const r=renderer.domElement.getBoundingClientRect(),v=new T.Vector3(p.group.position.x,p.group.position.y+(p.mounted?1.6:1),p.group.position.z).project(camera);return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height};},horseOnScreen(id){const h=companions.find(c=>c.data.id===id)||called,r=renderer.domElement.getBoundingClientRect(),v=new T.Vector3(h.root.position.x,h.root.position.y+1.9*h.scale,h.root.position.z).project(camera);return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height,id:h.data.id};}};markVisit(LOCATIONS[0]);startInStall();if(enterCare())startNote='';void network.loadProgress(adventure);{let pending=null;try{pending=JSON.parse(sessionStorage.getItem('trottville-join')||'null');sessionStorage.removeItem('trottville-join');}catch{}if(pending&&Date.now()-pending.at<120000)void joinRace(pending);else void network.resume();}updateAdventureHUD();if(intent){const [kind,id]=intent.split(':');if(kind==='game'){const g=BARN_GAMES.find(x=>x.id===id);if(g?.where==='outdoor')worldMap.open({x:g.x,z:g.z});else adventureUI.showGame(id);}else if(kind==='map')worldMap.open();else if(kind==='me')$('#world-style').click();else if(kind==='tackroom'){if(walkTo(TACK_SPOT)){doOnArrival=()=>talkToOtis();tell('Walking to Otis in the Tack Room.',3);}}else if(kind==='steeple')openSteeple();else if(kind==='barn')adventureUI.showBarn();}
   }
 
   // The wild lands: keep chunks loaded around you, move the sun (and its shadows) with you, tint the sky to
@@ -2130,7 +2180,7 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
     const fast=moveSpeed>(mounted?7:4.4);let speed=moveSpeed*(area==='outdoor'?G.gripSpeed(sky.fx.speed,mounted&&ride?ride.shoes.grip:0):1),v=movementVector(sx,sz,yaw);
     // v150 (Yoshi: "horse running should be pretty fast"): free-roam gallop covers 40% more ground. Timed runs, rounds,
     // the steeplechase and the corn maze keep the old pace (race times, jump timing and saddle balance unchanged).
-    sprintK=mounted&&moveSpeed>7&&area==='outdoor'&&!run&&!round&&!steepleRace&&!inMaze(position.x,position.z)?1+.4*Math.min(1,(moveSpeed-7)/2):1;speed*=sprintK;
+    sprintK=mounted&&moveSpeed>7&&area==='outdoor'&&!run&&!round&&!steepleRace&&!inMaze(position.x,position.z)&&!inJumpZone()?1+.4*Math.min(1,(moveSpeed-7)/2):1;speed*=sprintK;groundV=speed;   // v162: no sprint boost on the jump lane either
     if(sx||sz)cancelWalk();
     else if(!paused&&walkGoal&&!chair){const steering=steeringStep(position,walkPath,speed,delta);v=steering.vector;speed=steering.speed;if(!walkPath.length){const trip=mapTrip,horse=mountOnArrival,then=doOnArrival;cancelWalk();arrived(trip);then?.();if(horse){if(Math.hypot(horse.root.position.x-position.x,horse.root.position.z-position.z)<3.6)mount(horse);else tell(horse.data.name+' wandered off. Tap them again.',3);}}}
     // The Free Bridle answers the reins more slowly: when you steer yourself, the heading swings round instead of snapping.
@@ -2139,7 +2189,7 @@ if(area==='barn'){if(nearDoor()){openDoors();return;}if(nearKeeper()){talkToHaze
     else if(ride)ride.heading=null;
     if(chair)v={x:0,z:0};
     const moving=!!(v.x||v.z);
-    if(jumpVelocity||jump){jumpVelocity-=12*delta;jump=Math.max(0,jump+jumpVelocity*delta);if(jump===0){if(jumpVelocity<-1)sfx(mounted?'thud':'thump',{vol:mounted?.9:.5});jumpVelocity=0;}}
+    if(jumpVelocity||jump){jump=Math.max(0,jump+(jumpVelocity-6*delta)*delta);jumpVelocity-=12*delta;   /* v162: exact arc (the old step lost ~8 cm of height, so the take-off strip lied) */if(jump===0){if(jumpVelocity<-1)sfx(mounted?'thud':'thump',{vol:mounted?.9:.5});jumpVelocity=0;}}
     if(upClimb)stepClimb(delta);
     if(!houses&&expansion.lands?.houses)houses=buildHouses({T,houses:expansion.lands.houses,outdoors,HT,ground:(x,z)=>Math.max(chunks.surfaceHeight(x,z),bridgeFloor(x,z))});
     const next=slide?{x:position.x,z:position.z}:upY!=null||upClimb?upStep(v,speed,delta):moveActor(position,v,speed,delta,mounted?.7:.36,jump,area==='barn'?indoorList():outdoorList());let distance=Math.hypot(next.x-position.x,next.z-position.z);totalDistance+=distance;Object.assign(position,next);

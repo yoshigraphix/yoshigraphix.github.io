@@ -6,7 +6,7 @@
 // buildStall(T,{decorOnly:true}) skips the stall itself (walls, straw, door) and keeps only the decor plus a beam
 // to hang beam items from, so the 3D world's barn can show the same decor in your horse's bay. The name plaque
 // then sits on the front rail instead of the swung-open door.
-import {SLOT,shelfHost} from './stall-decor.mjs?v=161';
+import {SLOT,shelfHost} from './stall-decor.mjs?v=162';
 
 // The shuttered window (stall-window.js) sits where wall-3 used to be, so wall-3/wall-4 moved right and stacked.
 export const WINDOW_AT={x:1.35,y:4.2};

@@ -1,10 +1,10 @@
 // Painted valley map: a full-screen overlay over the 3D world. The land is painted once from the same height field,
 // paths and obstacles the world uses; pins, labels and "you are here" are redrawn on top while you pan and pinch.
 // Tapping a pin opens a card with two ways to get there: ride (earns trust) or jump (5 free a day, then one every 20 min; never costs trust).
-import {LOCATIONS,MAP_PATHS,PASTURE,FARMS,RIVERS,BRIDGES,FIELDS,MILLS,TOWN2,terrainHeight,fogBits,fogHas,FOG_N,FOG_CELL} from './world-content.mjs?v=161';
-import {cloudstepAt,onCloudstep,STREAM} from './world-cloudstep.mjs?v=161';
-import {PX_NAMES,pxImage,iconHTML} from './pixel-icons.js?v=161';
-import {REGIONS,R as regionPt,offsetOf,HALF,regionAt} from './world-regions.mjs?v=161';
+import {LOCATIONS,MAP_PATHS,PASTURE,FARMS,RIVERS,BRIDGES,FIELDS,MILLS,TOWN2,terrainHeight,fogBits,fogHas,FOG_N,FOG_CELL} from './world-content.mjs?v=162';
+import {cloudstepAt,onCloudstep,STREAM} from './world-cloudstep.mjs?v=162';
+import {PX_NAMES,pxImage,iconHTML} from './pixel-icons.js?v=162';
+import {REGIONS,R as regionPt,offsetOf,HALF,regionAt} from './world-regions.mjs?v=162';
 
 const EXTENT=HALF,PX=2,SIZE=EXTENT*2*PX; // world x,z in [-300,300] (nine regions); 2 px per metre on the painted sheet
 // Design spots of painted features → world (world-regions.mjs blocks).

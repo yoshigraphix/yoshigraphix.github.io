@@ -3,10 +3,10 @@
 // speed: a knocked rail or a refusal is 4 faults, and every second over the time allowed is 1 more.
 // Entry needs the Show Jacket, an upgraded saddle, and a horse of the show's level. Same seed, same course.
 // Built to the steeplechase's course interface (fences, checkpoints, ground, obstacles) so the riding is shared.
-import {rng,hashSeed,weekKey} from './steeple-course.mjs?v=161';
+import {rng,hashSeed,weekKey} from './steeple-course.mjs?v=162';
 
 export const SHOWS={
-  clover:{id:'clover',name:'Clover Cup',level:3,kind:'arena',jumps:8,crowd:10,size:[64,104],fee:150,prize:[1500,900,500,200],
+  clover:{id:'clover',name:'Clover Cup',level:3,qualifier:'cupq',kind:'arena',jumps:8,crowd:10,size:[64,104],fee:150,prize:[1500,900,500,200],
     blurb:'A friendly first show in the little arena, with a handful of fans on the bleachers.'},
   forest:{id:'forest',name:'Willow Wood Classic',level:6,kind:'forest',jumps:10,crowd:30,size:[150,300],fee:400,prize:[4000,2500,1500,500],
     blurb:'Logs, brush and stone walls on a winding trail through the trees. Watch the arrow!'},
@@ -27,11 +27,13 @@ export const daysToLevel=(xp,l,perDay=45)=>Math.max(0,Math.ceil((xpForLevel(l)-(
 // What stands between this rider and a show (empty list = can enter).
 // Entry fees (#34): paid each try until you've won that show's prize today; after that, rides are free practice.
 // The prize pays once a day per show. Horses 15 and over are too tired to enter (riding.mjs COMPETE_MAX).
-export function entryNeeds(show,{level=1,upgradedSaddle=false,hasOutfit=false,tooOld=false}={}){const out=[];
+// v162: a show with a qualifier (Clover Cup) asks for a qualifying clear round instead of a horse level.
+export function entryNeeds(show,{level=1,upgradedSaddle=false,hasOutfit=false,tooOld=false,qualified=false}={}){const out=[];
   if(tooOld)out.push({id:'age',text:'A horse under 15 years old (older horses tire too quickly for shows)'});
   if(!hasOutfit)out.push({id:'outfit',text:`Show Jacket (${SHOW_OUTFIT_PRICE.toLocaleString('en-US')} 🪙)`});
   if(!upgradedSaddle)out.push({id:'saddle',text:'An upgraded saddle on your horse'});
-  if(level<show.level)out.push({id:'level',text:`Horse level ${show.level} (now ${level})`});
+  if(show.qualifier){if(!qualified)out.push({id:'qual',text:`A clear round in the ${show.name} Qualifier at Clover Downs`});}
+  else if(level<show.level)out.push({id:'level',text:`Horse level ${show.level} (now ${level})`});
   return out;}
 
 // ---------- Scoring ----------

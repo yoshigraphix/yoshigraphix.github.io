@@ -7,10 +7,10 @@ export const dayNo=(ms=Date.now())=>Math.floor(ms/DAY);
 // Tiny seeded random, so a seed always makes the same horse / the same market day.
 export function rng(seed){let h=2166136261;for(const c of String(seed))h=Math.imul(h^c.charCodeAt(0),16777619);
   return ()=>{h=Math.imul(h^h>>>15,2246822507);h=Math.imul(h^h>>>13,3266489909);return ((h^=h>>>16)>>>0)/4294967296;};}
-import {BREED_LIST} from './breeds.mjs?v=161';
-import {safeName,horseNameProblem} from './friends-logic.mjs?v=161';
+import {BREED_LIST} from './breeds.mjs?v=162';
+import {safeName,horseNameProblem} from './friends-logic.mjs?v=162';
 export {horseNameProblem};
-import {addTrust,STARTER_TRUST,TAME_AT,ageMonths,ageBand} from './riding.mjs?v=161';
+import {addTrust,STARTER_TRUST,TAME_AT,ageMonths,ageBand} from './riding.mjs?v=162';
 export {ageMonths,ageBand};
 const pick=(r,list)=>list[Math.floor(r()*list.length)];
 
@@ -445,4 +445,5 @@ const GROUP_BASE={riding:{speed:20,stamina:18,agility:16,jumping:14},sport:{spee
 export function horseStats(h,{bond=0,tamed=false}={}){const b=breedOf(h?.breedId),base=STAT_BASE[b.id]||GROUP_BASE[b.group]||GROUP_BASE.riding;
   const gained=Math.max(0,Math.floor(Math.sqrt((h?.xp||0)/40))),grow=gained*4,cap=v=>Math.max(1,Math.min(100,Math.round(v)));
   const out={};for(const k of ['speed','stamina','agility','jumping'])out[k]=cap(base[k]+grow);
+  out.jumping=cap(out.jumping+Math.max(0,Number(h?.train?.jumping)||0));   // v162: Jumping training (training.mjs) adds on top
   out.bond=cap(tamed?35+bond*.65:bond*.35);return out;}

@@ -5,11 +5,11 @@
 // the lever slides the belt off to the left and the camera pans right, so baskets are dragged up and right to the truck.
 // Birds, fireflies and a squirrel with an eye for dropped apples keep it lively; Freckles the Appaloosa
 // stands by the truck and gives tips, and today's guest (a pricey breed from ranch.guestHorse) waits beside her to be met.
-import * as THREE from './vendor/three-0.180.0/three.module.js?v=161';
-import {APPLE_COLORS,BASKET_CAPACITY,basketLevel} from './apple-conveyor.mjs?v=161';
-import {makeSculptedHorse} from './horse-sculpt.js?v=161';
-import {solidCoat,guestHorse} from './ranch.mjs?v=161';
-import {horsePortrait as photograph} from './horse-portrait.js?v=161';
+import * as THREE from './vendor/three-0.180.0/three.module.js?v=162';
+import {APPLE_COLORS,BASKET_CAPACITY,basketLevel} from './apple-conveyor.mjs?v=162';
+import {makeSculptedHorse} from './horse-sculpt.js?v=162';
+import {solidCoat,guestHorse} from './ranch.mjs?v=162';
+import {horsePortrait as photograph} from './horse-portrait.js?v=162';
 
 export const APPLE_TINTS={green:'#86b545',red:'#cf3f33',orange:'#ec8a2e',yellow:'#ecc843'};
 export const LEVEL_COLORS={empty:'#f6f3e8',green:'#5fbf45',orange:'#f29b2c',red:'#e2402f'};
